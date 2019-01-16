@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="q-rest-product">
+    <output-path>$PROJECT_DIR$/out/artifacts/q_rest_product</output-path>
+    <root id="archive" name="q-rest-product.war">
+      <element id="javaee-facet-resources" facet="q-rest-product/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="q-rest-product" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="file-copy" path="$PROJECT_DIR$/web/WEB-INF/lib/jackson-annotations-2.8.5.jar" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/web/WEB-INF/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>
