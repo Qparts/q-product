@@ -28,6 +28,39 @@ public class ProductApiV2 {
     @EJB
     private DAO dao;
 
+    @ValidApp
+    @Path("products/best-sellers")
+    @GET
+    public Response getBestSellers(){
+        try{
+            String sql = "select * from prd_product where status = 'A' order by id desc limit 10";
+            List<PublicProduct> pbs = dao.getNative(PublicProduct.class, sql);
+            for(PublicProduct pb : pbs){
+                initPublicProduct(pb);
+            }
+            return Response.status(200).entity(pbs).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @ValidApp
+    @Path("products/offers")
+    @GET
+    public Response getOffers(){
+        try{
+            String sql = "select * from prd_product where status = 'A' order by id asc limit 10";
+            List<PublicProduct> pbs = dao.getNative(PublicProduct.class, sql);
+            for(PublicProduct pb : pbs){
+                initPublicProduct(pb);
+            }
+            return Response.status(200).entity(pbs).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
 
     @ValidApp
     @Path("product/{productId}")

@@ -275,13 +275,24 @@ public class ProductInternalApiV2 {
 
     private void createProductSpecs(long productId, List<ProductSpec> productSpecs) throws Exception {
         if (productSpecs != null) {
-            for (ProductSpec productSpec : productSpecs) {
-                productSpec.setCreated(new Date());
-                productSpec.setProductId(productId);
-                if (productSpec.getValueAr() == null || productSpec.getValueAr().length() == 0) {
-                    productSpec.setValueAr(productSpec.getValue());
+            Helper h = new Helper();
+            for (ProductSpec ps : productSpecs) {
+                String date = h.getDateFormat(new Date());
+                ps.setProductId(productId);
+                if (ps.getValueAr() == null || ps.getValueAr().length() == 0) {
+                    ps.setValueAr(ps.getValue());
                 }
-                dao.persist(productSpec);
+
+                String sql = "insert into prd_product_specification (spec_id, product_id, value, value_ar, created, created_by, status) " +
+                        "values(" + ps.getSpec().getId() +" ,"
+                        + productId +", "
+                        + "'" + ps.getValue() +"' , "
+                        + " '" + ps.getValueAr() +"' , "
+                        + " '" + date + "' , "
+                        + ps.getCreatedBy() + ", "
+                        + " '" + ps.getStatus() + "')";
+                System.out.println(sql);
+                dao.insertNative(sql);
             }
         }
     }
