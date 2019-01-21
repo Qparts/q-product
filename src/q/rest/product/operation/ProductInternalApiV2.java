@@ -3,7 +3,7 @@ package q.rest.product.operation;
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.SecuredUser;
 import q.rest.product.helper.Helper;
-import q.rest.product.model.contract.ProductCreation;
+import q.rest.product.model.contract.ProductHolder;
 import q.rest.product.model.entity.*;
 
 import javax.ejb.EJB;
@@ -92,11 +92,36 @@ public class ProductInternalApiV2 {
         }
     }
 
+    @SecuredUser
+    @GET
+    @Path("product/{id}")
+    public Response getProduct(@PathParam(value = "id") long id){
+        try{
+            Product product = dao.find(Product.class, id);
+            if(product == null){
+                return Response.status(404).build();
+            }
+            ProductHolder holder = getProductHolder(product);
+            return Response.status(200).entity(holder).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    private ProductHolder getProductHolder(Product product){
+        ProductHolder holder = new ProductHolder();
+        holder.setProduct(product);
+        holder.setCategories(getProductCategories(product.getId()));
+        holder.setProductPrices(getProductPrices(product.getId()));
+        holder.setProductSpecs(getProductSpecs(product.getId()));
+        holder.setTags(getProductTags(product.getId()));
+        return holder;
+    }
 
     @SecuredUser
     @POST
     @Path("product")
-    public Response createProduct(@HeaderParam("Authorization") String header, ProductCreation holder){
+    public Response createProduct(@HeaderParam("Authorization") String header, ProductHolder holder){
         try{
             Product product = holder.getProduct();
             if(productExists(product)){
@@ -109,7 +134,7 @@ public class ProductInternalApiV2 {
             this.createProductTags(product.getId(), holder.getTags());
             this.createProductSpecs(product.getId(), holder.getProductSpecs());
             this.createProductCategories(product.getId(), holder.getCategories());
-            this.createProductPrice(product.getId(), holder.getProductPrice());
+            this.createProductPrice(product.getId(), holder.getProductPrices().get(0));
           //  async.writeProductImage(header, holder.getImageString(), product.getId());
             return Response.status(200).entity(product.getId()).build();
         }catch (Exception ex){
@@ -180,7 +205,6 @@ public class ProductInternalApiV2 {
 
     private boolean categoryExists(Category category){
         String sql = "select b from Category b where (lower(b.name) = :value0 or lower(b.nameAr) = :value1) and b.id != :value2";
-
         List<Category> categoryList = dao.getJPQLParams(Category.class, sql, category.getName().toLowerCase().trim(), category.getNameAr().toLowerCase().trim(), category.getId());
         return !categoryList.isEmpty();
     }
@@ -318,6 +342,30 @@ public class ProductInternalApiV2 {
         for(Category child : children){
             addChildren(child);
         }
+    }
+
+    private List<String> getProductTags(long productId){
+        String sql = "select b.tag from ProductTag b where b.productId = :value0";
+        List<String> tags = dao.getJPQLParams(String.class, sql, productId);
+        return tags;
+    }
+
+    private List<ProductSpec> getProductSpecs(long productId){
+        String sql = "select b from ProductSpec b where b.productId = :value0";
+        List<ProductSpec> ps = dao.getJPQLParams(ProductSpec.class, sql, productId);
+        return ps;
+    }
+
+    private List<ProductPrice> getProductPrices(long productId){
+        String sql = "select b from ProductPrice b where b.productId = :value0 and b.status = :value1 order by b.created";
+        List<ProductPrice> ps = dao.getJPQLParams(ProductPrice.class, sql, productId, 'A');
+        return ps;
+    }
+
+    private List<Category> getProductCategories(long productId){
+        String sql = "select c from Category c where c.id in (select b.categoryId from ProductCategory b where b.productId = :value0)";
+        List<Category> categories = dao.getJPQLParams(Category.class, sql, productId);
+        return categories;
     }
 
 }

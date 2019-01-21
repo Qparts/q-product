@@ -8,15 +8,21 @@ import q.rest.product.model.entity.ProductSpec;
 import java.io.Serializable;
 import java.util.List;
 
-public class ProductCreation implements Serializable {
+public class ProductHolder implements Serializable {
 
     private Product product;
-    private String imageString;
     private List<Category> categories;
     private List<String> tags;
     private List<ProductSpec> productSpecs;
-    private ProductPrice productPrice;
+    private List<ProductPrice> productPrices;
 
+    public List<ProductPrice> getProductPrices() {
+        return productPrices;
+    }
+
+    public void setProductPrices(List<ProductPrice> productPrices) {
+        this.productPrices = productPrices;
+    }
 
     public Product getProduct() {
         return product;
@@ -24,14 +30,6 @@ public class ProductCreation implements Serializable {
 
     public void setProduct(Product product) {
         this.product = product;
-    }
-
-    public String getImageString() {
-        return imageString;
-    }
-
-    public void setImageString(String imageString) {
-        this.imageString = imageString;
     }
 
     public List<Category> getCategories() {
@@ -56,13 +54,5 @@ public class ProductCreation implements Serializable {
 
     public void setProductSpecs(List<ProductSpec> productSpecs) {
         this.productSpecs = productSpecs;
-    }
-
-    public ProductPrice getProductPrice() {
-        return productPrice;
-    }
-
-    public void setProductPrice(ProductPrice productPrice) {
-        this.productPrice = productPrice;
     }
 }
