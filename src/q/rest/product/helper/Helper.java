@@ -17,7 +17,7 @@ public class Helper {
         return string.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
     }
 
-    public static boolean isProbablyArabic(String s) {
+    private static boolean isProbablyArabic(String s) {
         for (int i = 0; i < s.length();) {
             int c = s.codePointAt(i);
             if (c >= 0x0600 && c <= 0x06E0)
@@ -25,6 +25,23 @@ public class Helper {
             i += Character.charCount(c);
         }
         return false;
+    }
+
+
+    public static String getNumberedQuery(String query){
+        String numbered = "";
+        try {
+
+            if(!Helper.isProbablyArabic(query)){
+                numbered = "%" + Helper.undecorate(query).toUpperCase() +"%";
+            }
+            else{
+                numbered="asProductNumber";
+            }
+        } catch (Exception ignore) {
+            numbered = "asProductNumber";
+        }
+        return numbered;
     }
 
 

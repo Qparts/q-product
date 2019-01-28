@@ -92,6 +92,38 @@ public class ProductInternalApiV2 {
         }
     }
 
+
+    @SecuredUser
+    @GET
+    @Path("products/latest-added")
+    public Response getLatestProducts(){
+        try {
+            String sql = "select b from Product b where id != :value0 order by created desc";
+            List<Product> products = dao.getJPQLParamsOffsetMax(Product.class, sql, 0, 20, 0L);
+            return Response.status(200).entity(products).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
+
+    @SecuredUser
+    @GET
+    @Path("products/search/{query}")
+    public Response searchProduct(@PathParam(value = "query") String query){
+        try {
+            String numbered = Helper.getNumberedQuery(query);
+            String lowered = "%"+ query.trim().toLowerCase() + "%";
+            String sql = "select b from Product b where lower(b.desc) like :value0 " +
+                    "or b.productNumber like :value1";
+            List<Product> products = dao.getJPQLParamsOffsetMax(Product.class, sql, 0, 20, lowered, numbered);
+            return Response.status(200).entity(products).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
     @SecuredUser
     @GET
     @Path("product/{id}")

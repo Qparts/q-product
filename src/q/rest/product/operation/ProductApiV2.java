@@ -95,20 +95,9 @@ public class ProductApiV2 {
 
             int offset = (page -1) * 5;
             int max = page * 5;
-            String numbered = "";
+            String numbered = Helper.getNumberedQuery(query);
             String tagged = "%"+Helper.properTag(query)+"%";
             String lowered = "%"+ query.trim().toLowerCase() + "%";
-            try {
-                if(!Helper.isProbablyArabic(query)){
-                    numbered = "%" + Helper.undecorate(query).toUpperCase() +"%";
-                }
-                else{
-                    numbered="asProductNumber";
-                }
-            } catch (Exception ignore) {
-                numbered = "asProductNumber";
-            }
-
             String sqlSize = "select count(b) from PublicProduct b where b.productNumber like :value2 "
                     + "or lower(b.desc) like :value0 "
                     + "or lower(b.details) like :value0 "
