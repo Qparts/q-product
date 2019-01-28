@@ -4,18 +4,19 @@ package q.rest.product.operation;
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.ValidApp;
 import q.rest.product.helper.AppConstants;
-import q.rest.product.model.contract.PublicBrand;
-import q.rest.product.model.contract.PublicProduct;
-import q.rest.product.model.contract.PublicReview;
-import q.rest.product.model.contract.PublicSpec;
+import q.rest.product.helper.Helper;
+import q.rest.product.model.contract.*;
+import q.rest.product.model.entity.Brand;
 import q.rest.product.model.entity.Product;
 import q.rest.product.model.entity.ProductPrice;
 import q.rest.product.model.entity.ProductSpec;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,12 +83,104 @@ public class ProductApiV2 {
     }
 
 
+//    @ValidApp
+    @Path("search/general")
+    @GET
+    public Response searchProduct(@Context UriInfo info){
+        try {
+            String query = info.getQueryParameters().getFirst("query");
+            Integer page = Integer.parseInt(info.getQueryParameters().getFirst("page"));
+            String sort = info.getQueryParameters().getFirst("sort");
+            String brandKey = info.getQueryParameters().getFirst("Brands");
+
+            int offset = (page -1) * 5;
+            int max = page * 5;
+            String numbered = "";
+            String tagged = "%"+Helper.properTag(query)+"%";
+            String lowered = "%"+ query.trim().toLowerCase() + "%";
+            try {
+                if(!Helper.isProbablyArabic(query)){
+                    numbered = "%" + Helper.undecorate(query).toUpperCase() +"%";
+                }
+                else{
+                    numbered="asProductNumber";
+                }
+            } catch (Exception ignore) {
+                numbered = "asProductNumber";
+            }
+
+            String sqlSize = "select count(b) from PublicProduct b where b.productNumber like :value2 "
+                    + "or lower(b.desc) like :value0 "
+                    + "or lower(b.details) like :value0 "
+                    + "or b.id in (select c.productId from ProductTag c where c.tag like :value1) "
+                    + "or b.id in (select d.productId from ProductSpec d where lower(d.value) like :value0) "
+                    + "or b.id in (select e.productId from ProductSpec e where  lower(e.valueAr) like :value0) "
+                    + "or lower(b.brand.name) like :value0 "
+                    + " or lower(b.brand.nameAr) like :value0 "
+                    + "or b.id in (select f.productId from ProductCategory f where f.categoryId in ("
+                    + "select g.id from Category g where lower(g.name) like :value0 or lower(g.nameAr) like :value0)) ";
+
+            String sql = "select b from PublicProduct b where b.productNumber like :value2 "
+                    + "or lower(b.desc) like :value0 "
+                    + "or lower(b.details) like :value0 "
+                    + "or b.id in (select c.productId from ProductTag c where c.tag like :value1) "
+                    + "or b.id in (select d.productId from ProductSpec d where lower(d.value) like :value0) "
+                    + "or b.id in (select e.productId from ProductSpec e where lower(e.valueAr) like :value0) "
+                    + "or lower(b.brand.name) like :value0 or lower(b.brand.nameAr) like :value0 "
+                    + "or b.id in (select f.productId from ProductCategory f where f.categoryId in ("
+                    + "select g.id from Category g where lower(g.name) like :value0 or lower(g.nameAr) like :value0)) ";
+            List<PublicProduct> products = dao.getJPQLParamsOffsetMax(PublicProduct.class, sql, offset, max, lowered, tagged, numbered);
+            Number n = dao.findJPQLParams(Number.class, sqlSize, lowered, tagged, numbered);
+            SearchResult searchResult = new SearchResult();
+            searchResult.setResultSize(n.intValue());
+            for (PublicProduct pb : products) {
+                initPublicProduct(pb);
+                searchResult.getProducts().add(pb);
+            }
+
+
+            String sqlBrands = "select distinct b.brand from PublicProduct b where b.productNumber like :value2 "
+                    + "or lower(b.desc) like :value0 "
+                    + "or lower(b.details) like :value0 "
+                    + "or b.id in (select c.productId from ProductTag c where c.tag like :value1) "
+                    + "or b.id in (select d.productId from ProductSpec d where lower(d.value) like :value0) "
+                    + "or b.id in (select e.productId from ProductSpec e where lower(e.valueAr) like :value0) "
+                    + "or lower(b.brand.name) like :value0 or lower(b.brand.nameAr) like :value0 "
+                    + "or b.id in (select f.productId from ProductCategory f where f.categoryId in ("
+                    + "select g.id from Category g where lower(g.name) like :value0 or lower(g.nameAr) like :value0)) ";
+
+            List<PublicBrand> brands = dao.getJPQLParams(PublicBrand.class, sqlBrands, lowered, tagged, numbered);
+            SearchFilter brandFilter = new SearchFilter();
+            brandFilter.setFilterTitle("Brands");
+            brandFilter.setFilterTitleAr("الماركة");
+            for(PublicBrand brand : brands){
+                brandFilter.addValues(brand.getName(), brand.getNameAr());
+            }
+            searchResult.getFilterObjects().add(brandFilter);
+            return Response.status(200).entity(searchResult).build();
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return Response.serverError().build();
+        }
+    }
+
+    private void initSearchFilters(SearchResult searchResult){
+
+
+
+    }
+
+
     private void initPublicProduct(PublicProduct product){
-        product.setSpecs(getPublicSpecs(product.getId()));
-        product.setSalesPrice(getAveragedSalesPrice(product.getId()));
-        product.setReviews(getPublicReviews(product.getId()));
-        product.initImageLink();
-        product.getBrand().initImageLink();
+        try {
+            product.setSpecs(getPublicSpecs(product.getId()));
+            product.setSalesPrice(getAveragedSalesPrice(product.getId()));
+            product.setReviews(getPublicReviews(product.getId()));
+            product.initImageLink();
+            product.getBrand().initImageLink();
+        }catch(Exception ex){
+            product = null;
+        }
     }
 
     private List<PublicReview> getPublicReviews(long productId){
