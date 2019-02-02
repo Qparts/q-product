@@ -2,6 +2,7 @@ package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.SecuredUser;
+import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.ProductHolder;
 import q.rest.product.model.entity.*;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Path("/internal/api/v2/")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -76,6 +78,89 @@ public class ProductInternalApiV2 {
     }
 
 
+
+    @SecuredUser
+    @GET
+    @Path("categories/make/{makeId}")
+    public Response getMakeCategories(@PathParam(value = "makeId") int makeId){
+        try{
+            String sql = "select b from Category b where b.categoryId in (" +
+                    "select c.categoryId from CategoryMake c where c.makeId =:value0)";
+            List<Category> categories = dao.getJPQLParams(Category.class, sql , makeId);
+            for(Category category : categories){
+                this.addTags(category);
+                this.addSpecs(category);
+            }
+            return Response.status(200).entity(categories).build();
+        }catch(Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @POST
+    @Path("find-or-create-product")
+    public Response findOrCreateProduct(Map<Object,Object> map){
+        try{
+            String number = (String) map.get("number");
+            String name = (String) map.get("name");
+            Integer brandId = ((Number) map.get("brandId")).intValue();
+            Integer createdBy = ((Number) map.get("createdBy")).intValue();
+            String undecor = Helper.undecorate(number);
+            String jpql = "select b from Product b where b.productNumber = :value0 and b.brand.id = :value1";
+            List<Product> products = dao.getJPQLParams(Product.class, jpql, undecor, brandId);
+            ProductHolder holder = new ProductHolder();
+            if (products.isEmpty()) {
+                Product product = new Product();
+                Brand brand = dao.find(Brand.class, brandId);
+                product.setCreated(new Date());
+                product.setProductNumber(undecor);
+                product.setBrand(brand);
+                product.setCreatedBy(createdBy);
+                product.setDesc(name);
+                product.setDetails("");
+                product.setStatus('I');
+                dao.persist(product);
+                createSparePartsCategory(product);
+                holder.setProduct(product);
+            }
+            else{
+                holder.setProduct(products.get(0));
+            }
+            holder.setTags(this.getProductTags(holder.getProduct().getId()));
+            holder.setProductPrices(this.getProductPrices(holder.getProduct().getId()));
+            holder.setCategories(this.getProductCategories(holder.getProduct().getId()));
+            holder.setProductSpecs(this.getProductSpecs(holder.getProduct().getId()));
+            return Response.status(200).entity(holder).build();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @PUT
+    @Path("product-price")
+    public Response productPrice(ProductPrice pp) {
+        try {
+            pp.setCreated(new Date());
+            pp.setStatus('A');
+            String sql = "select b from ProductPrice b where b.productId = :value0 and b.vendorId = :value1 and b.status =:value2";
+            List<ProductPrice> pps = dao.getJPQLParams(ProductPrice.class, sql, pp.getProductId(), pp.getVendorId(), 'A');
+            if (!pps.isEmpty()) {
+                for (ProductPrice oldpp: pps) {
+                    oldpp.setStatus('X');// archive old price
+                    dao.update(oldpp);
+                }
+            }
+            dao.persist(pp);
+            return Response.status(200).entity(pp).build();
+        } catch (Exception ex) {
+            return Response.status(500).build();
+        }
+    }
+
+
     @SecuredUser
     @GET
     @Path("categories")
@@ -105,8 +190,6 @@ public class ProductInternalApiV2 {
             return Response.status(500).build();
         }
     }
-
-
 
     @SecuredUser
     @GET
@@ -167,7 +250,6 @@ public class ProductInternalApiV2 {
             this.createProductSpecs(product.getId(), holder.getProductSpecs());
             this.createProductCategories(product.getId(), holder.getCategories());
             this.createProductPrice(product.getId(), holder.getProductPrices().get(0));
-          //  async.writeProductImage(header, holder.getImageString(), product.getId());
             return Response.status(200).entity(product.getId()).build();
         }catch (Exception ex){
             return Response.status(500).build();
@@ -235,6 +317,7 @@ public class ProductInternalApiV2 {
         }
     }
 
+
     private boolean categoryExists(Category category){
         String sql = "select b from Category b where (lower(b.name) = :value0 or lower(b.nameAr) = :value1) and b.id != :value2";
         List<Category> categoryList = dao.getJPQLParams(Category.class, sql, category.getName().toLowerCase().trim(), category.getNameAr().toLowerCase().trim(), category.getId());
@@ -294,6 +377,17 @@ public class ProductInternalApiV2 {
                 ProductCategory pc = new ProductCategory(productId, category.getId());
                 dao.persist(pc);
             }
+        }
+    }
+
+    private void createSparePartsCategory(Product product){
+        try {
+            String sql = "select b from Category b where lower(b.name) =:value0";
+            Category category = dao.findJPQLParams(Category.class, sql, "Spare Parts".toLowerCase());
+            ProductCategory pc = new ProductCategory(product.getId(), category.getId());
+            dao.persist(pc);
+        }catch(Exception ignore){
+
         }
     }
 
