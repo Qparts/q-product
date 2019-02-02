@@ -1,10 +1,12 @@
 package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
+import q.rest.product.filter.SecuredCustomer;
 import q.rest.product.filter.SecuredUser;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.ProductHolder;
+import q.rest.product.model.contract.PublicProduct;
 import q.rest.product.model.entity.*;
 
 import javax.ejb.EJB;
@@ -119,7 +121,7 @@ public class ProductInternalApiV2 {
                 product.setCreatedBy(createdBy);
                 product.setDesc(name);
                 product.setDetails("");
-                product.setStatus('I');
+                product.setStatus('A');
                 dao.persist(product);
                 createSparePartsCategory(product);
                 holder.setProduct(product);

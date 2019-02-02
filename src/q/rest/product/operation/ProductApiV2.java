@@ -83,7 +83,7 @@ public class ProductApiV2 {
     }
 
 
-//    @ValidApp
+    @ValidApp
     @Path("search/general")
     @GET
     public Response searchProduct(@Context UriInfo info){
