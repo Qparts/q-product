@@ -83,21 +83,39 @@ public class ProductApiV2 {
     }
 
 
+
+
     @ValidApp
     @Path("search/general")
     @GET
     public Response searchProduct(@Context UriInfo info){
         try {
             String query = info.getQueryParameters().getFirst("query");
-            Integer page = Integer.parseInt(info.getQueryParameters().getFirst("page"));
+            String pageString = info.getQueryParameters().getFirst("page");
+            if(pageString == null){
+                pageString = "";
+            }
+
             String sort = info.getQueryParameters().getFirst("sort");
             String brandKey = info.getQueryParameters().getFirst("Brands");
+            String categoryString = info.getQueryParameters().getFirst("category");
+
+            int page = 1;
+            int categoryId = 0;
+            if(pageString != null){
+                page = Integer.parseInt(pageString);
+            }
+
+            if(categoryString != null){
+                categoryId = Integer.parseInt(categoryString);
+            }
 
             int offset = (page -1) * 5;
             int max = page * 5;
             String numbered = Helper.getNumberedQuery(query);
             String tagged = "%"+Helper.properTag(query)+"%";
             String lowered = "%"+ query.trim().toLowerCase() + "%";
+
             String sqlSize = "select count(b) from PublicProduct b where b.productNumber like :value2 "
                     + "or lower(b.desc) like :value0 "
                     + "or lower(b.details) like :value0 "
@@ -118,15 +136,6 @@ public class ProductApiV2 {
                     + "or lower(b.brand.name) like :value0 or lower(b.brand.nameAr) like :value0 "
                     + "or b.id in (select f.productId from ProductCategory f where f.categoryId in ("
                     + "select g.id from Category g where lower(g.name) like :value0 or lower(g.nameAr) like :value0)) ";
-            List<PublicProduct> products = dao.getJPQLParamsOffsetMax(PublicProduct.class, sql, offset, max, lowered, tagged, numbered);
-            Number n = dao.findJPQLParams(Number.class, sqlSize, lowered, tagged, numbered);
-            SearchResult searchResult = new SearchResult();
-            searchResult.setResultSize(n.intValue());
-            for (PublicProduct pb : products) {
-                initPublicProduct(pb);
-                searchResult.getProducts().add(pb);
-            }
-
 
             String sqlBrands = "select distinct b.brand from PublicProduct b where b.productNumber like :value2 "
                     + "or lower(b.desc) like :value0 "
@@ -138,7 +147,30 @@ public class ProductApiV2 {
                     + "or b.id in (select f.productId from ProductCategory f where f.categoryId in ("
                     + "select g.id from Category g where lower(g.name) like :value0 or lower(g.nameAr) like :value0)) ";
 
-            List<PublicBrand> brands = dao.getJPQLParams(PublicBrand.class, sqlBrands, lowered, tagged, numbered);
+            List<PublicProduct> products;
+            Number searchSize;
+            List<PublicBrand> brands;
+
+            if(categoryId > 0){
+                sql += " and b.id in ( select h.productId from ProductCategory h where h.categoryId = :value3)";
+                sqlSize += " and b.id in ( select h.productId from ProductCategory h where h.categoryId = :value3)";
+                sqlBrands += " and b.id in ( select h.productId from ProductCategory h where h.categoryId = :value3)";
+                products = dao.getJPQLParamsOffsetMax(PublicProduct.class, sql, offset, max, lowered, tagged, numbered, categoryId);
+                searchSize = dao.findJPQLParams(Number.class, sqlSize , lowered, tagged, numbered, categoryId);
+                brands = dao.getJPQLParams(PublicBrand.class, sqlBrands , lowered, tagged, numbered, categoryId);
+            }else{
+                products = dao.getJPQLParamsOffsetMax(PublicProduct.class, sql, offset, max, lowered, tagged, numbered);
+                searchSize = dao.findJPQLParams(Number.class, sqlSize, lowered, tagged, numbered);
+                brands = dao.getJPQLParams(PublicBrand.class, sqlBrands, lowered, tagged, numbered);
+            }
+
+            SearchResult searchResult = new SearchResult();
+            searchResult.setResultSize(searchSize.intValue());
+            for (PublicProduct pb : products) {
+                initPublicProduct(pb);
+                searchResult.getProducts().add(pb);
+            }
+
             SearchFilter brandFilter = new SearchFilter();
             brandFilter.setFilterTitle("Brands");
             brandFilter.setFilterTitleAr("الماركة");

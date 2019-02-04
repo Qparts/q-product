@@ -30,6 +30,10 @@ public class DAO {
         return (List<T>) q.getResultList();
     }
 
+
+
+
+
     @SuppressWarnings("unchecked")
     public <T> List<T> getJPQLParamsOffsetMax(Class<T> klass, String jpql, int offset, int max, Object ... values){
         Query q = em.createQuery(jpql);
