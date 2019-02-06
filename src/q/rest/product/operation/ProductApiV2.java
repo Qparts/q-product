@@ -86,6 +86,7 @@ public class ProductApiV2 {
     @GET
     public Response searchProduct(@Context UriInfo info){
         try {
+            System.out.println("reached server");
             String query = info.getQueryParameters().getFirst("query");
             String pageString = info.getQueryParameters().getFirst("page");
             if(pageString == null){
