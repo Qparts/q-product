@@ -23,6 +23,7 @@ public class DAO {
         }
     }
 
+
     @SuppressWarnings("unchecked")
     public <T> List<T> getJPQLParams(Class<T> klass, String jpql, Object ... values){
         Query q = em.createQuery(jpql);

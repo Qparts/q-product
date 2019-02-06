@@ -182,7 +182,7 @@ public class ProductInternalApiV2 {
 
     @SecuredUser
     @GET
-    @Path("products/latest-added")
+    @Path("products/newest")
     public Response getLatestProducts(){
         try {
             String sql = "select b from Product b where id != :value0 order by created desc";
