@@ -7,7 +7,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/filter/ValidAppAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/filter/ValidAppAgent.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java" afterDir="false" />
     </list>
@@ -35,8 +34,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="83" column="7" selection-start-line="83" selection-start-column="7" selection-end-line="83" selection-end-column="7" />
+            <state relative-caret-position="658">
+              <caret line="105" column="62" selection-start-line="105" selection-start-column="62" selection-end-line="105" selection-end-column="62" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -45,13 +44,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/q/rest/product/filter/ValidAppAgent.java">
+        <entry file="file://$PROJECT_DIR$/src/META-INF/persistence.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="178">
-              <caret line="27" column="40" selection-start-line="27" selection-start-column="40" selection-end-line="27" selection-end-column="40" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="75">
+              <caret line="5" column="60" selection-start-line="5" selection-start-column="60" selection-end-line="5" selection-end-column="60" />
             </state>
           </provider>
         </entry>
@@ -67,9 +63,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>createProduct(</find>
-      <find>vendor</find>
-      <find>Vendor</find>
       <find>float</find>
       <find>product</find>
       <find>async</find>
@@ -87,7 +80,6 @@
       <find>product/</find>
       <find>securedC</find>
       <find>or-</find>
-      <find>catego</find>
       <find>value2</find>
       <find>PublicProd</find>
       <find>QueryB</find>
@@ -97,6 +89,10 @@
       <find>latel</find>
       <find>best-se</find>
       <find>best</find>
+      <find>catego</find>
+      <find>category</find>
+      <find>us</find>
+      <find>sys</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/src/q/rest/product/model/contract</dir>
@@ -150,9 +146,9 @@
         <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicBrand_.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/dao/DAO.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/operation/ProductInternalApiV2.java" />
-        <option value="$PROJECT_DIR$/src/META-INF/persistence.xml" />
-        <option value="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/filter/ValidAppAgent.java" />
+        <option value="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java" />
+        <option value="$PROJECT_DIR$/src/META-INF/persistence.xml" />
       </list>
     </option>
   </component>
@@ -199,27 +195,6 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="product" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="q-rest-product" type="b2602c69:ProjectViewProjectNode" />
-              <item name="q-rest-product" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="product" type="462c0819:PsiDirectoryNode" />
-              <item name="dao" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="q-rest-product" type="b2602c69:ProjectViewProjectNode" />
-              <item name="q-rest-product" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="product" type="462c0819:PsiDirectoryNode" />
-              <item name="filter" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="q-rest-product" type="b2602c69:ProjectViewProjectNode" />
-              <item name="q-rest-product" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="product" type="462c0819:PsiDirectoryNode" />
-              <item name="operation" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -234,7 +209,7 @@
     <property name="Repository.Attach.Sources" value="false" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1549454507360" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1549540559931" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -348,12 +323,12 @@
       <workItem from="1548927737378" duration="10318000" />
       <workItem from="1549100648031" duration="1953000" />
       <workItem from="1549263855868" duration="33737000" />
-      <workItem from="1549457085349" duration="191000" />
+      <workItem from="1549457085349" duration="1900000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="132885000" />
+    <option name="totallyTimeSpent" value="134594000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -368,7 +343,7 @@
     <frame x="0" y="23" width="1440" height="797" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27110156" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27110156" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Persistence" order="3" side_tool="true" />
@@ -379,7 +354,7 @@
       <window_info id="Web" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32907802" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3319149" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3319149" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -410,14 +385,6 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/web/WEB-INF/jboss-web.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="36" selection-start-line="5" selection-start-column="36" selection-end-line="5" selection-end-column="36" />
-        </state>
-      </provider>
-      <provider editor-type-id="com.intellij.javaee.oss.jboss.editor.JBossWebRootProvider" />
-    </entry>
     <entry file="file://$USER_HOME$/Downloads/hrtest/src/java/beans/CorporateBean.java" />
     <entry file="file://$USER_HOME$/Downloads/hrtest/src/java/beans/PaypointBean.java" />
     <entry file="file://$USER_HOME$/Downloads/Dynamic Pay/src/java/beans/XpressionBean.java" />
@@ -736,23 +703,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/PublicBrand_.java" />
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/PublicProduct_.java" />
-    <entry file="file://$PROJECT_DIR$/src/q/rest/product/filter/SecuredUserAgent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
-          <caret line="79" column="76" selection-start-line="79" selection-start-column="76" selection-end-line="79" selection-end-column="76" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/META-INF/persistence.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="63" selection-start-line="5" selection-start-column="63" selection-end-line="5" selection-end-column="63" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/dao/DAO.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
@@ -780,16 +730,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="83" column="7" selection-start-line="83" selection-start-column="7" selection-end-line="83" selection-end-column="7" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/entity/WebApp.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
@@ -799,11 +739,45 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/filter/ValidAppAgent.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="27" column="40" selection-start-line="27" selection-start-column="40" selection-end-line="27" selection-end-column="40" />
+        <state relative-caret-position="690">
+          <caret line="46" column="12" selection-start-line="46" selection-start-column="12" selection-end-line="46" selection-end-column="12" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/filter/SecuredUserAgent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-249">
+          <caret line="25" column="13" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/filter/SecuredCustomerAgent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-305">
+          <caret line="25" column="13" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="658">
+          <caret line="105" column="62" selection-start-line="105" selection-start-column="62" selection-end-line="105" selection-end-column="62" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/META-INF/persistence.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="60" selection-start-line="5" selection-start-column="60" selection-end-line="5" selection-end-column="60" />
         </state>
       </provider>
     </entry>

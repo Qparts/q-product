@@ -25,15 +25,11 @@ public class ValidAppAgent implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) throws IOException {
         try{
             String header = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
-            System.out.println("header " + header);
             if(header == null || !header.startsWith("Bearer")){
                 throw new Exception();
             }
-            System.out.println("splitting");
             String[] values = header.split("&&");
-            System.out.println("app secret extracted ");
             String appSecret = values[2].trim();
-            System.out.println("app secret " + appSecret);
             validateSecret(appSecret);
         }catch (Exception ex){
             requestContext.abortWith(Response.status(401).entity("Unauthorized Access").build());
@@ -43,15 +39,11 @@ public class ValidAppAgent implements ContainerRequestFilter {
 
     // retrieves app object from app secret
     private void validateSecret(String secret) throws Exception {
-        System.out.println("validating ");
         // verify web app secret
         String sql = "select b from WebApp b where b.appSecret = :value0 and b.active = :value1";
         WebApp webApp = dao.findJPQLParams(WebApp.class, sql, secret, true);
-        System.out.println("result ");
         if (webApp == null) {
-            System.out.println("web app is null ");
             throw new Exception();
         }
-        System.out.println("result ok");
     }
 }

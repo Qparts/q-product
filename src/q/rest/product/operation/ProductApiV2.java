@@ -86,7 +86,6 @@ public class ProductApiV2 {
     @GET
     public Response searchProduct(@Context UriInfo info){
         try {
-            System.out.println("reached server");
             String query = info.getQueryParameters().getFirst("query");
             String pageString = info.getQueryParameters().getFirst("page");
             if(pageString == null){
@@ -114,8 +113,8 @@ public class ProductApiV2 {
             String tagged = "%"+Helper.properTag(query)+"%";
             String lowered = "%"+ query.trim().toLowerCase() + "%";
 
-            String sqlSize = "select count(b) from PublicProduct b where b.productNumber like :value2 "
-                    + "or (lower(b.desc) like :value0 "
+            String sqlSize = "select count(b) from PublicProduct b where (b.productNumber like :value2 "
+                    + "or lower(b.desc) like :value0 "
                     + "or lower(b.details) like :value0 "
                     + "or b.id in (select c.productId from ProductTag c where c.tag like :value1) "
                     + "or b.id in (select d.productId from ProductSpec d where lower(d.value) like :value0) "
@@ -125,8 +124,8 @@ public class ProductApiV2 {
                     + "or b.id in (select f.productId from ProductCategory f where f.categoryId in ("
                     + "select g.id from Category g where lower(g.name) like :value0 or lower(g.nameAr) like :value0))) ";
 
-            String sql = "select b from PublicProduct b where b.productNumber like :value2 "
-                    + "or (lower(b.desc) like :value0 "
+            String sql = "select b from PublicProduct b where (b.productNumber like :value2 "
+                    + "or lower(b.desc) like :value0 "
                     + "or lower(b.details) like :value0 "
                     + "or b.id in (select c.productId from ProductTag c where c.tag like :value1) "
                     + "or b.id in (select d.productId from ProductSpec d where lower(d.value) like :value0) "
@@ -135,8 +134,8 @@ public class ProductApiV2 {
                     + "or b.id in (select f.productId from ProductCategory f where f.categoryId in ("
                     + "select g.id from Category g where lower(g.name) like :value0 or lower(g.nameAr) like :value0))) ";
 
-            String sqlBrands = "select distinct b.brand from PublicProduct b where b.productNumber like :value2 "
-                    + "or (lower(b.desc) like :value0 "
+            String sqlBrands = "select distinct b.brand from PublicProduct b where (b.productNumber like :value2 "
+                    + "or lower(b.desc) like :value0 "
                     + "or lower(b.details) like :value0 "
                     + "or b.id in (select c.productId from ProductTag c where c.tag like :value1) "
                     + "or b.id in (select d.productId from ProductSpec d where lower(d.value) like :value0) "
@@ -156,7 +155,7 @@ public class ProductApiV2 {
                 products = dao.getJPQLParamsOffsetMax(PublicProduct.class, sql, offset, max, lowered, tagged, numbered, categoryId);
                 searchSize = dao.findJPQLParams(Number.class, sqlSize , lowered, tagged, numbered, categoryId);
                 brands = dao.getJPQLParams(PublicBrand.class, sqlBrands , lowered, tagged, numbered, categoryId);
-            }else{
+            } else {
                 products = dao.getJPQLParamsOffsetMax(PublicProduct.class, sql, offset, max, lowered, tagged, numbered);
                 searchSize = dao.findJPQLParams(Number.class, sqlSize, lowered, tagged, numbered);
                 brands = dao.getJPQLParams(PublicBrand.class, sqlBrands, lowered, tagged, numbered);
