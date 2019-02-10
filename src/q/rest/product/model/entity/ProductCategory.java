@@ -8,7 +8,6 @@ import java.util.Objects;
 @Table(name = "prd_product_category")
 @IdClass(ProductCategory.ProductCategoryPK.class)
 public class ProductCategory implements Serializable {
-	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "product_id")

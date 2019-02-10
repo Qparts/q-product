@@ -35,6 +35,16 @@ public class PublicProduct implements Serializable {
     private String image;
     @Transient
     private List<PublicReview> reviews;
+    @Transient
+    private List<PublicProduct> variants;
+
+    public List<PublicProduct> getVariants() {
+        return variants;
+    }
+
+    public void setVariants(List<PublicProduct> variants) {
+        this.variants = variants;
+    }
 
     @JsonIgnore
     public void initImageLink(){

@@ -3,7 +3,6 @@ package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.ValidApp;
-import q.rest.product.helper.Helper;
 import q.rest.product.helper.ProductSQLSearch;
 import q.rest.product.model.contract.*;
 import q.rest.product.model.entity.*;
@@ -144,22 +143,38 @@ public class ProductApiV2 {
     }
 
     private void initSearchFilters(SearchResult searchResult){
-
-
-
     }
 
 
     private void initPublicProduct(PublicProduct product){
         try {
-            product.setSpecs(getPublicSpecs(product.getId()));
-            product.setSalesPrice(getAveragedSalesPrice(product.getId()));
-            product.setReviews(getPublicReviews(product.getId()));
-            product.initImageLink();
-            product.getBrand().initImageLink();
+            initPublicProductNoVariant(product);
+            initVariants(product);
         }catch(Exception ex){
             product = null;
         }
+    }
+
+    private void initPublicProductNoVariant(PublicProduct product){
+        product.setSpecs(getPublicSpecs(product.getId()));
+        product.setSalesPrice(getAveragedSalesPrice(product.getId()));
+        product.setReviews(getPublicReviews(product.getId()));
+        product.initImageLink();
+        product.getBrand().initImageLink();
+        product.setVariants(new ArrayList<>());
+    }
+
+    private void initVariants(PublicProduct product){
+        //get variants
+        String sql = "select distinct b from PublicProduct b where b.status =:value0 and b.id in (" +
+                "select c.productId from Variant c where c.variantId =:value1) or b.id in " +
+                "(select d.variantId from Variant d where d.productId =:value1)";
+        List<PublicProduct> variants = dao.getJPQLParams(PublicProduct.class, sql, 'A', product.getId());
+        for(PublicProduct variant : variants){
+            initPublicProductNoVariant(variant);
+        }
+        product.setVariants(variants);
+
     }
 
     private List<PublicReview> getPublicReviews(long productId){
