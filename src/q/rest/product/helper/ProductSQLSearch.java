@@ -52,7 +52,7 @@ public class ProductSQLSearch {
     }
 
     private void initProductSearchSize() {
-        productSearchSizeSql = "select count(*) from prd_product b.status = 'A' ";
+        productSearchSizeSql = "select count(*) from prd_product b where b.status = 'A' ";
         productSearchSizeSql += getCommonSql();
     }
 
