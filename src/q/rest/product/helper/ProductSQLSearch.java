@@ -101,7 +101,7 @@ public class ProductSQLSearch {
     }
 
     private String inCategoryId(String connector) {
-        return categoryId > 0 ? connector + " b.id in (select product_id from prd_product_category where category_id = " + categoryId + ") " : "";
+        return categoryId > 0 ? connector + " (b.id in (select product_id from prd_product_category where category_id = " + categoryId + ") " : "";
     }
 
 
@@ -115,7 +115,7 @@ public class ProductSQLSearch {
                     "    SELECT s2.id, s2.parent_node" +
                     "    FROM prd_category s2, nodes s1 WHERE s2.parent_node = s1.id" +
                     ")" +
-                    "SELECT id FROM nodes))" : "";
+                    "SELECT id FROM nodes)))" : "";
         }
 
 

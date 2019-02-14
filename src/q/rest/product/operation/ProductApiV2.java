@@ -114,6 +114,9 @@ public class ProductApiV2 {
             int max = page * 18;
 
             ProductSQLSearch psql = new ProductSQLSearch(query, categoryId, max, offset);
+
+            System.out.println(psql.getProductSearchSql());
+
             List<PublicProduct> products = dao.getNative(PublicProduct.class, psql.getProductSearchSql());
             Number searchSize = (Number) dao.getNative(psql.getProductSearchSizeSql()).get(0);
             List<PublicBrand> brands = dao.getNative(PublicBrand.class, psql.getBrandsSearch());
