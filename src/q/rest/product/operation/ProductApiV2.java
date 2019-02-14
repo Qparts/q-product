@@ -111,7 +111,7 @@ public class ProductApiV2 {
             }
 
             int offset = (page -1) * 18;
-            int max = page * 18;
+            int max = 18;
 
             ProductSQLSearch psql = new ProductSQLSearch(query, categoryId, max, offset);
 
