@@ -46,18 +46,18 @@ public class ProductSQLSearch {
     }
 
     private void initBrandsSearch() {
-        brandsSearch = "select * from prd_brand where id in (select distinct b.brand_id from prd_product b where (b.id > 0 ";
+        brandsSearch = "select * from prd_brand where id in (select distinct b.brand_id from prd_product b where (b.status = 'A' ";
         brandsSearch += getCommonSql();
         brandsSearch += "))";
     }
 
     private void initProductSearchSize() {
-        productSearchSizeSql = "select count(*) from prd_product b where id > 0 ";
+        productSearchSizeSql = "select count(*) from prd_product b.status = 'A' ";
         productSearchSizeSql += getCommonSql();
     }
 
     private void initProductSearch() {
-        productSearchSql = "select * from prd_product b where id > 0 ";
+        productSearchSql = "select * from prd_product b where b.status = 'A' ";
         productSearchSql += getCommonSql();
         productSearchSql += offsetLimit();
     }
