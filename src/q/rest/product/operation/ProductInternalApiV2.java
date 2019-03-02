@@ -13,6 +13,8 @@ import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.nio.file.LinkOption;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +96,31 @@ public class ProductInternalApiV2 {
                 this.addSpecs(category);
             }
             return Response.status(200).entity(categories).build();
+        }catch(Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @POST
+    @Path("search-product-by-number")
+    public Response searchProduct(Map<Object, Object> map){
+        try{
+            String number = (String) map.get("number");
+            String undecor = "%" + Helper.undecorate(number) + "%";
+            String jpql = "select b from Product b where b.productNumber like :value0 and b.status =:value1";
+            List<Product> products = dao.getJPQLParams(Product.class, jpql, undecor, 'A');
+            List<ProductHolder> holders = new ArrayList<>();
+            for(Product product : products){
+                ProductHolder holder = new ProductHolder();
+                holder.setProduct(product);
+                holder.setTags(this.getProductTags(product.getId()));
+                holder.setProductPrices(this.getProductPrices(product.getId()));
+                holder.setCategories(this.getProductCategories(product.getId()));
+                holder.setProductSpecs(this.getProductSpecs(product.getId()));
+                holders.add(holder);
+            }
+            return Response.status(200).entity(holders).build();
         }catch(Exception ex){
             return Response.status(500).build();
         }
