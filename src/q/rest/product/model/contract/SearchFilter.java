@@ -14,8 +14,8 @@ public class SearchFilter {
         options = new HashSet<>();
     }
 
-    public void addValues(String value, String valueAr){
-        options.add(new Values(value, valueAr));
+    public void addValues(String value, String valueAr, int id){
+        options.add(new Values(value, valueAr, id));
     }
 
     public String getFilterTitle() {

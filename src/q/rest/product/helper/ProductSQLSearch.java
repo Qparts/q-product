@@ -1,5 +1,7 @@
 package q.rest.product.helper;
 
+import java.util.List;
+
 public class ProductSQLSearch {
     private final static String OR = " or ";
     private final static String AND = " and ";
@@ -11,11 +13,12 @@ public class ProductSQLSearch {
     private final int categoryId;
     private final int max;
     private final int offset;
+    private final List<Integer> brandsFilter;
     private String productSearchSql;
     private String productSearchSizeSql;
     private String brandsSearch;
 
-    public ProductSQLSearch(String query, int categoryId, int max, int offset) {
+    public ProductSQLSearch(String query, int categoryId, List<Integer> brandsFilter, int max, int offset) {
         if (query != null) {
             this.query = query;
             this.numbered = "'" + Helper.getNumberedQuery(query) + "'";
@@ -27,14 +30,28 @@ public class ProductSQLSearch {
         this.categoryId = categoryId;
         this.max = max;
         this.offset = offset;
+        this.brandsFilter = brandsFilter;
 
         initProductSearch();
         initProductSearchSize();
         initBrandsSearch();
     }
 
+    private String getBrandsFilter(){
+        String sql = "";
+        if(!this.brandsFilter.isEmpty()){
+            sql = " and b.brand_id in (0";
+            for(Integer id : brandsFilter){
+                sql += "," + id;
+            }
+            sql +=") ";
+        }
+        return sql;
+    }
+
     private String getCommonSql(){
         return productNumber(AND)
+                + getBrandsFilter()
                 + inCategoryId(AND)
                 + inCategoryChildren(OR)
                 + likeDesc((categoryId > 0 ? AND : OR) + " (")

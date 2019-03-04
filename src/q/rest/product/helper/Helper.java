@@ -4,7 +4,9 @@ package q.rest.product.helper;
 import q.rest.product.model.entity.Category;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 public class Helper {
@@ -15,6 +17,21 @@ public class Helper {
 
     public static String undecorate(String string) {
         return string.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
+    }
+
+    public static List<Integer> extractParams(List<String> params){
+        List<Integer> intParams = new ArrayList<>();
+        if(params != null ){
+        for(String v : params){
+            try{
+                int id = Integer.parseInt(v);
+                intParams.add(id);
+            }catch (Exception ignore){
+
+            }
+        }
+        }
+        return intParams;
     }
 
     private static boolean isProbablyArabic(String s) {

@@ -3,6 +3,7 @@ package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.ValidApp;
+import q.rest.product.helper.Helper;
 import q.rest.product.helper.ProductSQLSearch;
 import q.rest.product.model.contract.*;
 import q.rest.product.model.entity.*;
@@ -14,8 +15,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Path("/api/v2/")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -131,8 +131,12 @@ public class ProductApiV2 {
                 pageString = "";
             }
 
+            Map<String,Object> map = new HashMap<String, Object>();
+
             String sort = info.getQueryParameters().getFirst("sort");
-            String brandKey = info.getQueryParameters().getFirst("Brands");
+            List<String> brandStringValues = info.getQueryParameters().get("Brands");
+            List<Integer> brandValues = Helper.extractParams(brandStringValues);
+
             String categoryString = info.getQueryParameters().getFirst("category");
 
             int page = 1;
@@ -148,7 +152,7 @@ public class ProductApiV2 {
             int offset = (page -1) * 18;
             int max = 18;
 
-            ProductSQLSearch psql = new ProductSQLSearch(query, categoryId, max, offset);
+            ProductSQLSearch psql = new ProductSQLSearch(query, categoryId, brandValues, max, offset);
             List<PublicProduct> products = dao.getNative(PublicProduct.class, psql.getProductSearchSql());
             Number searchSize = (Number) dao.getNative(psql.getProductSearchSizeSql()).get(0);
             List<PublicBrand> brands = dao.getNative(PublicBrand.class, psql.getBrandsSearch());
@@ -163,7 +167,7 @@ public class ProductApiV2 {
             brandFilter.setFilterTitle("Brands");
             brandFilter.setFilterTitleAr("الماركة");
             for(PublicBrand brand : brands){
-                brandFilter.addValues(brand.getName(), brand.getNameAr());
+                brandFilter.addValues(brand.getName(), brand.getNameAr(), brand.getId());
             }
             if(brands.size() > 0){
                 searchResult.getFilterObjects().add(brandFilter);
