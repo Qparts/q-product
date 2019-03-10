@@ -6,9 +6,18 @@ import java.util.Set;
 
 public class SearchFilter {
 
+    private int id;
     private String filterTitle;
     private String filterTitleAr;
     private Set<Values> options;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public SearchFilter(){
         options = new HashSet<>();

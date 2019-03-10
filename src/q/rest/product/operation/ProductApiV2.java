@@ -162,10 +162,12 @@ public class ProductApiV2 {
                 initPublicProduct(pb);
                 searchResult.getProducts().add(pb);
             }
-
+            int filterIdIndex = 1;
             SearchFilter brandFilter = new SearchFilter();
             brandFilter.setFilterTitle("Brands");
             brandFilter.setFilterTitleAr("الماركة");
+            brandFilter.setId(filterIdIndex);
+            filterIdIndex++;
             for(PublicBrand brand : brands){
                 brandFilter.addValues(brand.getName(), brand.getNameAr(), brand.getId());
             }
