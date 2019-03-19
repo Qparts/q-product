@@ -33,7 +33,7 @@ public class AppConstants {
     }
 
     public static final String getCatalogGroups(String catalogId, String carId, String groupId){
-        String link = PARTS_CATALOG_API + "catalogs/" + catalogId + "groups2?carId=" + carId;
+        String link = PARTS_CATALOG_API + "catalogs/" + catalogId + "/groups2?carId=" + carId;
         if(groupId != null) {
             link+= "&groupId=" + groupId;
         }
