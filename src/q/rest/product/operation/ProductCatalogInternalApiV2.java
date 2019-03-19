@@ -10,7 +10,6 @@ import q.rest.product.model.catalog.CatalogPart;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.*;
 import java.util.List;
@@ -42,6 +41,7 @@ public class ProductCatalogInternalApiV2 {
         }
     }
 
+  //  @SecuredUser
     @Path("groups/make/{makeId}/car/{carId}")
     @GET
     public Response searchGroups(@Context UriInfo info, @PathParam(value = "carId") String carId, @PathParam(value = "makeId") int makeId ){
@@ -63,6 +63,7 @@ public class ProductCatalogInternalApiV2 {
         }
     }
 
+//    @SecuredUser
     @Path("parts/make/{makeId}/car/{carId}/group/{groupId}")
     @GET
     public Response searchGroups(@PathParam(value = "groupId") String groupId, @PathParam(value = "carId") String carId, @PathParam(value = "makeId") int makeId ){
@@ -139,13 +140,6 @@ public class ProductCatalogInternalApiV2 {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();
         b.header(HttpHeaders.AUTHORIZATION, AppConstants.PARTS_CATALOG_API_KEY);
         Response r = b.get();
-        return r;
-    }
-
-    private <T> Response postSecuredRequest(String link, T t, String authHeader) {
-        Invocation.Builder b = ClientBuilder.newClient().target(link).request();
-        b.header(HttpHeaders.AUTHORIZATION, authHeader);
-        Response r = b.post(Entity.entity(t, "application/json"));// not secured
         return r;
     }
 
