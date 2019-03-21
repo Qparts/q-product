@@ -73,8 +73,8 @@ public class ProductCatalogInternalApiV2 {
             if(r.getStatus() != 200){
                 return Response.status(404).build();
             }
-            List<CatalogPart> catalogParts = r.readEntity(new GenericType<List<CatalogPart>>(){});
-            return Response.status(200).entity(catalogParts).build();
+            CatalogPart catalogPart = r.readEntity(CatalogPart.class);
+            return Response.status(200).entity(catalogPart).build();
         }catch (Exception e){
             return Response.status(500).build();
         }
