@@ -3,9 +3,13 @@ package q.rest.product.operation;
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.SecuredUser;
 import q.rest.product.helper.AppConstants;
-import q.rest.product.model.catalog.CatalogCar;
-import q.rest.product.model.catalog.CatalogGroup;
-import q.rest.product.model.catalog.CatalogPart;
+import q.rest.product.helper.Helper;
+import q.rest.product.model.catalog.*;
+import q.rest.product.model.contract.ProductHolder;
+import q.rest.product.model.entity.Category;
+import q.rest.product.model.entity.Product;
+import q.rest.product.model.entity.ProductPrice;
+import q.rest.product.model.entity.ProductSpec;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -74,11 +78,56 @@ public class ProductCatalogInternalApiV2 {
                 return Response.status(404).build();
             }
             CatalogPart catalogPart = r.readEntity(CatalogPart.class);
+            initProductHolders(catalogPart, makeId);
             return Response.status(200).entity(catalogPart).build();
         }catch (Exception e){
             return Response.status(500).build();
         }
     }
+
+    private void initProductHolders(CatalogPart catalogPart, int makeId){
+        for(CatalogPartsGroup cpg : catalogPart.getPartGroups()){
+            for(CatalogPartsList parts : cpg.getParts()){
+                ProductHolder holder = getProductHolder(parts.getNumber(), makeId);
+                parts.setProductHolder(holder);
+            }
+        }
+    }
+
+    private ProductHolder getProductHolder(String partNumber, int makeId){
+        String undecor = Helper.undecorate(partNumber);
+        int brandId = getCatalogBrandId(makeId);
+        String jpql = "select b from Product b where b.productNumber = :value0 and b.status =:value1 and b.brand.id = :value2";
+        Product product = dao.findJPQLParams(Product.class, jpql, undecor, 'A', brandId);
+        ProductHolder holder = null;
+        if(product != null){
+            holder = new ProductHolder();
+            holder.setProduct(product);
+            holder.setTags(this.getProductTags(product.getId()));
+            holder.setProductPrices(this.getProductPrices(product.getId()));
+            holder.setCategories(this.getProductCategories(product.getId()));
+            holder.setProductSpecs(this.getProductSpecs(product.getId()));
+        }
+        return holder;
+
+    }
+
+    public int getCatalogBrandId(int makeId){
+        switch (makeId){
+            case 1:
+            case 2:
+                return 9;
+            case 3:
+                return 11;
+            case 4:
+                return 10;
+            case 5:
+            case 6:
+            case 7:
+        }
+        return 0;
+    }
+
 
     public String getCatalogIdFromMakeId(int makeId){
         switch (makeId){
@@ -132,6 +181,33 @@ public class ProductCatalogInternalApiV2 {
         }
 
         return "hyundai";
+    }
+
+
+
+
+    private List<String> getProductTags(long productId){
+        String sql = "select b.tag from ProductTag b where b.productId = :value0";
+        List<String> tags = dao.getJPQLParams(String.class, sql, productId);
+        return tags;
+    }
+
+    private List<ProductSpec> getProductSpecs(long productId){
+        String sql = "select b from ProductSpec b where b.productId = :value0";
+        List<ProductSpec> ps = dao.getJPQLParams(ProductSpec.class, sql, productId);
+        return ps;
+    }
+
+    private List<ProductPrice> getProductPrices(long productId){
+        String sql = "select b from ProductPrice b where b.productId = :value0 and b.status = :value1 order by b.created";
+        List<ProductPrice> ps = dao.getJPQLParams(ProductPrice.class, sql, productId, 'A');
+        return ps;
+    }
+
+    private List<Category> getProductCategories(long productId){
+        String sql = "select c from Category c where c.id in (select b.categoryId from ProductCategory b where b.productId = :value0)";
+        List<Category> categories = dao.getJPQLParams(Category.class, sql, productId);
+        return categories;
     }
 
 
