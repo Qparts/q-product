@@ -16,6 +16,7 @@ public class ProductHolder implements Serializable {
     private List<ProductSpec> productSpecs;
     private List<ProductPrice> productPrices;
 
+
     public List<ProductPrice> getProductPrices() {
         return productPrices;
     }

@@ -109,7 +109,6 @@ public class ProductCatalogInternalApiV2 {
             holder.setProductSpecs(this.getProductSpecs(product.getId()));
         }
         return holder;
-
     }
 
     public int getCatalogBrandId(int makeId){
