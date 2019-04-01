@@ -278,6 +278,7 @@ public class ProductInternalApiV2 {
             this.createProductPrice(product.getId(), holder.getProductPrices().get(0));
             return Response.status(200).entity(product.getId()).build();
         }catch (Exception ex){
+            ex.printStackTrace();
             return Response.status(500).build();
         }
     }
