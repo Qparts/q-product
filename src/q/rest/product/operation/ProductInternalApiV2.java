@@ -261,9 +261,8 @@ public class ProductInternalApiV2 {
     @SecuredUser
     @POST
     @Path("product")
-    public Response createProduct(@HeaderParam("Authorization") String header, Object object){
+    public Response createProduct(@HeaderParam("Authorization") String header, ProductHolder holder){
         try{
-            ProductHolder holder = (ProductHolder) object;
             Product product = holder.getProduct();
             if(productExists(product)){
                 return Response.status(409).build();
