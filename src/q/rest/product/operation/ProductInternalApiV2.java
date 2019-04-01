@@ -1,19 +1,15 @@
 package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
-import q.rest.product.filter.SecuredCustomer;
 import q.rest.product.filter.SecuredUser;
-import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.ProductHolder;
-import q.rest.product.model.contract.PublicProduct;
 import q.rest.product.model.entity.*;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.nio.file.LinkOption;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -265,8 +261,9 @@ public class ProductInternalApiV2 {
     @SecuredUser
     @POST
     @Path("product")
-    public Response createProduct(@HeaderParam("Authorization") String header, ProductHolder holder){
+    public Response createProduct(@HeaderParam("Authorization") String header, Object object){
         try{
+            ProductHolder holder = (ProductHolder) object;
             Product product = holder.getProduct();
             if(productExists(product)){
                 return Response.status(409).build();

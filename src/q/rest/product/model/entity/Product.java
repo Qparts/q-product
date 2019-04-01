@@ -19,8 +19,12 @@ public class Product implements Serializable {
     private String productNumber;
     @Column(name="product_desc")
     private String desc;
+    @Column(name="product_desc_ar")
+    private String descAr;
     @Column(name="details")
     private String details;
+    @Column(name="details_ar")
+    private String detailsAr;
     @JoinColumn(name="brand_id")
     @ManyToOne
     private Brand brand;
@@ -30,6 +34,22 @@ public class Product implements Serializable {
     private int createdBy;
     @Column(name="status")
     private char status;
+
+    public String getDescAr() {
+        return descAr;
+    }
+
+    public void setDescAr(String descAr) {
+        this.descAr = descAr;
+    }
+
+    public String getDetailsAr() {
+        return detailsAr;
+    }
+
+    public void setDetailsAr(String detailsAr) {
+        this.detailsAr = detailsAr;
+    }
 
     public char getStatus() {
         return status;
