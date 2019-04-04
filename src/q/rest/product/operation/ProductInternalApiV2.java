@@ -467,7 +467,6 @@ public class ProductInternalApiV2 {
                         + " '" + date + "' , "
                         + ps.getCreatedBy() + ", "
                         + " '" + ps.getStatus() + "')";
-                System.out.println(sql);
                 dao.insertNative(sql);
             }
         }

@@ -115,11 +115,11 @@ public class ProductCatalogInternalApiV2 {
         switch (makeId){
             case 1:
             case 2:
-                return 9;
+                return 2;
             case 3:
-                return 11;
+                return 9;
             case 4:
-                return 10;
+                return 15;
             case 5:
             case 6:
             case 7:
