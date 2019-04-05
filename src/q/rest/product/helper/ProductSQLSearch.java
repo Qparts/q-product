@@ -62,9 +62,22 @@ public class ProductSQLSearch {
                 + inLikeCategory(OR) + (query != null ? ")" : "" );
     }
 
+
+    private String getCommonSqlForBrand(){
+        return productNumber(AND)
+                + inCategoryId(AND)
+                + inCategoryChildren(OR)
+                + likeDesc((categoryId > 0 ? AND : OR) + " (")
+                + likeDetails(OR)
+                + likeTag(OR)
+                + inLikeSpec(OR)
+                + inLikeBrand(OR)
+                + inLikeCategory(OR) + (query != null ? ")" : "" );
+    }
+
     private void initBrandsSearch() {
         brandsSearch = "select * from prd_brand where id in (select distinct b.brand_id from prd_product b where (b.status = 'A' ";
-        brandsSearch += getCommonSql();
+        brandsSearch += getCommonSqlForBrand();
         brandsSearch += "))";
     }
 
