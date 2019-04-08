@@ -19,8 +19,12 @@ public class PublicProduct implements Serializable {
     private String productNumber;
     @Column(name="product_desc")
     private String desc;
+    @Column(name="product_desc_ar")
+    private String descAr;
     @Column(name="details")
     private String details;
+    @Column(name="details_ar")
+    private String detailsAr;
     @JoinColumn(name="brand_id")
     @ManyToOne
     private PublicBrand brand;
@@ -51,8 +55,28 @@ public class PublicProduct implements Serializable {
         this.image = AppConstants.getProductImage(id);
     }
 
+    public String getDescAr() {
+        return descAr;
+    }
+
+    public void setDescAr(String descAr) {
+        this.descAr = descAr;
+    }
+
+    public String getDetailsAr() {
+        return detailsAr;
+    }
+
+    public void setDetailsAr(String detailsAr) {
+        this.detailsAr = detailsAr;
+    }
+
     public String getImage() {
         return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public long getId() {
