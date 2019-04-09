@@ -6,10 +6,7 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicProduct.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicProduct.java" afterDir="false" />
-    </list>
+    <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -46,8 +43,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/PublicProduct.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="77" column="40" selection-start-line="77" selection-start-column="40" selection-end-line="77" selection-end-column="40" />
+            <state relative-caret-position="1125">
+              <caret line="79" column="5" lean-forward="true" selection-start-line="79" selection-start-column="5" selection-end-line="79" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1034#1035#0" expanded="true" />
@@ -62,6 +59,7 @@
                 <element signature="e#1611#1612#0" expanded="true" />
                 <element signature="e#1661#1662#0" expanded="true" />
                 <element signature="e#1703#1704#0" expanded="true" />
+                <element signature="e#1805#1806#0" expanded="true" />
                 <element signature="e#1839#1840#0" expanded="true" />
               </folding>
             </state>
@@ -254,14 +252,6 @@
               <item name="q-rest-product" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="product" type="462c0819:PsiDirectoryNode" />
-              <item name="model" type="462c0819:PsiDirectoryNode" />
-              <item name="entity" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="q-rest-product" type="b2602c69:ProjectViewProjectNode" />
-              <item name="q-rest-product" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="product" type="462c0819:PsiDirectoryNode" />
               <item name="operation" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -278,7 +268,7 @@
     <property name="Repository.Attach.Sources" value="false" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554730833773" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554817330492" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -402,12 +392,12 @@
       <workItem from="1551086717296" duration="2579000" />
       <workItem from="1551442141131" duration="9586000" />
       <workItem from="1551970375765" duration="19175000" />
-      <workItem from="1554039260660" duration="11037000" />
+      <workItem from="1554039260660" duration="11782000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="195250000" />
+    <option name="totallyTimeSpent" value="195995000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1015,8 +1005,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/PublicProduct.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="77" column="40" selection-start-line="77" selection-start-column="40" selection-end-line="77" selection-end-column="40" />
+        <state relative-caret-position="1125">
+          <caret line="79" column="5" lean-forward="true" selection-start-line="79" selection-start-column="5" selection-end-line="79" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1034#1035#0" expanded="true" />
@@ -1031,6 +1021,7 @@
             <element signature="e#1611#1612#0" expanded="true" />
             <element signature="e#1661#1662#0" expanded="true" />
             <element signature="e#1703#1704#0" expanded="true" />
+            <element signature="e#1805#1806#0" expanded="true" />
             <element signature="e#1839#1840#0" expanded="true" />
           </folding>
         </state>
