@@ -208,7 +208,7 @@ public class ProductInternalApiV2 {
     @Path("products/newest")
     public Response getLatestProducts(){
         try {
-            String sql = "select b from Product b where id != :value0 order by created desc";
+            String sql = "select b from Product b where b.d != :value0 order by created desc";
             List<Product> products = dao.getJPQLParamsOffsetMax(Product.class, sql, 0, 20, 0L);
             return Response.status(200).entity(products).build();
         }catch (Exception ex){
@@ -255,6 +255,7 @@ public class ProductInternalApiV2 {
         holder.setProductPrices(getProductPrices(product.getId()));
         holder.setProductSpecs(getProductSpecs(product.getId()));
         holder.setTags(getProductTags(product.getId()));
+        holder.setLiveStock(getLiveStock(product.getId()));
         return holder;
     }
 
@@ -493,6 +494,12 @@ public class ProductInternalApiV2 {
         for(Category child : children){
             addChildren(child);
         }
+    }
+
+    private List<Stock> getLiveStock(long productId){
+        String sql = "select b from Stock b where b.productId = :value0 and b.quantity > :value1";
+        List<Stock> stocks = dao.getJPQLParams(Stock.class, sql , productId, 0);
+        return stocks;
     }
 
     private List<String> getProductTags(long productId){

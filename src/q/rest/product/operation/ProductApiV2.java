@@ -149,8 +149,8 @@ public class ProductApiV2 {
                 categoryId = Integer.parseInt(categoryString);
             }
 
-            int offset = (page -1) * 18;
-            int max = 18;
+            int offset = (page -1) * 16;
+            int max = 16;
 
             ProductSQLSearch psql = new ProductSQLSearch(query, categoryId, brandValues, max, offset);
             List<PublicProduct> products = dao.getNative(PublicProduct.class, psql.getProductSearchSql());

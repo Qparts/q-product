@@ -1,9 +1,6 @@
 package q.rest.product.model.contract;
 
-import q.rest.product.model.entity.Category;
-import q.rest.product.model.entity.Product;
-import q.rest.product.model.entity.ProductPrice;
-import q.rest.product.model.entity.ProductSpec;
+import q.rest.product.model.entity.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,7 +12,15 @@ public class ProductHolder implements Serializable {
     private List<String> tags;
     private List<ProductSpec> productSpecs;
     private List<ProductPrice> productPrices;
+    private List<Stock> liveStock;
 
+    public List<Stock> getLiveStock() {
+        return liveStock;
+    }
+
+    public void setLiveStock(List<Stock> liveStock) {
+        this.liveStock = liveStock;
+    }
 
     public List<ProductPrice> getProductPrices() {
         return productPrices;
