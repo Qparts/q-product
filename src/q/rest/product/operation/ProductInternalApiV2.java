@@ -208,8 +208,9 @@ public class ProductInternalApiV2 {
     @Path("products/newest")
     public Response getLatestProducts(){
         try {
-            String sql = "select b from Product b where b.d != :value0 order by created desc";
-            List<Product> products = dao.getJPQLParamsOffsetMax(Product.class, sql, 0, 20, 0L);
+//            String sql = "select b from Product b where b.id != :value0 order by created desc";
+  //          List<Product> products = dao.getJPQLParamsOffsetMax(Product.class, sql, 'A', 20, 0L);
+            List<Product> products = new ArrayList<>();
             return Response.status(200).entity(products).build();
         }catch (Exception ex){
             return Response.status(500).build();
@@ -343,6 +344,26 @@ public class ProductInternalApiV2 {
             return Response.status(500).build();
         }
     }
+
+    /*
+    @SecuredUser
+    @POST
+    @Path("stock/add")
+    public Response addStock(){
+        try{
+            Stock stock = new Stock();
+            stock.setCostActual();
+            stock.setCreatedBy();
+            stock.setCreated();
+            stock.setProductId();
+            stock.setPurchaseId();
+            stock.setPurchaseProductId();
+            stock.setQuantity();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+*/
 
 
     private boolean categoryExists(Category category){
