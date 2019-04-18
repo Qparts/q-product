@@ -32,16 +32,17 @@ public class AppConstants {
         return PARTS_CATALOG_API + "catalogs/" + catalogId + "/cars-by-vin?vin=" + vin;
     }
 
-    public static final String getCatalogGroups(String catalogId, String carId, String groupId){
+    public static final String getCatalogGroups(String catalogId, String carId, String groupId, String criteria){
         String link = PARTS_CATALOG_API + "catalogs/" + catalogId + "/groups2?carId=" + carId;
+        link += "&criteria=" + criteria;
         if(groupId != null) {
             link+= "&groupId=" + groupId;
         }
         return link;
     }
 
-    public static final String getCatalogParts(String catalogId, String carId, String groupId){
-        return PARTS_CATALOG_API + "catalogs/" + catalogId + "/parts2?carId=" + carId + "&groupId=" + groupId;
+    public static final String getCatalogParts(String catalogId, String carId, String groupId, String criteria){
+        return PARTS_CATALOG_API + "catalogs/" + catalogId + "/parts2?carId=" + carId + "&groupId=" + groupId + "&criteria=" + criteria;
     }
 
 }

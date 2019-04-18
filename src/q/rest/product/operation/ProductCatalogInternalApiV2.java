@@ -27,7 +27,7 @@ public class ProductCatalogInternalApiV2 {
     private DAO dao;
 
 
-    //@SecuredUser
+    @SecuredUser
     @Path("cars/make/{makeId}/vin/{vin}")
     @GET
     public Response searchVin(@PathParam(value = "vin") String vin, @PathParam(value = "makeId") int makeId){
@@ -45,17 +45,18 @@ public class ProductCatalogInternalApiV2 {
         }
     }
 
-  //  @SecuredUser
+    @SecuredUser
     @Path("groups/make/{makeId}/car/{carId}")
     @GET
     public Response searchGroups(@Context UriInfo info, @PathParam(value = "carId") String carId, @PathParam(value = "makeId") int makeId ){
         try{
             String catalogId = this.getCatalogIdFromMakeId(makeId);
             String groupid = info.getQueryParameters().getFirst("groupid");
+            String criteria = info.getQueryParameters().getFirst("criteria");
             if(groupid == null || groupid == ""){
                 groupid = null;
             }
-            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogGroups(catalogId, carId, groupid));
+            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogGroups(catalogId, carId, groupid, criteria));
             if(r.getStatus() != 200){
                 return Response.status(404).build();
             }
@@ -67,13 +68,16 @@ public class ProductCatalogInternalApiV2 {
         }
     }
 
-//    @SecuredUser
-    @Path("parts/make/{makeId}/car/{carId}/group/{groupId}")
+    @SecuredUser
+    @Path("parts/make/{makeId}/car/{carId}/group/{groupId}/criteria/{criteria}")
     @GET
-    public Response searchGroups(@PathParam(value = "groupId") String groupId, @PathParam(value = "carId") String carId, @PathParam(value = "makeId") int makeId ){
+    public Response searchGroups(@PathParam(value = "groupId") String groupId,
+                                 @PathParam(value = "carId") String carId,
+                                 @PathParam(value = "makeId") int makeId,
+                                 @PathParam(value = "criteria") String criteria){
         try{
             String catalogId = this.getCatalogIdFromMakeId(makeId);
-            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogParts(catalogId, carId, groupId));
+            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogParts(catalogId, carId, groupId, criteria));
             if(r.getStatus() != 200){
                 return Response.status(404).build();
             }

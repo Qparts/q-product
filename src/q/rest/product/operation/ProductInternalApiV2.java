@@ -345,25 +345,20 @@ public class ProductInternalApiV2 {
         }
     }
 
-    /*
     @SecuredUser
     @POST
     @Path("stock/add")
-    public Response addStock(){
+    public Response addStock(List<Stock> stockList){
         try{
-            Stock stock = new Stock();
-            stock.setCostActual();
-            stock.setCreatedBy();
-            stock.setCreated();
-            stock.setProductId();
-            stock.setPurchaseId();
-            stock.setPurchaseProductId();
-            stock.setQuantity();
+            for(Stock stock : stockList){
+                stock.setCreated(new Date());
+                dao.persist(stock);
+            }
+            return Response.status(201).build();
         }catch (Exception ex){
             return Response.status(500).build();
         }
     }
-*/
 
 
     private boolean categoryExists(Category category){
