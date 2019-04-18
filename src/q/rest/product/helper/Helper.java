@@ -3,6 +3,8 @@ package q.rest.product.helper;
 
 import q.rest.product.model.entity.Category;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +34,11 @@ public class Helper {
         }
         }
         return intParams;
+    }
+
+
+    public static String getEncodedUrl(String url){
+        return URLEncoder.encode(url, StandardCharsets.UTF_8);
     }
 
     private static boolean isProbablyArabic(String s) {

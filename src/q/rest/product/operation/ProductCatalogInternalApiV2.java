@@ -57,7 +57,7 @@ public class ProductCatalogInternalApiV2 {
                 groupid = null;
             }
             System.out.println("Criteria at product services is " + criteria);
-            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogGroups(catalogId, carId, groupid, criteria));
+            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogGroups(catalogId, carId, groupid, Helper.getEncodedUrl(criteria)));
             if(r.getStatus() != 200){
                 return Response.status(404).build();
             }
@@ -79,7 +79,7 @@ public class ProductCatalogInternalApiV2 {
                                  @PathParam(value = "criteria") String criteria){
         try{
             String catalogId = this.getCatalogIdFromMakeId(makeId);
-            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogParts(catalogId, carId, groupId, criteria));
+            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogParts(catalogId, carId, groupId, Helper.getEncodedUrl(criteria)));
             if(r.getStatus() != 200){
                 return Response.status(404).build();
             }
