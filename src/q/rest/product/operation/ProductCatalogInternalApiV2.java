@@ -56,7 +56,6 @@ public class ProductCatalogInternalApiV2 {
             if(groupid == null || groupid == ""){
                 groupid = null;
             }
-            System.out.println("Criteria at product services is " + criteria);
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogGroups(catalogId, carId, groupid, Helper.getEncodedUrl(criteria)));
             if(r.getStatus() != 200){
                 return Response.status(404).build();

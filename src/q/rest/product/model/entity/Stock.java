@@ -13,26 +13,19 @@ public class Stock implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_stock_id_seq_gen")
     @Column(name="id", updatable = false)
     private long id;
-
     @Column(name="product_id")
     private long productId;
-
     @Column(name="purchase_id")
-    private long purchaseId;
-
+    private Long purchaseId;
     @Column(name="purchase_product_id")
     private long purchaseProductId;
-
     @Column(name="quantity")
     private int quantity;
-
     @Column(name="cost_actual")
     private double costActual;
-
     @Column(name="created")
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
-
     @Column(name="created_by")
     private int createdBy;
 

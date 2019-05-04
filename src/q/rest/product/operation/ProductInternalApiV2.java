@@ -4,16 +4,14 @@ import q.rest.product.dao.DAO;
 import q.rest.product.filter.SecuredUser;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.ProductHolder;
+import q.rest.product.model.contract.StockDeduct;
 import q.rest.product.model.entity.*;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Path("/internal/api/v2/")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -108,13 +106,7 @@ public class ProductInternalApiV2 {
             List<Product> products = dao.getJPQLParams(Product.class, jpql, undecor, 'A');
             List<ProductHolder> holders = new ArrayList<>();
             for(Product product : products){
-                ProductHolder holder = new ProductHolder();
-                holder.setProduct(product);
-                holder.setTags(this.getProductTags(product.getId()));
-                holder.setProductPrices(this.getProductPrices(product.getId()));
-                holder.setCategories(this.getProductCategories(product.getId()));
-                holder.setProductSpecs(this.getProductSpecs(product.getId()));
-                holders.add(holder);
+                holders.add(getProductHolder(product));
             }
             return Response.status(200).entity(holders).build();
         }catch(Exception ex){
@@ -360,6 +352,128 @@ public class ProductInternalApiV2 {
         }
     }
 
+
+    @SecuredUser
+    @POST
+    @Path("stock/deduct")
+    public Response deductStock(List<StockDeduct> stockDeducts){
+        try{
+            //check if all stocks are available
+            if(!isAllStockAvailable(stockDeducts)){
+                return Response.status(409).build();
+            }
+            for(StockDeduct sd : stockDeducts){
+                String sql = "select b from Stock b where b.productId =:value0 and b.quantity > :value1 order by b.created asc";
+                List<Stock> stocks = dao.getJPQLParams(Stock.class, sql, sd.getProductId(), 0);
+                if(!stocks.isEmpty()){
+                    int remaining = sd.getQuantity();
+                    int index = 0;
+                    while(remaining > 0){
+                        try {
+                            Stock stock = stocks.get(index);
+                            if (stock.getQuantity() <= remaining) {
+                                remaining = remaining - stock.getQuantity();
+                                Map<String,Object> map = new HashMap<>();
+                                map.put("purchaseProductId", stock.getPurchaseProductId());
+                                map.put("quantity", stock.getQuantity());
+                                sd.getPurchaseProductIds().add(map);
+                                stock.setQuantity(0);
+                                dao.update(stock);
+                            } else {
+                                stock.setQuantity(stock.getQuantity() - remaining);
+                                Map<String,Object> map = new HashMap<>();
+                                map.put("purchaseProductId", stock.getPurchaseProductId());
+                                map.put("quantity", remaining);
+                                sd.getPurchaseProductIds().add(map);
+                                dao.update(stock);
+                                remaining = 0;
+                            }
+                            index++;
+                        }catch (ArrayIndexOutOfBoundsException ex){
+                            //no more to delete!! create a negative stock
+                            remaining = 0;
+                        }
+                    }
+                }else{
+                    //no more to delete!! create a negative stock
+                }
+            }
+            return Response.status(200).entity(stockDeducts).build();
+        }catch(Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    private boolean isAllStockAvailable(List<StockDeduct> stockDeducts){
+        boolean success = true;
+        var filtered = new ArrayList<StockDeduct>();
+        for(StockDeduct sd : stockDeducts){
+           if(filtered.contains(sd)){
+               success = false;
+               break;
+           }
+           else{
+               filtered.add(sd);
+           }
+        }
+        if(success){
+            for(StockDeduct sd : filtered){
+                String sql = "select sum(b.quantity) from Stock b where b.productId = :value0 and b.quantity > :value1";
+                Number n = dao.findJPQLParams(Number.class, sql, sd.getProductId(), 0);
+                if(n == null){
+                    n = 0;
+                }
+                if(n.intValue() < sd.getQuantity()){
+                    success = false;
+                    break;
+                }
+            }
+
+        }
+        return success;
+    }
+
+    /*
+    @SecuredUser
+    @POST
+    @Path("stock/deduct")
+    public Response deductStock(List<StockDeduct> stockDeducts){
+        try{
+            for(StockDeduct sd : stockDeducts){
+                String sql = "select b from Stock b where b.productId where order by b.created asc";
+                List<Stock> stocks = dao.getJPQLParams(Stock.class, sql, sd.getProductId());
+                if(!stocks.isEmpty()){
+                    int remaining = sd.getQuantity();
+                    int index = 0;
+                    while(remaining > 0){
+                        try {
+                            Stock stock = stocks.get(index);
+                            if (stock.getQuantity() <= remaining) {
+                                remaining = remaining - stock.getQuantity();
+                                dao.delete(stock);
+                            } else {
+                                stock.setQuantity(stock.getQuantity() - remaining);
+                                dao.update(stock);
+                                remaining = 0;
+                            }
+                            index++;
+                        }catch (ArrayIndexOutOfBoundsException ex){
+                            //no more to delete!! create a negative stock
+                            createNegativeStock(sd);
+                            remaining = 0;
+                        }
+                    }
+                }else{
+                    //no more to delete!! create a negative stock
+                  createNegativeStock(sd);
+                }
+            }
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+    */
 
     private boolean categoryExists(Category category){
         String sql = "select b from Category b where (lower(b.name) = :value0 or lower(b.nameAr) = :value1) and b.id != :value2";
