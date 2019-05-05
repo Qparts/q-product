@@ -44,6 +44,14 @@ public class DAO {
     }
 
 
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getNativeOffsetMax(Class<T> klass, String jpql, int offset, int max){
+        Query q = em.createNativeQuery(jpql);
+        q.setFirstResult(offset).setMaxResults(max);
+        return (List<T>) q.getResultList();
+    }
+
+
     private void setParameter(Query q, String name, Object val) {
         if (val instanceof Date) {
             Date d = (Date) val;

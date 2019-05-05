@@ -61,9 +61,24 @@ public class ProductApiV2 {
     @GET
     public Response getOilPopularBrands(){
         try{
-            String sql = "select distinct b.brand from PublicProduct b where b.brand.status =:value0 and b.id in (" +
-                    "select c.productId from ProductCategory c where c.categoryId = :value1)";
-            List<PublicBrand> brands = dao.getJPQLParamsOffsetMax(PublicBrand.class, sql, 0, 6, 'A', 9);
+            String sql = "select * from prd_brand a where a.id in (" +
+                    " select distinct b.brand_id from prd_product b where b.id in(" +
+                    " select product_id from prd_product_category where category_id in (" +
+                    " WITH RECURSIVE nodes AS (" +
+                    " SELECT s1.id, s1.parent_node" +
+                    " FROM prd_category s1 WHERE parent_node = 9" +
+                    " UNION" +
+                    " SELECT s2.id, s2.parent_node" +
+                    " FROM prd_category s2, nodes s1 WHERE s2.parent_node = s1.id" +
+                    " )" +
+                    " SELECT id FROM nodes" +
+                    " )" +
+                    " ) or b.id in (" +
+                    " select product_id from prd_product_category where category_id = 9" +
+                    " )" +
+                    ") limit 6";
+
+            List<PublicBrand> brands = dao.getNative(PublicBrand.class, sql);
             initBrandsLinks(brands);
             return Response.status(200).entity(brands).build();
         }catch (Exception ex){
