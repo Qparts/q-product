@@ -31,25 +31,28 @@ public class ProductApiV2 {
     @GET
     public Response getBestSellers(@Context UriInfo info){
         try{
-            String categoryId = info.getQueryParameters().getFirst("category");
-            if(categoryId == null || categoryId == ""){
-                categoryId = null;
-            }
+        //    String categoryId = info.getQueryParameters().getFirst("category");
+          //  if(categoryId == null || categoryId == ""){
 
-            String sql = "select * from prd_product where status = 'A' ";
+            //}
 
-            if(categoryId != null){
-                sql += " and id in (select id from prd_product_category where category_id = "+ categoryId + ")";
-            }
+//            String sql = "select * from prd_product where status = 'A' ";
 
-            sql += " order by id desc limit 10";
+  //          if(categoryId != null){
+    //            sql += " and id in (select id from prd_product_category where category_id = "+ categoryId + ")";
+      //      }
 
-            List<PublicProduct> pbs = dao.getNative(PublicProduct.class, sql);
+        //    sql += " order by id desc limit 10";
+
+            String sql = "select b from Product b where b.id in (:value0 , :value1, :value2, :value3, :value4, " +
+                    ":value5, :value6, :value7, :value8, :value9)";
+            List<PublicProduct> pbs = dao.getJPQLParams(PublicProduct.class, sql, 89536, 4, 103297, 133718, 90774, 76068, 133718, 57, 76069, 5);
             for(PublicProduct pb : pbs){
                 initPublicProduct(pb);
             }
-
             return Response.status(200).entity(pbs).build();
+
+
         }catch (Exception ex){
             return Response.status(500).build();
         }
