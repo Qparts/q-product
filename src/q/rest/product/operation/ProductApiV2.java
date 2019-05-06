@@ -46,7 +46,7 @@ public class ProductApiV2 {
 
             String sql = "select b from Product b where b.id in (:value0 , :value1, :value2, :value3, :value4, " +
                     ":value5, :value6, :value7, :value8, :value9)";
-            List<PublicProduct> pbs = dao.getJPQLParams(PublicProduct.class, sql, 89536, 4, 103297, 133718, 90774, 76068, 133718, 57, 76069, 5);
+            List<PublicProduct> pbs = dao.getJPQLParams(PublicProduct.class, sql, 89536L, 4L, 103297L, 133718L, 90774L, 76068L, 133718L, 57L, 76069L, 5L);
             for(PublicProduct pb : pbs){
                 initPublicProduct(pb);
             }
