@@ -277,6 +277,19 @@ public class ProductInternalApiV2 {
     }
 
     @SecuredUser
+    @PUT
+    @Path("product")
+    public Response updateProduct(@HeaderParam("Authorization") String header, ProductHolder holder){
+        try{
+            dao.update(holder.getProduct());
+            return Response.status(201).build();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
     @POST
     @Path("spec")
     public Response createSpec(Spec spec){
