@@ -295,6 +295,41 @@ public class ProductInternalApiV2 {
     }
 
     @SecuredUser
+    @POST
+    @Path("product-spec")
+    public Response createProductSpec(ProductSpec ps){
+        try{
+            if (ps.getValueAr() == null || ps.getValueAr().length() == 0) {
+                ps.setValueAr(ps.getValue());
+            }
+            var specs = dao.getTwoConditions(ProductSpec.class, "productId", "spec.id", ps.getProductId(), ps.getSpec().getId());
+            if(!specs.isEmpty()){
+                if(specs.size() == 1){
+                    specs.get(0).setValueAr(ps.getValueAr());
+                    specs.get(0).setValue(ps.getValue());
+                    dao.update(specs.get(0));
+                }
+                else{
+                    return Response.status(409).build();
+                }
+            }else{
+                String sql = "insert into prd_product_specification (spec_id, product_id, value, value_ar, created, created_by, status) " +
+                        "values(" + ps.getSpec().getId() +" ,"
+                        + ps.getProductId() +", "
+                        + "'" + ps.getValue() +"' , "
+                        + " '" + ps.getValueAr() +"' , "
+                        + " now() , "
+                        + ps.getCreatedBy() + ", "
+                        + " '" + ps.getStatus() + "')";
+                dao.insertNative(sql);
+            }
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
     @PUT
     @Path("product")
     public Response updateProduct(@HeaderParam("Authorization") String header, ProductHolder holder){
