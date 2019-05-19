@@ -60,12 +60,22 @@ public class Helper {
                 numbered = "%" + Helper.undecorate(query).toUpperCase() +"%";
             }
             else{
-                numbered="asProductNumber";
+                throw new Exception();
             }
         } catch (Exception ignore) {
             numbered = "asProductNumber";
         }
         return numbered;
+    }
+
+    public static long getQueryAsId(String query){
+        long asId = 0;
+        try {
+            asId = Long.parseLong(query);
+        } catch (Exception ignore) {
+
+        }
+        return asId;
     }
 
 

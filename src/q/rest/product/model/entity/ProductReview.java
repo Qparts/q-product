@@ -30,7 +30,7 @@ public class ProductReview implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
     @Column(name="status")
-    private char status;
+    private char status;//A = approved, P = pending, R = rejected
     @Column(name="reviewed_by")
     private Integer reviewedBy;
     @Column(name="reviewed_on")

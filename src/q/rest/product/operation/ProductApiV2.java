@@ -2,6 +2,7 @@ package q.rest.product.operation;
 
 
 import q.rest.product.dao.DAO;
+import q.rest.product.filter.SecuredCustomer;
 import q.rest.product.filter.ValidApp;
 import q.rest.product.helper.Helper;
 import q.rest.product.helper.ProductSQLSearch;
@@ -108,6 +109,21 @@ public class ProductApiV2 {
                 initPublicProduct(pb);
             }
             return Response.status(200).entity(pbs).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
+    @SecuredCustomer
+    @Path("review")
+    @POST
+    public Response writeReview(PublicReview pr){
+        try{
+            pr.setCreated(new Date());
+            pr.setStatus('P');
+            dao.persist(pr);
+            return Response.status(201).build();
         }catch (Exception ex){
             return Response.status(500).build();
         }

@@ -216,9 +216,27 @@ public class ProductInternalApiV2 {
         try {
             String numbered = Helper.getNumberedQuery(query);
             String lowered = "%"+ query.trim().toLowerCase() + "%";
+            long asId = Helper.getQueryAsId(query);
             String sql = "select b from Product b where lower(b.desc) like :value0 " +
-                    "or b.productNumber like :value1";
-            List<Product> products = dao.getJPQLParamsOffsetMax(Product.class, sql, 0, 20, lowered, numbered);
+                    "or lower(b.productNumber) like :value1 or b.id = :value2";
+            List<Product> products = dao.getJPQLParamsOffsetMax(Product.class, sql, 0, 20, lowered, numbered, asId);
+            return Response.status(200).entity(products).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @GET
+    @Path("products/search/{query}/id-only")
+    public Response searchProductsIds(@PathParam(value = "query") String query){
+        try {
+            String numbered = Helper.getNumberedQuery(query);
+            String lowered = "%"+ query.trim().toLowerCase() + "%";
+            long asId = Helper.getQueryAsId(query);
+            String sql = "select b.id from Product b where lower(b.desc) like :value0 " +
+                    "or lower(b.productNumber) like :value1 or b.id = :value2";
+            List<Long> products = dao.getJPQLParamsOffsetMax(Long.class, sql, 0, 20, lowered, numbered, asId);
             return Response.status(200).entity(products).build();
         }catch (Exception ex){
             return Response.status(500).build();
