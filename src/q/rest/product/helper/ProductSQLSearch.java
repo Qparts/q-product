@@ -14,13 +14,14 @@ public class ProductSQLSearch {
     private final int max;
     private final int offset;
     private final List<Integer> brandsFilter;
+    private final List<Integer> viscosityFilter;
     private String productSearchSql;
     private String productSearchSizeSql;
     private String brandsSearch;
     private String specsSearch;
     private String productSpecsSearch;
 
-    public ProductSQLSearch(String query, int categoryId, List<Integer> brandsFilter, int max, int offset) {
+    public ProductSQLSearch(String query, int categoryId, List<Integer> brandsFilter, List<Integer> viscosityFilter, int max, int offset) {
         if (query != null) {
             this.query = query;
             this.numbered = "'" + Helper.getNumberedQuery(query) + "'";
@@ -33,6 +34,7 @@ public class ProductSQLSearch {
         this.max = max;
         this.offset = offset;
         this.brandsFilter = brandsFilter;
+        this.viscosityFilter = viscosityFilter;
 
         initProductSearch();
         initProductSearchSize();
@@ -53,9 +55,23 @@ public class ProductSQLSearch {
         return sql;
     }
 
+    private String getViscocityFilter(){
+        String sql = "";
+        if(!this.viscosityFilter.isEmpty()){
+            sql = " and b.id in (" +
+                    "select product_id from prd_product_specification where value = (select w.value from prd_product_specification w where w.spec_id = 2 and w.product_id in (0";
+            for(Integer id : brandsFilter){
+                sql += "," + id;
+            }
+            sql +="))) ";
+        }
+        return sql;
+    }
+
     private String getCommonSql(){
         return productNumber(AND)
                 + getBrandsFilter()
+                + getViscocityFilter()
                 + inCategoryId(AND)
                 + inCategoryChildren(OR)
                 + likeDesc((categoryId > 0 ? AND : OR) + " (")

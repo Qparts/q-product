@@ -170,8 +170,16 @@ public class ProductApiV2 {
             Map<String,Object> map = new HashMap<String, Object>();
 
             String sort = info.getQueryParameters().getFirst("sort");
+
+
             List<String> brandStringValues = info.getQueryParameters().get("Brands");
             List<Integer> brandValues = Helper.extractParams(brandStringValues);
+
+            List<String> viscosityStringValues = info.getQueryParameters().get("Viscosity");
+            List<Integer> viscosityProductIds = Helper.extractParams(viscosityStringValues);
+
+
+
             String categoryString = info.getQueryParameters().getFirst("category");
 
             int page = 1;
@@ -187,7 +195,7 @@ public class ProductApiV2 {
             int offset = (page -1) * 16;
             int max = 16;
 
-            ProductSQLSearch psql = new ProductSQLSearch(query, categoryId, brandValues, max, offset);
+            ProductSQLSearch psql = new ProductSQLSearch(query, categoryId, brandValues, viscosityProductIds, max, offset);
             List<PublicProduct> products = dao.getNative(PublicProduct.class, psql.getProductSearchSql());
             Number searchSize = (Number) dao.getNative(psql.getProductSearchSizeSql()).get(0);
             List<PublicBrand> brands = dao.getNative(PublicBrand.class, psql.getBrandsSearch());
