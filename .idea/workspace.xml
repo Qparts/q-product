@@ -7,8 +7,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/ProductSQLSearch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/ProductSQLSearch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -66,13 +65,46 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="168">
-              <caret line="194" column="106" selection-start-line="194" selection-start-column="106" selection-end-line="194" selection-end-column="106" />
+            <state relative-caret-position="160">
+              <caret line="223" column="41" selection-start-line="223" selection-start-column="41" selection-end-line="223" selection-end-column="41" />
               <folding>
                 <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/SearchFilter.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#289#290#0" expanded="true" />
+                <element signature="e#314#315#0" expanded="true" />
+                <element signature="e#347#348#0" expanded="true" />
+                <element signature="e#375#376#0" expanded="true" />
+                <element signature="e#513#514#0" expanded="true" />
+                <element signature="e#572#573#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="124">
+              <caret line="41" column="37" selection-start-line="41" selection-start-column="37" selection-end-line="41" selection-end-column="37" />
+              <folding>
+                <element signature="e#652#653#0" expanded="true" />
+                <element signature="e#690#691#0" expanded="true" />
+                <element signature="e#1118#1119#0" expanded="true" />
+                <element signature="e#1173#1174#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -89,7 +121,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>brand</find>
       <find>18</find>
       <find>b.d</find>
       <find>newest</find>
@@ -119,6 +150,7 @@
       <find>search</find>
       <find>search-produc</find>
       <find>s</find>
+      <find>addValues</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/src/q/rest/product/model/contract</dir>
@@ -178,9 +210,9 @@
         <option value="$PROJECT_DIR$/src/q/rest/product/model/entity/Spec.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicBrand.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/SearchFilter.java" />
-        <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/helper/ProductSQLSearch.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java" />
+        <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java" />
       </list>
     </option>
   </component>
@@ -375,12 +407,12 @@
       <workItem from="1557569548635" duration="2000" />
       <workItem from="1557577803558" duration="714000" />
       <workItem from="1558177930100" duration="4992000" />
-      <workItem from="1558295722792" duration="5870000" />
+      <workItem from="1558295722792" duration="6109000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="237224000" />
+    <option name="totallyTimeSpent" value="237463000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -989,31 +1021,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="54" selection-start-line="8" selection-start-column="54" selection-end-line="8" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/SearchFilter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="26" column="28" selection-start-line="26" selection-start-column="28" selection-end-line="26" selection-end-column="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#289#290#0" expanded="true" />
-            <element signature="e#314#315#0" expanded="true" />
-            <element signature="e#347#348#0" expanded="true" />
-            <element signature="e#375#376#0" expanded="true" />
-            <element signature="e#510#511#0" expanded="true" />
-            <element signature="e#569#570#0" expanded="true" />
-            <element signature="e#861#862#0" expanded="true" />
-            <element signature="e#899#900#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/entity/ProductSpec.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="148">
@@ -1055,10 +1062,39 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="194" column="106" selection-start-line="194" selection-start-column="106" selection-end-line="194" selection-end-column="106" />
+        <state relative-caret-position="160">
+          <caret line="223" column="41" selection-start-line="223" selection-start-column="41" selection-end-line="223" selection-end-column="41" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/SearchFilter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#289#290#0" expanded="true" />
+            <element signature="e#314#315#0" expanded="true" />
+            <element signature="e#347#348#0" expanded="true" />
+            <element signature="e#375#376#0" expanded="true" />
+            <element signature="e#513#514#0" expanded="true" />
+            <element signature="e#572#573#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="124">
+          <caret line="41" column="37" selection-start-line="41" selection-start-column="37" selection-end-line="41" selection-end-column="37" />
+          <folding>
+            <element signature="e#652#653#0" expanded="true" />
+            <element signature="e#690#691#0" expanded="true" />
+            <element signature="e#1118#1119#0" expanded="true" />
+            <element signature="e#1173#1174#0" expanded="true" />
           </folding>
         </state>
       </provider>

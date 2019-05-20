@@ -1,5 +1,7 @@
 package q.rest.product.model.contract;
 
+import java.util.Objects;
+
 public class Values {
 
     private String value;
@@ -34,5 +36,20 @@ public class Values {
 
     public void setValueAr(String valueAr) {
         this.valueAr = valueAr;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Values values = (Values) o;
+        return Objects.equals(value, values.value) &&
+                Objects.equals(valueAr, values.valueAr) &&
+                Objects.equals(id, values.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, valueAr, id);
     }
 }
