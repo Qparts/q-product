@@ -1,8 +1,5 @@
 package q.rest.product.model.contract;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 

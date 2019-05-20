@@ -47,8 +47,9 @@ public class Values {
                 Objects.equals(valueAr, values.valueAr);
     }
 
+
     @Override
     public int hashCode() {
-        return Objects.hash(value, valueAr, id);
+        return Objects.hash(value, valueAr);
     }
 }
