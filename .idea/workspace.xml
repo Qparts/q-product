@@ -7,8 +7,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductInternalApiV2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/ProductSQLSearch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/ProductSQLSearch.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/SearchFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/SearchFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/Spec.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/Spec.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -19,11 +22,56 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/q/rest/product/operation/ProductInternalApiV2.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="377">
-              <caret line="323" selection-start-line="323" selection-end-line="323" />
+            <state relative-caret-position="191">
+              <caret line="216" column="61" lean-forward="true" selection-start-line="216" selection-start-column="61" selection-end-line="216" selection-end-column="61" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/q/rest/product/helper/Helper.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="141">
+              <caret line="19" column="25" selection-start-line="19" selection-start-column="25" selection-end-line="19" selection-end-column="25" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#475#476#0" expanded="true" />
+                <element signature="e#549#550#0" expanded="true" />
+                <element signature="e#990#991#0" expanded="true" />
+                <element signature="e#1059#1060#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/q/rest/product/helper/ProductSQLSearch.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="351">
+              <caret line="92" column="26" selection-start-line="92" selection-start-column="26" selection-end-line="92" selection-end-column="26" />
+              <folding>
+                <element signature="e#5616#5617#0" expanded="true" />
+                <element signature="e#5655#5656#0" expanded="true" />
+                <element signature="e#5784#5785#0" expanded="true" />
+                <element signature="e#5819#5820#0" expanded="true" />
+                <element signature="e#6676#6677#0" expanded="true" />
+                <element signature="e#6710#6711#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="162">
+              <caret line="214" column="13" selection-start-line="214" selection-start-column="13" selection-end-line="214" selection-end-column="13" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -42,7 +90,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>latest</find>
       <find>brand</find>
       <find>18</find>
       <find>b.d</find>
@@ -65,13 +112,14 @@
       <find>best-seller</find>
       <find>product&quot;)</find>
       <find>&quot;product&quot;)</find>
-      <find>search</find>
       <find>spec</find>
       <find>ps.getVal</find>
       <find>createspec</find>
       <find>create</find>
       <find>createproductspe</find>
       <find>&quot;product</find>
+      <find>search</find>
+      <find>search-produc</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/src/q/rest/product/model/contract</dir>
@@ -83,7 +131,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/ProductCreation.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/entity/ProductTag.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/operation/ProductInternalApi.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/entity/ProductPrice.java" />
@@ -98,14 +145,12 @@
         <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/SearchResult.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/entity/CategoryMake.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/dao/StatefulDAO.java" />
-        <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicBrand.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicProduct_.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicBrand_.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/filter/ValidAppAgent.java" />
         <option value="$PROJECT_DIR$/src/META-INF/persistence.xml" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/entity/ProductCategory.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/entity/Variant.java" />
-        <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV2.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogAPICars.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogCarParameter.java" />
@@ -116,11 +161,9 @@
         <option value="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogPartsPosition.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogPart.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogPartsGroup.java" />
-        <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/SearchFilter.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/operation/BeaconAPI.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogPartsList.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/entity/Product.java" />
-        <option value="$PROJECT_DIR$/src/q/rest/product/helper/ProductSQLSearch.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicProduct.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/ProductHolder.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" />
@@ -130,10 +173,15 @@
         <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/StockDeduct.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/dao/DAO.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/entity/ProductReview.java" />
-        <option value="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/model/entity/VendorStock.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/helper/Helper.java" />
         <option value="$PROJECT_DIR$/src/q/rest/product/operation/ProductInternalApiV2.java" />
+        <option value="$PROJECT_DIR$/src/q/rest/product/helper/ProductSQLSearch.java" />
+        <option value="$PROJECT_DIR$/src/q/rest/product/model/entity/Spec.java" />
+        <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicBrand.java" />
+        <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/SearchFilter.java" />
+        <option value="$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java" />
+        <option value="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java" />
       </list>
     </option>
   </component>
@@ -328,12 +376,12 @@
       <workItem from="1557569548635" duration="2000" />
       <workItem from="1557577803558" duration="714000" />
       <workItem from="1558177930100" duration="4992000" />
-      <workItem from="1558295722792" duration="1769000" />
+      <workItem from="1558295722792" duration="5575000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="233123000" />
+    <option name="totallyTimeSpent" value="236929000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -415,19 +463,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/dao/StatefulDAO.java" />
-    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/PublicSpec.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-          <folding>
-            <element signature="e#423#424#0" expanded="true" />
-            <element signature="e#455#456#0" expanded="true" />
-            <element signature="e#583#584#0" expanded="true" />
-            <element signature="e#615#616#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/PublicBrand_.java" />
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/PublicProduct_.java" />
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/filter/ValidApp.java">
@@ -495,18 +530,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/PublicBrand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#601#602#0" expanded="true" />
-            <element signature="e#660#661#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogPartsPositionCoordinates.java" />
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogPartsPosition.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -555,31 +578,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/operation/BeaconAPI.java" />
-    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="131">
-          <caret line="11" column="21" selection-start-line="11" selection-start-column="21" selection-end-line="11" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/SearchFilter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="236">
-          <caret line="26" column="52" lean-forward="true" selection-start-line="26" selection-start-column="52" selection-end-line="26" selection-end-column="52" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#289#290#0" expanded="true" />
-            <element signature="e#314#315#0" expanded="true" />
-            <element signature="e#347#348#0" expanded="true" />
-            <element signature="e#375#376#0" expanded="true" />
-            <element signature="e#271#272#0" expanded="true" />
-            <element signature="e#312#313#0" expanded="true" />
-            <element signature="e#378#379#0" expanded="true" />
-            <element signature="e#437#438#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogGroup.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
@@ -671,16 +669,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/entity/ProductSpec.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="71">
-          <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-11.0.1.jdk/Contents/Home/lib/src.zip!/java.base/java/lang/String.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="148">
@@ -753,16 +741,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="148">
           <caret line="35" column="35" selection-start-line="35" selection-start-column="35" selection-end-line="35" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/entity/Spec.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="15" column="19" lean-forward="true" selection-start-line="11" selection-end-line="15" selection-end-column="19" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -892,23 +870,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/q/rest/product/helper/ProductSQLSearch.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="628">
-          <caret line="134" column="5" selection-start-line="134" selection-start-column="5" selection-end-line="134" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="488">
-          <caret line="125" column="48" selection-start-line="125" selection-start-column="48" selection-end-line="125" selection-end-column="48" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/entity/ProductReview.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="435">
@@ -975,12 +936,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/PublicSpec.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+          <folding>
+            <element signature="e#423#424#0" expanded="true" />
+            <element signature="e#455#456#0" expanded="true" />
+            <element signature="e#583#584#0" expanded="true" />
+            <element signature="e#615#616#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/helper/Helper.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="377">
-          <caret line="70" column="18" selection-start-line="70" selection-start-column="18" selection-end-line="70" selection-end-column="18" />
+        <state relative-caret-position="141">
+          <caret line="19" column="25" selection-start-line="19" selection-start-column="25" selection-end-line="19" selection-end-column="25" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#475#476#0" expanded="true" />
+            <element signature="e#549#550#0" expanded="true" />
             <element signature="e#990#991#0" expanded="true" />
             <element signature="e#1059#1060#0" expanded="true" />
           </folding>
@@ -989,8 +965,97 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/q/rest/product/operation/ProductInternalApiV2.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="377">
-          <caret line="323" selection-start-line="323" selection-end-line="323" />
+        <state relative-caret-position="191">
+          <caret line="216" column="61" lean-forward="true" selection-start-line="216" selection-start-column="61" selection-end-line="216" selection-end-column="61" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/helper/ProductSQLSearch.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="351">
+          <caret line="92" column="26" selection-start-line="92" selection-start-column="26" selection-end-line="92" selection-end-column="26" />
+          <folding>
+            <element signature="e#5616#5617#0" expanded="true" />
+            <element signature="e#5655#5656#0" expanded="true" />
+            <element signature="e#5784#5785#0" expanded="true" />
+            <element signature="e#5819#5820#0" expanded="true" />
+            <element signature="e#6676#6677#0" expanded="true" />
+            <element signature="e#6710#6711#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/entity/Spec.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="32" column="48" selection-start-line="32" selection-start-column="48" selection-end-line="32" selection-end-column="48" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1044#1045#0" expanded="true" />
+            <element signature="e#1111#1112#0" expanded="true" />
+            <element signature="e#1159#1160#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/PublicBrand.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="29" column="14" selection-start-line="29" selection-start-column="11" selection-end-line="29" selection-end-column="14" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#601#602#0" expanded="true" />
+            <element signature="e#660#661#0" expanded="true" />
+            <element signature="e#686#687#0" expanded="true" />
+            <element signature="e#711#712#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/Values.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="54" selection-start-line="8" selection-start-column="54" selection-end-line="8" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/contract/SearchFilter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="26" column="28" selection-start-line="26" selection-start-column="28" selection-end-line="26" selection-end-column="28" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#289#290#0" expanded="true" />
+            <element signature="e#314#315#0" expanded="true" />
+            <element signature="e#347#348#0" expanded="true" />
+            <element signature="e#375#376#0" expanded="true" />
+            <element signature="e#510#511#0" expanded="true" />
+            <element signature="e#569#570#0" expanded="true" />
+            <element signature="e#861#862#0" expanded="true" />
+            <element signature="e#899#900#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/model/entity/ProductSpec.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="148">
+          <caret line="52" column="16" selection-start-line="52" selection-start-column="16" selection-end-line="52" selection-end-column="16" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1315#1316#0" expanded="true" />
+            <element signature="e#1333#1334#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="214" column="13" selection-start-line="214" selection-start-column="13" selection-end-line="214" selection-end-column="13" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

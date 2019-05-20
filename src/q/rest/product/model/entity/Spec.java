@@ -1,8 +1,11 @@
 package q.rest.product.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -23,6 +26,17 @@ public class Spec implements Serializable {
     private Date created;
     @Column(name="created_by")
     private int createdBy;
+    @Transient
+    @JsonIgnore
+    private List<ProductSpec> productSpecs;
+
+    public List<ProductSpec> getProductSpecs() {
+        return productSpecs;
+    }
+
+    public void setProductSpecs(List<ProductSpec> productSpecs) {
+        this.productSpecs = productSpecs;
+    }
 
     public int getId() {
         return id;

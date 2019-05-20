@@ -17,6 +17,8 @@ public class ProductSQLSearch {
     private String productSearchSql;
     private String productSearchSizeSql;
     private String brandsSearch;
+    private String specsSearch;
+    private String productSpecsSearch;
 
     public ProductSQLSearch(String query, int categoryId, List<Integer> brandsFilter, int max, int offset) {
         if (query != null) {
@@ -35,6 +37,8 @@ public class ProductSQLSearch {
         initProductSearch();
         initProductSearchSize();
         initBrandsSearch();
+        initSpecsSearch();
+        initProductSpecsSearch();
     }
 
     private String getBrandsFilter(){
@@ -73,6 +77,20 @@ public class ProductSQLSearch {
                 + inLikeSpec(OR)
                 + inLikeBrand(OR)
                 + inLikeCategory(OR) + (query != null ? ")" : "" );
+    }
+
+    private void initSpecsSearch(){
+        specsSearch = "select * from prd_specification where id in (select distinct c.spec_id from prd_product_specification c where c.product_id in " +
+                "(select distinct b.id from prd_product b where (b.status ='A' ";
+        specsSearch += getCommonSqlForBrand();
+        specsSearch += ")))";
+    }
+
+    private void initProductSpecsSearch(){
+        productSpecsSearch = "select * from prd_product_specification c where c.product_id in " +
+                "(select distinct b.id from prd_product b where (b.status ='A' ";
+        productSpecsSearch+= getCommonSqlForBrand();
+        productSpecsSearch += "))";
     }
 
     private void initBrandsSearch() {
@@ -159,5 +177,9 @@ public class ProductSQLSearch {
 
     public String getBrandsSearch() {
         return brandsSearch;
+    }
+
+    public String getSpecsSearch() {
+        return specsSearch;
     }
 }

@@ -172,7 +172,6 @@ public class ProductApiV2 {
             String sort = info.getQueryParameters().getFirst("sort");
             List<String> brandStringValues = info.getQueryParameters().get("Brands");
             List<Integer> brandValues = Helper.extractParams(brandStringValues);
-
             String categoryString = info.getQueryParameters().getFirst("category");
 
             int page = 1;
@@ -192,12 +191,16 @@ public class ProductApiV2 {
             List<PublicProduct> products = dao.getNative(PublicProduct.class, psql.getProductSearchSql());
             Number searchSize = (Number) dao.getNative(psql.getProductSearchSizeSql()).get(0);
             List<PublicBrand> brands = dao.getNative(PublicBrand.class, psql.getBrandsSearch());
+            List<Spec> specs = dao.getNative(Spec.class, psql.getSpecsSearch());
+            List<ProductSpec> productSpecs = dao.getNative(ProductSpec.class, psql.getSpecsSearch());
             SearchResult searchResult = new SearchResult();
             searchResult.setResultSize(searchSize.intValue());
+
             for (PublicProduct pb : products) {
                 initPublicProduct(pb);
                 searchResult.getProducts().add(pb);
             }
+
             int filterIdIndex = 1;
             SearchFilter brandFilter = new SearchFilter();
             brandFilter.setFilterTitle("Brands");
@@ -210,6 +213,32 @@ public class ProductApiV2 {
             if(brands.size() > 0){
                 searchResult.getFilterObjects().add(brandFilter);
             }
+            for(var spec : specs){
+                SearchFilter specFilter = new SearchFilter();
+                specFilter.setFilterTitle(spec.getName());
+                specFilter.setFilterTitleAr(spec.getNameAr());
+                specFilter.setId(filterIdIndex);
+                spec.setProductSpecs(new ArrayList<>());
+                for(var productSpec : productSpecs){
+                    if(productSpec.getSpec().getId() == spec.getId()){
+                        specFilter.addValues(productSpec.getValue(), productSpec.getValueAr(), productSpec.getProductId());
+                    }
+                }
+                if(specFilter.getOptions().size() > 0) {
+                    searchResult.getFilterObjects().add(specFilter);
+                }
+                filterIdIndex++;
+            }
+
+            for(var spec : specs){
+                SearchFilter specFilter = new SearchFilter();
+                specFilter.setFilterTitle(spec.getName());
+                specFilter.setFilterTitleAr(spec.getNameAr());
+                specFilter.setId(filterIdIndex);
+                filterIdIndex++;
+            }
+
+
 
             return Response.status(200).entity(searchResult).build();
         }catch(Exception ex){

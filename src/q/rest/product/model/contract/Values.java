@@ -4,19 +4,19 @@ public class Values {
 
     private String value;
     private String valueAr;
-    private int id;
+    private Number id;
 
-    public Values(String value, String valueAr, int id) {
+    public Values(String value, String valueAr, Number id) {
         this.value = value;
         this.valueAr = valueAr;
         this.id = id;
     }
 
-    public int getId() {
+    public Number getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Number id) {
         this.id = id;
     }
 

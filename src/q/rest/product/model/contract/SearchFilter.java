@@ -23,7 +23,7 @@ public class SearchFilter {
         options = new HashSet<>();
     }
 
-    public void addValues(String value, String valueAr, int id){
+    public void addValues(String value, String valueAr, Number id){
         options.add(new Values(value, valueAr, id));
     }
 
