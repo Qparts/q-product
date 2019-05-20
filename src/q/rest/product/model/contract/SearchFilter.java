@@ -24,7 +24,10 @@ public class SearchFilter {
     }
 
     public void addValues(String value, String valueAr, Number id){
-        options.add(new Values(value, valueAr, id));
+        Values values = new Values(value, valueAr, id);
+        if(!options.contains(values)){
+            options.add(values);
+        }
     }
 
     public String getFilterTitle() {
