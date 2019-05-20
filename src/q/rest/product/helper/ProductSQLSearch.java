@@ -35,12 +35,21 @@ public class ProductSQLSearch {
         this.offset = offset;
         this.brandsFilter = brandsFilter;
         this.viscosityFilter = viscosityFilter;
-
         initProductSearch();
+        System.out.println("=============================");
+        System.out.println(productSearchSql);
         initProductSearchSize();
+        System.out.println("=============================");
+        System.out.println(productSearchSizeSql);
         initBrandsSearch();
+        System.out.println("=============================");
+        System.out.println(brandsSearch);
         initSpecsSearch();
+        System.out.println("=============================");
+        System.out.println(specsSearch);
         initProductSpecsSearch();
+        System.out.println("=============================");
+        System.out.println(productSpecsSearch);
     }
 
     private String getBrandsFilter(){
