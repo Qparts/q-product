@@ -1,5 +1,7 @@
 package q.rest.product.model.contract;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,14 +22,12 @@ public class SearchFilter {
     }
 
     public SearchFilter(){
-        options = new HashSet<>();
+        options = new HashSet<Values>();
     }
 
     public void addValues(String value, String valueAr, Number id){
         Values values = new Values(value, valueAr, id);
-        if(!options.contains(values)){
-            options.add(values);
-        }
+        options.add(values);
     }
 
     public String getFilterTitle() {

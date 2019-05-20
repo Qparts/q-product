@@ -44,8 +44,7 @@ public class Values {
         if (o == null || getClass() != o.getClass()) return false;
         Values values = (Values) o;
         return Objects.equals(value, values.value) &&
-                Objects.equals(valueAr, values.valueAr) &&
-                Objects.equals(id, values.id);
+                Objects.equals(valueAr, values.valueAr);
     }
 
     @Override
