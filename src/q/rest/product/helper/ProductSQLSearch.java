@@ -65,6 +65,7 @@ public class ProductSQLSearch {
             }
             sql +="))) ";
         }
+        System.out.println(sql);
         return sql;
     }
 
