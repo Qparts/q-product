@@ -182,4 +182,8 @@ public class ProductSQLSearch {
     public String getSpecsSearch() {
         return specsSearch;
     }
+
+    public String getProductSpecsSearch() {
+        return productSpecsSearch;
+    }
 }

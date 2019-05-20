@@ -192,7 +192,7 @@ public class ProductApiV2 {
             Number searchSize = (Number) dao.getNative(psql.getProductSearchSizeSql()).get(0);
             List<PublicBrand> brands = dao.getNative(PublicBrand.class, psql.getBrandsSearch());
             List<Spec> specs = dao.getNative(Spec.class, psql.getSpecsSearch());
-            List<ProductSpec> productSpecs = dao.getNative(ProductSpec.class, psql.getSpecsSearch());
+            List<ProductSpec> productSpecs = dao.getNative(ProductSpec.class, psql.getProductSpecsSearch());
             SearchResult searchResult = new SearchResult();
             searchResult.setResultSize(searchSize.intValue());
 
