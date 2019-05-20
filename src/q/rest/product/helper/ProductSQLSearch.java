@@ -60,7 +60,7 @@ public class ProductSQLSearch {
         if(!this.viscosityFilter.isEmpty()){
             sql = " and b.id in (" +
                     "select product_id from prd_product_specification where value = (select w.value from prd_product_specification w where w.spec_id = 2 and w.product_id in (0";
-            for(Integer id : brandsFilter){
+            for(Integer id : viscosityFilter){
                 sql += "," + id;
             }
             sql +="))) ";
