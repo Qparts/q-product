@@ -15,6 +15,8 @@ public class Stock implements Serializable {
     private long id;
     @Column(name="product_id")
     private long productId;
+    @Column(name="vendor_id")
+    private int vendorId;
     @Column(name="purchase_id")
     private Long purchaseId;
     @Column(name="purchase_product_id")
@@ -28,6 +30,14 @@ public class Stock implements Serializable {
     private Date created;
     @Column(name="created_by")
     private int createdBy;
+
+    public int getVendorId() {
+        return vendorId;
+    }
+
+    public void setVendorId(int vendorId) {
+        this.vendorId = vendorId;
+    }
 
     public long getId() {
         return id;

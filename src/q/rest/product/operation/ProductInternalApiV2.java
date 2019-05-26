@@ -100,10 +100,18 @@ public class ProductInternalApiV2 {
     @Path("search-product-by-number")
     public Response searchProduct(Map<Object, Object> map){
         try{
+            boolean inStock = (boolean) map.get("inStock");
             String number = (String) map.get("number");
             String undecor = "%" + Helper.undecorate(number) + "%";
             String jpql = "select b from Product b where b.productNumber like :value0 and b.status =:value1";
-            List<Product> products = dao.getJPQLParams(Product.class, jpql, undecor, 'A');
+            String stockCond = " and b.id in (select c.productId from Stock c where c.quantity > :value2)";
+            String voidCond = " and b.createdBy >= :value2";
+            if(inStock){
+                jpql += stockCond;
+            }else{
+                jpql += voidCond;
+            }
+            List<Product> products = dao.getJPQLParams(Product.class, jpql, undecor, 'A', 0);
             List<ProductHolder> holders = new ArrayList<>();
             for(Product product : products){
                 holders.add(getProductHolder(product));
@@ -409,8 +417,43 @@ public class ProductInternalApiV2 {
     public Response addStock(List<Stock> stockList){
         try{
             for(Stock stock : stockList){
-                stock.setCreated(new Date());
-                dao.persist(stock);
+                String sql = "select b from Stock b where b.productId = :value0 " +
+                        " and b.purchaseProductId = :value1 " +
+                        " and b.vendorId = :value2 " +
+                        " and b.purchaseId = :value3 ";
+
+                Stock checkStock = dao.findJPQLParams(Stock.class, sql , stock.getProductId(), stock.getPurchaseProductId(), stock.getVendorId(), stock.getPurchaseId());
+                if(checkStock != null){
+                    checkStock.setQuantity(checkStock.getQuantity() + stock.getQuantity());
+                    dao.update(checkStock);
+                }
+                else{
+                    stock.setCreated(new Date());
+                    dao.persist(stock);
+                }
+            }
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
+    @SecuredUser
+    @PUT
+    @Path("stock/deduct/purchase-return")
+    public Response deductStockPurchaseReturn(List<Stock> stocks){
+        try{
+            for(Stock stock : stocks){
+                String sql = "select b from Stock b where b.productId = :value0 " +
+                        " and b.purchaseProductId = :value1 " +
+                        " and b.vendorId = :value2 " +
+                        " and b.purchaseId = :value3 ";
+                Stock checkStock = dao.findJPQLParams(Stock.class, sql , stock.getProductId(), stock.getPurchaseProductId(), stock.getVendorId(), stock.getPurchaseId());
+                if(checkStock != null){
+                    checkStock.setQuantity(checkStock.getQuantity() - stock.getQuantity());
+                    dao.update(checkStock);
+                }
             }
             return Response.status(201).build();
         }catch (Exception ex){
