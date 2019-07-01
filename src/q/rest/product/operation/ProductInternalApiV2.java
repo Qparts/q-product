@@ -98,7 +98,7 @@ public class ProductInternalApiV2 {
     @SecuredUser
     @POST
     @Path("search-product-by-number")
-    public Response searchProduct(Map<Object, Object> map){
+    public Response searchProductByNumber(Map<Object, Object> map){
         try{
             boolean inStock = (boolean) map.get("inStock");
             String number = (String) map.get("number");
@@ -218,15 +218,18 @@ public class ProductInternalApiV2 {
     }
 
     @SecuredUser
-    @GET
-    @Path("products/search/{query}")
-    public Response searchProduct(@PathParam(value = "query") String query){
+    @POST
+    @Path("products/search")
+    public Response searchProduct(Map<String,String> map){
         try {
+            String query = map.get("query");
             String numbered = Helper.getNumberedQuery(query);
             String lowered = "%"+ query.trim().toLowerCase() + "%";
             long asId = Helper.getQueryAsId(query);
-            String sql = "select b from Product b where lower(b.desc) like :value0 " +
-                    "or lower(b.productNumber) like :value1 or b.id = :value2";
+            String sql = "select b from Product b " +
+                    "where lower(b.desc) like :value0 " +
+                    "or lower(b.descAr) like :value0 "+
+                    "or b.productNumber like :value1 or b.id = :value2 ";
             List<Product> products = dao.getJPQLParamsOffsetMax(Product.class, sql, 0, 20, lowered, numbered, asId);
             return Response.status(200).entity(products).build();
         }catch (Exception ex){

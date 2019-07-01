@@ -38,11 +38,8 @@ public class ProductSQLSearch {
         initProductSearch();
         initProductSearchSize();
         initBrandsSearch();
-        System.out.println(brandsSearch);
         initSpecsSearch();
-        System.out.println(specsSearch);
         initProductSpecsSearch();
-        System.out.println(productSpecsSearch);
     }
 
     private String getBrandsFilter(){
