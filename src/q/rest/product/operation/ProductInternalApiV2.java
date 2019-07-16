@@ -164,6 +164,23 @@ public class ProductInternalApiV2 {
     }
 
     @SecuredUser
+    @DELETE
+    @Path("product-price/{priceId}")
+    public Response archivePrice(@PathParam(value = "priceId") long priceId){
+        try{
+            ProductPrice pp = dao.find(ProductPrice.class, priceId);
+            if(pp.getStatus() == 'A'){
+                pp.setStatus('X');
+                dao.update(pp);
+            }
+            return Response.status(201).build();
+        }
+        catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
     @PUT
     @Path("product-price")
     public Response productPrice(ProductPrice pp) {
