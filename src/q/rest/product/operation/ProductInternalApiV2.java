@@ -300,6 +300,27 @@ public class ProductInternalApiV2 {
 
     @SecuredUser
     @POST
+    @Path("product/quick-add")
+    public Response quickAddProduct(@HeaderParam("Authorization") String header, ProductHolder holder){
+        try{
+            Product product = holder.getProduct();
+            if(productExists(product)){
+                return Response.status(409).build();
+            }
+            product.setCreated(new Date());
+            String undecorated = Helper.undecorate(product.getProductNumber());
+            product.setProductNumber(undecorated);
+            product.setStatus('A');
+            dao.persist(product);
+            this.createProductPrice(product.getId(), holder.getProductPrices().get(0));
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @POST
     @Path("product")
     public Response createProduct(@HeaderParam("Authorization") String header, ProductHolder holder){
         try{

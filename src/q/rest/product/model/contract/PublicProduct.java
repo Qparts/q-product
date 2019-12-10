@@ -2,7 +2,6 @@ package q.rest.product.model.contract;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import q.rest.product.helper.AppConstants;
-import q.rest.product.model.entity.ProductReview;
 
 import javax.persistence.*;
 import java.io.Serializable;
