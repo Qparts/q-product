@@ -1,5 +1,8 @@
 package q.rest.product.model.qvm;
 
+import q.rest.product.model.contract.ProductHolder;
+import q.rest.product.model.contract.PublicProduct;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -7,12 +10,20 @@ public class QvmSearchResult implements Serializable {
 
     private Integer vendorId;
     private String partNumber;
+    private List<PublicProduct> qpartsProducts;
     private String brand;
     private Double retailPrice;
     private Double wholesalesPrice;
     private Boolean available;
     private List<SearchAvailability> availability;
 
+    public List<PublicProduct> getQpartsProducts() {
+        return qpartsProducts;
+    }
+
+    public void setQpartsProducts(List<PublicProduct> qpartsProducts) {
+        this.qpartsProducts = qpartsProducts;
+    }
 
     public Integer getVendorId() {
         return vendorId;
