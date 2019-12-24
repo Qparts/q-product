@@ -5,6 +5,7 @@ public class AppConstants {
     //SERVICES
     private static final String USER_SERVICE =  SysProps.getValue("userService");
     private static final String CUSTOMER_SERVICE = SysProps.getValue("customerService");
+    private static final String VENDOR_SERVICE = SysProps.getValue("vendorQvmService");
 
     //AWS
     private static final String AMAZON_S3_PATH = SysProps.getValue("amazonS3Path");
@@ -17,6 +18,7 @@ public class AppConstants {
 
     public static final String CUSTOMER_MATCH_TOKEN = CUSTOMER_SERVICE + "match-token";
     public static final String USER_MATCH_TOKEN = USER_SERVICE + "match-token";
+    public static final String VENDOR_MATCH_TOKEN = VENDOR_SERVICE + "match-token";
 
 
     public static final String getProductImage(long id){
