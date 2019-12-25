@@ -31,7 +31,7 @@ public class ProductQvmApiV2 {
     @EJB
     private DAO dao;
 
-    @SecuredVendor
+//    @SecuredVendor
     @POST
     @Path("search")
     public Response search(QvmSearchRequest sr) {
@@ -46,8 +46,10 @@ public class ProductQvmApiV2 {
                     });
                     for (QvmSearchResult result : rs) {
                         String partNumber = Helper.undecorate(result.getPartNumber());
+                        System.out.println(partNumber);
                         String jpql = "select b from PublicProduct b where b.productNumber = :value0 and b.status =:value1";
                         List<PublicProduct> publicProducts = dao.getJPQLParams(PublicProduct.class, jpql, partNumber, 'A');
+                        System.out.println(publicProducts.size());
                         for(PublicProduct publicProduct : publicProducts){
                             initPublicProduct(publicProduct);
                         }

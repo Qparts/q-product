@@ -8,7 +8,6 @@
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmSearchResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmSearchResult.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -195,7 +194,7 @@
       <workItem from="1577140128318" duration="671000" />
       <workItem from="1577141200974" duration="2530000" />
       <workItem from="1577146173143" duration="158000" />
-      <workItem from="1577230248954" duration="1063000" />
+      <workItem from="1577230248954" duration="2190000" />
     </task>
     <servers />
   </component>
