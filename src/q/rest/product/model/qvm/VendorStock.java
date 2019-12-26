@@ -1,4 +1,4 @@
-package q.rest.product.model.entity;
+package q.rest.product.model.qvm;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -19,14 +19,14 @@ public class VendorStock implements Serializable {
     private int vendorId;
     @Column(name="branch_id")
     private int branchId;
-    @Column(name="cityId")
+    @Column(name="city_id")
     private int cityId;
-    @Column(name="quantity_min")
-    private int quantityMin;
-    @Column(name="quantity_max")
-    private int quantityMax;
-    @Column(name = "vat_percentage")
-    private double vatPercentage;
+    @Column(name="quantity")
+    private int quantity;
+    @Column(name = "retail_price")
+    private double retailPrice;
+    @Column(name = "wholesale_price")
+    private double wholesalesPrice;
     @Column(name="created")
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
@@ -34,6 +34,26 @@ public class VendorStock implements Serializable {
     private int createdBy;
     @Column(name="created_by_vendor")
     private int createdByVendor;
+    @Column(name = "part_number")
+    private String partNumber;
+    @Column(name="brand_name")
+    private String brandName;
+
+    public String getBrandName() {
+        return brandName;
+    }
+
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
+    }
+
+    public String getPartNumber() {
+        return partNumber;
+    }
+
+    public void setPartNumber(String partNumber) {
+        this.partNumber = partNumber;
+    }
 
     public int getVendorId() {
         return vendorId;
@@ -59,28 +79,28 @@ public class VendorStock implements Serializable {
         this.cityId = cityId;
     }
 
-    public int getQuantityMin() {
-        return quantityMin;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setQuantityMin(int quantityMin) {
-        this.quantityMin = quantityMin;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
-    public int getQuantityMax() {
-        return quantityMax;
+    public double getRetailPrice() {
+        return retailPrice;
     }
 
-    public void setQuantityMax(int quantityMax) {
-        this.quantityMax = quantityMax;
+    public void setRetailPrice(double retailPrice) {
+        this.retailPrice = retailPrice;
     }
 
-    public double getVatPercentage() {
-        return vatPercentage;
+    public double getWholesalesPrice() {
+        return wholesalesPrice;
     }
 
-    public void setVatPercentage(double vatPercentage) {
-        this.vatPercentage = vatPercentage;
+    public void setWholesalesPrice(double wholesalesPrice) {
+        this.wholesalesPrice = wholesalesPrice;
     }
 
     public int getCreatedByVendor() {

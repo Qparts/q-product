@@ -7,11 +7,12 @@ import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.PublicProduct;
 import q.rest.product.model.contract.PublicReview;
 import q.rest.product.model.contract.PublicSpec;
+import q.rest.product.model.contract.SearchResult;
+import q.rest.product.model.entity.Product;
 import q.rest.product.model.entity.ProductSpec;
-import q.rest.product.model.qvm.QvmSearchRequest;
-import q.rest.product.model.qvm.QvmSearchResult;
-import q.rest.product.model.qvm.QvmVendorCredentials;
+import q.rest.product.model.qvm.*;
 
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
@@ -21,6 +22,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Path("/qvm/api/v2/")
@@ -30,6 +32,70 @@ public class ProductQvmApiV2 {
 
     @EJB
     private DAO dao;
+
+
+   @PUT
+   @Path("update-stock")
+   public Response updateStock(UploadStock uploadStock){
+       try{
+            updateStockAsync(uploadStock);
+            return Response.status(201).build();
+       }catch (Exception ex){
+            return Response.status(500).build();
+       }
+   }
+
+
+    @Asynchronous
+    private void updateStockAsync(UploadStock uploadStock){
+        try{
+            Date newDate = new Date();
+            for(var vs : uploadStock.getVendorStocks()){
+                vs.setPartNumber(Helper.undecorate(vs.getPartNumber()));
+                String sql = "select b from VendorStock b where b.partNumber = :value0 and b.vendorId = :value1 and b.brandName = :value2 and b.branchId = :value3";
+                VendorStock vendorStock = dao.findJPQLParams(VendorStock.class, sql, vs.getPartNumber(), vs.getVendorId(), vs.getBrandName(), vs.getBranchId());
+                if(vendorStock != null){
+                    vendorStock.setCreated(newDate);
+                    vendorStock.setQuantity(vs.getQuantity());
+                    vendorStock.setRetailPrice(vs.getRetailPrice());
+                    vendorStock.setWholesalesPrice(vs.getWholesalesPrice());
+                    vendorStock.setCreatedBy(uploadStock.getCreatedBy());
+                    vendorStock.setCreatedByVendor(uploadStock.getCreatedByVendor());
+                    if(vendorStock.getProductId() == 0){
+                        String jpql = "select b from Product b where b.productNumber = :value0 and lower(b.brand.name) = :value1";
+                        Product product = dao.findJPQLParams(Product.class, jpql, vs.getPartNumber(), vs.getBrandName().toLowerCase());
+                        if(product != null){
+                            vendorStock.setProductId(product.getId());
+                        }
+                    }
+                    dao.update(vendorStock);
+                }
+                else{
+                    vs.setCreated(newDate);
+                    System.out.println(vs.getPartNumber());
+                    String jpql = "select b from Product b where b.productNumber = :value0 and lower(b.brand.name) = :value1";
+                    Product product = dao.findJPQLParams(Product.class, jpql, vs.getPartNumber(), vs.getBrandName().toLowerCase());
+                    if(product != null){
+                        vs.setProductId(product.getId());
+                        vs.setBrandName(product.getBrand().getName());
+                    }
+                    dao.persist(vs);
+                }
+            }//end for loop
+            //delete anything before newdate for the same vendor, same branch
+            Helper h = new Helper();
+            String sql = "delete from prd_vendor_stock where vendor_id = " + uploadStock.getVendorId() +
+                    " and branch_id = " + uploadStock.getBranchId() + " and created < '" +  h.getDateFormat(newDate) +"'";
+            dao.updateNative(sql);
+
+        }catch (Exception ex){
+            System.out.println("an error occured");
+        }
+    }
+
+
+
+
 
 //    @SecuredVendor
     @POST
@@ -45,11 +111,10 @@ public class ProductQvmApiV2 {
                     List<QvmSearchResult> rs = r.readEntity(new GenericType<List<QvmSearchResult>>() {
                     });
                     for (QvmSearchResult result : rs) {
+                        result.setSource('L');
                         String partNumber = Helper.undecorate(result.getPartNumber());
-                        System.out.println(partNumber);
                         String jpql = "select b from PublicProduct b where b.productNumber = :value0 and b.status =:value1";
                         List<PublicProduct> publicProducts = dao.getJPQLParams(PublicProduct.class, jpql, partNumber, 'A');
-                        System.out.println(publicProducts.size());
                         for(PublicProduct publicProduct : publicProducts){
                             initPublicProduct(publicProduct);
                         }
@@ -58,6 +123,34 @@ public class ProductQvmApiV2 {
                     }
                     results.addAll(rs);
                 }
+            }
+
+            //SEARRCH FROM STOCK
+            String jpql = "select b from VendorStock b where b.partNumber like :value0";
+            List<VendorStock> vendorStocks = dao.getJPQLParams(VendorStock.class, jpql, "%" + Helper.undecorate(sr.getQuery()) +"%");
+            for(VendorStock vendorStock : vendorStocks){
+                QvmSearchResult searchResult = new QvmSearchResult();
+                searchResult.setQpartsProducts(new ArrayList<>());
+                PublicProduct product = dao.find(PublicProduct.class, vendorStock.getProductId());
+                initPublicProduct(product);
+                searchResult.setSource('U');
+                searchResult.getQpartsProducts().add(product);
+                searchResult.setVendorId(vendorStock.getVendorId());
+                searchResult.setAvailable(true);
+                searchResult.setBrand(vendorStock.getBrandName());
+                searchResult.setPartNumber(vendorStock.getPartNumber());
+                searchResult.setRetailPrice(vendorStock.getRetailPrice());
+                searchResult.setWholesalesPrice(vendorStock.getWholesalesPrice());
+                searchResult.setLastUpdate(vendorStock.getCreated());
+                searchResult.setAvailability(new ArrayList<>());
+                SearchAvailability sa = new SearchAvailability();
+                SearchBranch sb = new SearchBranch();
+                sb.setqBranchId(vendorStock.getBranchId());
+                sb.setqCityId(vendorStock.getCityId());
+                sa.setBranch(sb);
+                sa.setQuantity(vendorStock.getQuantity());
+                searchResult.getAvailability().add(sa);
+                results.add(searchResult);
             }
             return Response.status(200).entity(results).build();
         }catch (Exception ex){

@@ -4,18 +4,37 @@ import q.rest.product.model.contract.ProductHolder;
 import q.rest.product.model.contract.PublicProduct;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 public class QvmSearchResult implements Serializable {
-
+    private char source;//L = live integration, U = stock upload
     private Integer vendorId;
     private String partNumber;
+    private String brandPartNumber;
     private List<PublicProduct> qpartsProducts;
     private String brand;
     private Double retailPrice;
     private Double wholesalesPrice;
     private Boolean available;
+    private Date lastUpdate;
     private List<SearchAvailability> availability;
+
+    public char getSource() {
+        return source;
+    }
+
+    public void setSource(char source) {
+        this.source = source;
+    }
+
+    public String getBrandPartNumber() {
+        return brandPartNumber;
+    }
+
+    public void setBrandPartNumber(String brandPartNumber) {
+        this.brandPartNumber = brandPartNumber;
+    }
 
     public List<PublicProduct> getQpartsProducts() {
         return qpartsProducts;
@@ -79,5 +98,13 @@ public class QvmSearchResult implements Serializable {
 
     public void setAvailability(List<SearchAvailability> availability) {
         this.availability = availability;
+    }
+
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 }

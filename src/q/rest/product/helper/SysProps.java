@@ -38,9 +38,7 @@ public class SysProps {
 
 
     public static String getValue(String key){
-        System.out.println("getting key " + key);
         Object o = prop.get(key);
-        System.out.println("sucess");
         return prop.get(key).toString();
     }
 
