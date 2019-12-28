@@ -2,12 +2,10 @@ package q.rest.product.operation;
 
 
 import q.rest.product.dao.DAO;
-import q.rest.product.filter.SecuredVendor;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.PublicProduct;
 import q.rest.product.model.contract.PublicReview;
 import q.rest.product.model.contract.PublicSpec;
-import q.rest.product.model.contract.SearchResult;
 import q.rest.product.model.entity.Product;
 import q.rest.product.model.entity.ProductSpec;
 import q.rest.product.model.qvm.*;
@@ -103,58 +101,65 @@ public class ProductQvmApiV2 {
     public Response search(QvmSearchRequest sr) {
         try {
             List<QvmSearchResult> results = new ArrayList<>();
-            for (QvmVendorCredentials cred : sr.getVendorCreds()) {
-                String endpoint = cred.getEndpointAddress() + "search/" + sr.getQuery();
-                String header = "Bearer " + cred.getSecret();
-                Response r = getSecuredRequest(endpoint, header);
-                if (r.getStatus() == 200) {
-                    List<QvmSearchResult> rs = r.readEntity(new GenericType<List<QvmSearchResult>>() {
-                    });
-                    for (QvmSearchResult result : rs) {
-                        result.setSource('L');
-                        String partNumber = Helper.undecorate(result.getPartNumber());
-                        String jpql = "select b from PublicProduct b where b.productNumber = :value0 and b.status =:value1";
-                        List<PublicProduct> publicProducts = dao.getJPQLParams(PublicProduct.class, jpql, partNumber, 'A');
-                        for(PublicProduct publicProduct : publicProducts){
-                            initPublicProduct(publicProduct);
-                        }
-                        result.setQpartsProducts(publicProducts);
-                        result.setVendorId(cred.getVendorId());
-                    }
-                    results.addAll(rs);
-                }
-            }
-
-            //SEARRCH FROM STOCK
-            String jpql = "select b from VendorStock b where b.partNumber like :value0";
-            List<VendorStock> vendorStocks = dao.getJPQLParams(VendorStock.class, jpql, "%" + Helper.undecorate(sr.getQuery()) +"%");
-            for(VendorStock vendorStock : vendorStocks){
-                QvmSearchResult searchResult = new QvmSearchResult();
-                searchResult.setQpartsProducts(new ArrayList<>());
-                PublicProduct product = dao.find(PublicProduct.class, vendorStock.getProductId());
-                initPublicProduct(product);
-                searchResult.setSource('U');
-                searchResult.getQpartsProducts().add(product);
-                searchResult.setVendorId(vendorStock.getVendorId());
-                searchResult.setAvailable(true);
-                searchResult.setBrand(vendorStock.getBrandName());
-                searchResult.setPartNumber(vendorStock.getPartNumber());
-                searchResult.setRetailPrice(vendorStock.getRetailPrice());
-                searchResult.setWholesalesPrice(vendorStock.getWholesalesPrice());
-                searchResult.setLastUpdate(vendorStock.getCreated());
-                searchResult.setAvailability(new ArrayList<>());
-                SearchAvailability sa = new SearchAvailability();
-                SearchBranch sb = new SearchBranch();
-                sb.setqBranchId(vendorStock.getBranchId());
-                sb.setqCityId(vendorStock.getCityId());
-                sa.setBranch(sb);
-                sa.setQuantity(vendorStock.getQuantity());
-                searchResult.getAvailability().add(sa);
-                results.add(searchResult);
-            }
+            searchLiveAPis(results, sr);
+            searchVendorStock(results, sr.getQuery());
             return Response.status(200).entity(results).build();
         }catch (Exception ex){
             return Response.status(500).build();
+        }
+    }
+
+    private void searchLiveAPis(List<QvmSearchResult> results, QvmSearchRequest sr){
+        for (QvmVendorCredentials cred : sr.getVendorCreds()) {
+            String endpoint = cred.getEndpointAddress() + "search/" + sr.getQuery();
+            String header = "Bearer " + cred.getSecret();
+            Response r = getSecuredRequest(endpoint, header);
+            if (r.getStatus() == 200) {
+                List<QvmSearchResult> rs = r.readEntity(new GenericType<List<QvmSearchResult>>() {
+                });
+                for (QvmSearchResult result : rs) {
+                    result.setSource('L');
+                    String partNumber = Helper.undecorate(result.getPartNumber());
+                    String jpql = "select b from PublicProduct b where b.productNumber = :value0 and b.status =:value1";
+                    List<PublicProduct> publicProducts = dao.getJPQLParams(PublicProduct.class, jpql, partNumber, 'A');
+                    for(PublicProduct publicProduct : publicProducts){
+                        initPublicProduct(publicProduct);
+                    }
+                    result.setQpartsProducts(publicProducts);
+                    result.setVendorId(cred.getVendorId());
+                }
+                results.addAll(rs);
+            }
+        }
+    }
+
+    private void searchVendorStock( List<QvmSearchResult> results, String query){
+        //SEARRCH FROM STOCK
+        String jpql = "select b from VendorStock b where b.partNumber like :value0";
+        List<VendorStock> vendorStocks = dao.getJPQLParams(VendorStock.class, jpql, "%" + Helper.undecorate(query) +"%");
+        for(VendorStock vendorStock : vendorStocks){
+            QvmSearchResult searchResult = new QvmSearchResult();
+            searchResult.setQpartsProducts(new ArrayList<>());
+            PublicProduct product = dao.find(PublicProduct.class, vendorStock.getProductId());
+            initPublicProduct(product);
+            searchResult.setSource('U');
+            searchResult.getQpartsProducts().add(product);
+            searchResult.setVendorId(vendorStock.getVendorId());
+            searchResult.setAvailable(true);
+            searchResult.setBrand(vendorStock.getBrandName());
+            searchResult.setPartNumber(vendorStock.getPartNumber());
+            searchResult.setRetailPrice(vendorStock.getRetailPrice());
+            searchResult.setWholesalesPrice(vendorStock.getWholesalesPrice());
+            searchResult.setLastUpdate(vendorStock.getCreated());
+            searchResult.setAvailability(new ArrayList<>());
+            SearchAvailability sa = new SearchAvailability();
+            SearchBranch sb = new SearchBranch();
+            sb.setqBranchId(vendorStock.getBranchId());
+            sb.setqCityId(vendorStock.getCityId());
+            sa.setBranch(sb);
+            sa.setQuantity(vendorStock.getQuantity());
+            searchResult.getAvailability().add(sa);
+            results.add(searchResult);
         }
     }
 
