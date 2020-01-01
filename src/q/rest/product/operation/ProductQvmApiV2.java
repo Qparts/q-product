@@ -2,6 +2,7 @@ package q.rest.product.operation;
 
 
 import q.rest.product.dao.DAO;
+import q.rest.product.filter.SecuredVendor;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.PublicProduct;
 import q.rest.product.model.contract.PublicReview;
@@ -19,9 +20,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Path("/qvm/api/v2/")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -31,15 +30,15 @@ public class ProductQvmApiV2 {
     @EJB
     private DAO dao;
 
-
-   @PUT
-   @Path("update-stock")
-   public Response updateStock(UploadStock uploadStock){
+    @SecuredVendor
+    @PUT
+    @Path("update-stock")
+    public Response updateStock(UploadStock uploadStock){
        try{
-            updateStockAsync(uploadStock);
-            return Response.status(201).build();
+           updateStockAsync(uploadStock);
+           return Response.status(201).build();
        }catch (Exception ex){
-            return Response.status(500).build();
+           return Response.status(500).build();
        }
    }
 
@@ -92,40 +91,91 @@ public class ProductQvmApiV2 {
     }
 
 
+    private void addMissinProduct(List<QvmObject> results, String query){
+        //find other products
+        Set<PublicProduct> allProductsAdded = new HashSet<>();
+        //add from q-parts if already not added
+        for (QvmObject obj : results) {
+            if (obj.getQpartsProducts() != null) {
+                allProductsAdded.addAll(obj.getQpartsProducts());
+            }
+        }
+        String partNumber = "%" + Helper.undecorate(query) + "%";
+        String sql = "select b from PublicProduct b where b.productNumber like :value0 and b.status =:value1 and b.id not in (0 ";
+        for(PublicProduct pp : allProductsAdded){
+            sql += "," + pp.getId();
+        }
+        sql += ")";
+        List<PublicProduct> pps = dao.getJPQLParams(PublicProduct.class, sql , partNumber, 'A');
+        for(PublicProduct pp : pps){
+            QvmObject qvmObject = new QvmObject();
+            qvmObject.setAvailability(new ArrayList<>());
+            qvmObject.setAvailable(false);
+            qvmObject.setBrand(pp.getBrand().getName());
+            qvmObject.setVendorId(0);
+            qvmObject.setSource('Q');
+            qvmObject.setRetailPrice(pp.getSalesPrice());
+            qvmObject.setWholesalesPrice(pp.getSalesPrice());
+            qvmObject.setPartNumber(pp.getProductNumber());
+            List<PublicProduct> list = new ArrayList<>();
+            list.add(pp);
+            qvmObject.setQpartsProducts(list);
+            results.add(qvmObject);
+        }
+    }
 
 
-
-//    @SecuredVendor
+    @SecuredVendor
     @POST
-    @Path("search")
-    public Response search(QvmSearchRequest sr) {
+    @Path("search-availability")
+    public Response searchAvailability(QvmSearchRequest sr) {
         try {
-            List<QvmSearchResult> results = new ArrayList<>();
+            List<QvmObject> results = new ArrayList<>();
             searchLiveAPis(results, sr);
-            searchVendorStock(results, sr.getQuery());
+            searchVendorStock(results, sr.getQuery(), sr.isAttachProduct());
+            addMissinProduct(results, sr.getQuery());
             return Response.status(200).entity(results).build();
         }catch (Exception ex){
             return Response.status(500).build();
         }
     }
 
-    private void searchLiveAPis(List<QvmSearchResult> results, QvmSearchRequest sr){
+    @SecuredVendor
+    @POST
+    @Path("search-parts")
+    public Response searchParts(String query) {
+        try {
+            String partNumber = "%" + Helper.undecorate(query) + "%";
+            String jpql = "select b from PublicProduct b where b.productNumber like :value0 and b.status =:value1";
+            List<PublicProduct> publicProducts = dao.getJPQLParams(PublicProduct.class, jpql, partNumber, 'A');
+            for(PublicProduct publicProduct : publicProducts){
+                initPublicProduct(publicProduct);
+            }
+            return Response.status(200).entity(publicProducts).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    private void searchLiveAPis(List<QvmObject> results, QvmSearchRequest sr){
         for (QvmVendorCredentials cred : sr.getVendorCreds()) {
             String endpoint = cred.getEndpointAddress() + "search/" + sr.getQuery();
             String header = "Bearer " + cred.getSecret();
             Response r = getSecuredRequest(endpoint, header);
             if (r.getStatus() == 200) {
-                List<QvmSearchResult> rs = r.readEntity(new GenericType<List<QvmSearchResult>>() {
+                List<QvmObject> rs = r.readEntity(new GenericType<List<QvmObject>>() {
                 });
-                for (QvmSearchResult result : rs) {
+                for (QvmObject result : rs) {
                     result.setSource('L');
-                    String partNumber = Helper.undecorate(result.getPartNumber());
-                    String jpql = "select b from PublicProduct b where b.productNumber = :value0 and b.status =:value1";
-                    List<PublicProduct> publicProducts = dao.getJPQLParams(PublicProduct.class, jpql, partNumber, 'A');
-                    for(PublicProduct publicProduct : publicProducts){
-                        initPublicProduct(publicProduct);
+                    if(sr.isAttachProduct()) {
+                        String partNumber = Helper.undecorate(result.getPartNumber());
+                        String jpql = "select b from PublicProduct b where b.productNumber = :value0 and b.status =:value1";
+                        List<PublicProduct> publicProducts = dao.getJPQLParams(PublicProduct.class, jpql, partNumber, 'A');
+                        for (PublicProduct publicProduct : publicProducts) {
+                            initPublicProduct(publicProduct);
+                        }
+                        result.setQpartsProducts(publicProducts);
                     }
-                    result.setQpartsProducts(publicProducts);
                     result.setVendorId(cred.getVendorId());
                 }
                 results.addAll(rs);
@@ -133,17 +183,21 @@ public class ProductQvmApiV2 {
         }
     }
 
-    private void searchVendorStock( List<QvmSearchResult> results, String query){
+
+
+    private void searchVendorStock(List<QvmObject> results, String query, boolean attachProduct){
         //SEARRCH FROM STOCK
         String jpql = "select b from VendorStock b where b.partNumber like :value0";
         List<VendorStock> vendorStocks = dao.getJPQLParams(VendorStock.class, jpql, "%" + Helper.undecorate(query) +"%");
         for(VendorStock vendorStock : vendorStocks){
-            QvmSearchResult searchResult = new QvmSearchResult();
+            QvmObject searchResult = new QvmObject();
             searchResult.setQpartsProducts(new ArrayList<>());
-            PublicProduct product = dao.find(PublicProduct.class, vendorStock.getProductId());
-            initPublicProduct(product);
+            if(attachProduct) {
+                PublicProduct product = dao.find(PublicProduct.class, vendorStock.getProductId());
+                initPublicProduct(product);
+                searchResult.getQpartsProducts().add(product);
+            }
             searchResult.setSource('U');
-            searchResult.getQpartsProducts().add(product);
             searchResult.setVendorId(vendorStock.getVendorId());
             searchResult.setAvailable(true);
             searchResult.setBrand(vendorStock.getBrandName());
@@ -152,8 +206,8 @@ public class ProductQvmApiV2 {
             searchResult.setWholesalesPrice(vendorStock.getWholesalesPrice());
             searchResult.setLastUpdate(vendorStock.getCreated());
             searchResult.setAvailability(new ArrayList<>());
-            SearchAvailability sa = new SearchAvailability();
-            SearchBranch sb = new SearchBranch();
+            QvmAvailability sa = new QvmAvailability();
+            QvmBranch sb = new QvmBranch();
             sb.setqBranchId(vendorStock.getBranchId());
             sb.setqCityId(vendorStock.getCityId());
             sa.setBranch(sb);

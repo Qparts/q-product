@@ -6,6 +6,7 @@ import q.rest.product.helper.AppConstants;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 @Table(name="prd_product")
 @Entity
@@ -149,5 +150,18 @@ public class PublicProduct implements Serializable {
 
     public void setReviews(List<PublicReview> reviews) {
         this.reviews = reviews;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PublicProduct that = (PublicProduct) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

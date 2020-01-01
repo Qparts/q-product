@@ -8,6 +8,12 @@
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/dao/DAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/dao/DAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicProduct.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicProduct.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmSearchRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmSearchRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmSearchResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/SearchAvailability.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmAvailability.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/SearchBranch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmBranch.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -200,7 +206,8 @@
       <workItem from="1577284238431" duration="8638000" />
       <workItem from="1577307958961" duration="1744000" />
       <workItem from="1577388161704" duration="9000" />
-      <workItem from="1577532723570" duration="1206000" />
+      <workItem from="1577532723570" duration="2869000" />
+      <workItem from="1577699261642" duration="13150000" />
     </task>
     <servers />
   </component>

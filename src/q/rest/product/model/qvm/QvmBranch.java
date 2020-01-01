@@ -1,6 +1,6 @@
 package q.rest.product.model.qvm;
 
-public class SearchBranch {
+public class QvmBranch {
     private int qBranchId;
     private int qCityId;
     private String branchName;
@@ -9,10 +9,10 @@ public class SearchBranch {
     private String cityName;
     private String cityNameAr;
 
-    public SearchBranch() {
+    public QvmBranch() {
     }
 
-    public SearchBranch(String branchName, String branchId, String cityName) {
+    public QvmBranch(String branchName, String branchId, String cityName) {
         this.branchName = branchName;
         this.branchId = branchId;
         this.cityName = cityName;

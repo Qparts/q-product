@@ -1,14 +1,13 @@
 package q.rest.product.model.qvm;
 
-import q.rest.product.model.contract.ProductHolder;
 import q.rest.product.model.contract.PublicProduct;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class QvmSearchResult implements Serializable {
-    private char source;//L = live integration, U = stock upload
+public class QvmObject implements Serializable {
+    private char source;//L = live integration, U = stock upload, Q = Q Parts
     private Integer vendorId;
     private String partNumber;
     private String brandPartNumber;
@@ -18,7 +17,7 @@ public class QvmSearchResult implements Serializable {
     private Double wholesalesPrice;
     private Boolean available;
     private Date lastUpdate;
-    private List<SearchAvailability> availability;
+    private List<QvmAvailability> availability;
 
     public char getSource() {
         return source;
@@ -92,11 +91,11 @@ public class QvmSearchResult implements Serializable {
         this.available = available;
     }
 
-    public List<SearchAvailability> getAvailability() {
+    public List<QvmAvailability> getAvailability() {
         return availability;
     }
 
-    public void setAvailability(List<SearchAvailability> availability) {
+    public void setAvailability(List<QvmAvailability> availability) {
         this.availability = availability;
     }
 
