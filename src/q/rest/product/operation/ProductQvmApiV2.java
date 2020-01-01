@@ -95,18 +95,19 @@ public class ProductQvmApiV2 {
         //find other products
         Set<PublicProduct> allProductsAdded = new HashSet<>();
         //add from q-parts if already not added
-        for (QvmObject obj : results) {
-            if (obj.getQpartsProducts() != null) {
-                allProductsAdded.addAll(obj.getQpartsProducts());
-            }
-        }
+//        for (QvmObject obj : results) {
+  //          if (obj.getQpartsProducts() != null) {
+    //            allProductsAdded.addAll(obj.getQpartsProducts());
+      //      }
+        //}
         String partNumber = "%" + Helper.undecorate(query) + "%";
-        StringBuilder sql = new StringBuilder("select b from PublicProduct b where b.productNumber like :value0 and b.status =:value1 and b.id not in (0 ");
-        for(PublicProduct pp : allProductsAdded){
-            sql.append(",").append(pp.getId());
-        }
-        sql.append(")");
-        List<PublicProduct> pps = dao.getJPQLParams(PublicProduct.class, sql.toString(), partNumber, 'A');
+       // StringBuilder sql = new StringBuilder("select b from PublicProduct b where b.productNumber like :value0 and b.status =:value1 and b.id not in (0 ");
+        //for(PublicProduct pp : allProductsAdded){
+          //  sql.append(",").append(pp.getId());
+        //}
+        //sql.append(")");
+        String sql = "select b from PublicProduct b where b.productNumber like :value0 and b.status =:value1";
+        List<PublicProduct> pps = dao.getJPQLParams(PublicProduct.class, sql, partNumber, 'A');
         for(PublicProduct pp : pps){
             QvmObject qvmObject = new QvmObject();
             qvmObject.setAvailability(new ArrayList<>());
