@@ -101,12 +101,12 @@ public class ProductQvmApiV2 {
             }
         }
         String partNumber = "%" + Helper.undecorate(query) + "%";
-        String sql = "select b from PublicProduct b where b.productNumber like :value0 and b.status =:value1 and b.id not in (0 ";
+        StringBuilder sql = new StringBuilder("select b from PublicProduct b where b.productNumber like :value0 and b.status =:value1 and b.id not in (0 ");
         for(PublicProduct pp : allProductsAdded){
-            sql += "," + pp.getId();
+            sql.append(",").append(pp.getId());
         }
-        sql += ")";
-        List<PublicProduct> pps = dao.getJPQLParams(PublicProduct.class, sql , partNumber, 'A');
+        sql.append(")");
+        List<PublicProduct> pps = dao.getJPQLParams(PublicProduct.class, sql.toString(), partNumber, 'A');
         for(PublicProduct pp : pps){
             QvmObject qvmObject = new QvmObject();
             qvmObject.setAvailability(new ArrayList<>());
@@ -117,6 +117,7 @@ public class ProductQvmApiV2 {
             qvmObject.setRetailPrice(pp.getSalesPrice());
             qvmObject.setWholesalesPrice(pp.getSalesPrice());
             qvmObject.setPartNumber(pp.getProductNumber());
+            initPublicProduct(pp);
             List<PublicProduct> list = new ArrayList<>();
             list.add(pp);
             qvmObject.setQpartsProducts(list);
