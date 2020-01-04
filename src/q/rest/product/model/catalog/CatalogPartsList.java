@@ -1,6 +1,6 @@
 package q.rest.product.model.catalog;
 
-import q.rest.product.model.contract.ProductHolder;
+import q.rest.product.model.contract.PublicProduct;
 
 public class CatalogPartsList {
     private String id;
@@ -10,14 +10,14 @@ public class CatalogPartsList {
     private String description;
     private String positionNumber;
     private String url;
-    private ProductHolder productHolder;
+    private PublicProduct product;
 
-    public ProductHolder getProductHolder() {
-        return productHolder;
+    public PublicProduct getProduct() {
+        return product;
     }
 
-    public void setProductHolder(ProductHolder productHolder) {
-        this.productHolder = productHolder;
+    public void setProduct(PublicProduct product) {
+        this.product = product;
     }
 
     public String getId() {

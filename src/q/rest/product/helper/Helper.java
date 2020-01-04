@@ -79,6 +79,11 @@ public class Helper {
     }
 
 
+    public static String getCatalogIdFromMakeId(int makeId){
+        return Bundler.getValue(String.valueOf(makeId));
+
+    }
+
 
     public static void trimNames(Category category){
         category.setName(category.getName().trim());

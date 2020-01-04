@@ -34,6 +34,7 @@ public class AppConstants {
         return PARTS_CATALOG_API + "catalogs/" + catalogId + "/cars-by-vin?vin=" + vin;
     }
 
+
     public static final String getCatalogGroups(String catalogId, String carId, String groupId, String criteria){
         String link = PARTS_CATALOG_API + "catalogs/" + catalogId + "/groups2?carId=" + carId;
         link += "&criteria=" + criteria;

@@ -46,13 +46,12 @@ public class ProductQvmApiV2 {
     @Asynchronous
     private void updateStockAsync(UploadStock uploadStock){
         try{
-            Date newDate = new Date();
             for(var vs : uploadStock.getVendorStocks()){
                 vs.setPartNumber(Helper.undecorate(vs.getPartNumber()));
                 String sql = "select b from VendorStock b where b.partNumber = :value0 and b.vendorId = :value1 and b.brandName = :value2 and b.branchId = :value3";
                 VendorStock vendorStock = dao.findJPQLParams(VendorStock.class, sql, vs.getPartNumber(), vs.getVendorId(), vs.getBrandName(), vs.getBranchId());
                 if(vendorStock != null){
-                    vendorStock.setCreated(newDate);
+                    vendorStock.setCreated(uploadStock.getDate());
                     vendorStock.setQuantity(vs.getQuantity());
                     vendorStock.setRetailPrice(vs.getRetailPrice());
                     vendorStock.setWholesalesPrice(vs.getWholesalesPrice());
@@ -68,8 +67,7 @@ public class ProductQvmApiV2 {
                     dao.update(vendorStock);
                 }
                 else{
-                    vs.setCreated(newDate);
-                    System.out.println(vs.getPartNumber());
+                    vs.setCreated(uploadStock.getDate());
                     String jpql = "select b from Product b where b.productNumber = :value0 and lower(b.brand.name) = :value1";
                     Product product = dao.findJPQLParams(Product.class, jpql, vs.getPartNumber(), vs.getBrandName().toLowerCase());
                     if(product != null){
@@ -82,7 +80,7 @@ public class ProductQvmApiV2 {
             //delete anything before newdate for the same vendor, same branch
             Helper h = new Helper();
             String sql = "delete from prd_vendor_stock where vendor_id = " + uploadStock.getVendorId() +
-                    " and branch_id = " + uploadStock.getBranchId() + " and created < '" +  h.getDateFormat(newDate) +"'";
+                    " and branch_id = " + uploadStock.getBranchId() + " and created < '" +  h.getDateFormat(uploadStock.getDate()) +"'";
             dao.updateNative(sql);
 
         }catch (Exception ex){

@@ -94,7 +94,7 @@ public class ProductCatalogInternalApiV2 {
         for(CatalogPartsGroup cpg : catalogPart.getPartGroups()){
             for(CatalogPartsList parts : cpg.getParts()){
                 ProductHolder holder = getProductHolder(parts.getNumber(), makeId);
-                parts.setProductHolder(holder);
+//                parts.setProductHolder(holder);
             }
         }
     }

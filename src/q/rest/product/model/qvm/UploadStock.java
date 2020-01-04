@@ -2,6 +2,7 @@ package q.rest.product.model.qvm;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class UploadStock implements Serializable {
@@ -10,6 +11,15 @@ public class UploadStock implements Serializable {
     private int createdByVendor;
     private int createdBy;
     private int branchId;
+    private Date date;
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public List<VendorStock> getVendorStocks() {
         return vendorStocks;
