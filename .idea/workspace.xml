@@ -7,17 +7,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/helper/Bundler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/helper/catalogsVars.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV2Test.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/faces-config.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/Helper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/Helper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogPartsList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogPartsList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/UploadStock.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/UploadStock.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogInternalApiV2.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -216,6 +206,8 @@
       <workItem from="1578138371936" duration="243000" />
       <workItem from="1578138911405" duration="1047000" />
       <workItem from="1578146788771" duration="47000" />
+      <workItem from="1578148857727" duration="1887000" />
+      <workItem from="1578210391658" duration="1126000" />
     </task>
     <servers />
   </component>
