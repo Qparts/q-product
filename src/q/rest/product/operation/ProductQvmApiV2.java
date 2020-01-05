@@ -133,7 +133,7 @@ public class ProductQvmApiV2 {
             List<QvmObject> results = new ArrayList<>();
             searchLiveAPis(results, sr);
             searchVendorStock(results, sr.getQuery(), sr.isAttachProduct());
-            addMissinProduct(results, sr.getQuery());
+            //addMissinProduct(results, sr.getQuery());
             return Response.status(200).entity(results).build();
         }catch (Exception ex){
             return Response.status(500).build();
@@ -166,7 +166,6 @@ public class ProductQvmApiV2 {
                 if (r.getStatus() == 200) {
                     List<QvmObject> rs = r.readEntity(new GenericType<List<QvmObject>>() {
                     });
-                    System.out.println(rs.size());
                     for (QvmObject result : rs) {
                         result.setSource('L');
                         if (sr.isAttachProduct()) {
