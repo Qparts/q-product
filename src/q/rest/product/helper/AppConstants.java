@@ -5,7 +5,7 @@ public class AppConstants {
     //SERVICES
     private static final String USER_SERVICE =  SysProps.getValue("userService");
     private static final String CUSTOMER_SERVICE = SysProps.getValue("customerService");
-    private static final String VENDOR_SERVICE = SysProps.getValue("vendorQvmService");
+    private static final String VENDOR_SERVICE = SysProps.getValue("vendorService");
 
     //AWS
     private static final String AMAZON_S3_PATH = SysProps.getValue("amazonS3Path");
