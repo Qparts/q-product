@@ -160,7 +160,7 @@ public class ProductQvmApiV2 {
     private void searchLiveAPis(List<QvmObject> results, QvmSearchRequest sr){
         try {
             for (QvmVendorCredentials cred : sr.getVendorCreds()) {
-                String endpoint = cred.getEndpointAddress() + "search/" + sr.getQuery();
+                String endpoint = cred.getEndpointAddress() + sr.getQuery();
                 String header = "Bearer " + cred.getSecret();
                 Response r = getSecuredRequest(endpoint, header);
                 if (r.getStatus() == 200) {
