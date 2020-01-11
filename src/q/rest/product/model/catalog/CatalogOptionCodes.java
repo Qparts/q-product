@@ -2,7 +2,7 @@ package q.rest.product.model.catalog;
 
 import java.io.Serializable;
 
-public class CatalogOptionCodes implements Serializable {
+public class CatalogOptionCodes {
     private String code;
     private String description;
 

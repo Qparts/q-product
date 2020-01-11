@@ -1,5 +1,6 @@
 package q.rest.product.model.catalog;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class CatalogCar {

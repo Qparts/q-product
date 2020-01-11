@@ -1,6 +1,8 @@
 package q.rest.product.model.catalog;
 
-public class CatalogCarParameter {
+import java.io.Serializable;
+
+public class CatalogCarParameter  {
     private String key;
     private String name;
     private String value;
