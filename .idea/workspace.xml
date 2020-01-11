@@ -8,6 +8,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogInternalApiV2.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -208,7 +209,7 @@
       <workItem from="1578148857727" duration="1887000" />
       <workItem from="1578210391658" duration="7935000" />
       <workItem from="1578310484898" duration="2569000" />
-      <workItem from="1578553099754" duration="612000" />
+      <workItem from="1578553099754" duration="1545000" />
     </task>
     <servers />
   </component>

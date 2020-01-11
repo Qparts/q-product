@@ -41,6 +41,7 @@ public class ProductCatalogInternalApiV2 {
             return Response.status(200).entity(catalogCars).build();
 
         }catch (Exception ex){
+            ex.printStackTrace();
             return Response.status(500).build();
         }
     }
