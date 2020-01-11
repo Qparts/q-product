@@ -47,37 +47,22 @@ public class ProductCatalogInternalApiV2 {
         }
     }
 
-    @SecuredUser
-    @Path("cars/make/{makeId}/vin/{vin}")
-    @GET
-    public Response searchVin(@PathParam(value = "vin") String vin, @PathParam(value = "makeId") int makeId){
-        try{
-            String catalogId = this.getCatalogIdFromMakeId(makeId);
-            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
-            if(r.getStatus() != 200){
-                return Response.status(404).build();
-            }
-            List<CatalogCar> catalogCars = r.readEntity(new GenericType<List<CatalogCar>>(){});
-            return Response.status(200).entity(catalogCars).build();
+    @ValidApp
 
-        }catch (Exception ex){
-            ex.printStackTrace();
-            return Response.status(500).build();
-        }
-    }
-
-    @SecuredUser
-    @Path("groups/make/{makeId}/car/{carId}")
+    @Path("groups")
     @GET
-    public Response searchGroups(@Context UriInfo info, @PathParam(value = "carId") String carId, @PathParam(value = "makeId") int makeId ){
+    public Response searchGroups(@Context UriInfo info){
         try{
-            String catalogId = this.getCatalogIdFromMakeId(makeId);
-            String groupid = info.getQueryParameters().getFirst("groupid");
+            Integer makeId = Integer.parseInt(info.getQueryParameters().getFirst("makeid"));
+            String groupId = info.getQueryParameters().getFirst("groupid");
             String criteria = info.getQueryParameters().getFirst("criteria");
-            if(groupid == null || groupid == ""){
-                groupid = null;
+            String carId = info.getQueryParameters().getFirst("carid");
+
+            String catalogId = this.getCatalogIdFromMakeId(makeId);
+            if(groupId == null || groupId == ""){
+                groupId = null;
             }
-            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogGroups(catalogId, carId, groupid, Helper.getEncodedUrl(criteria)));
+            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogGroups(catalogId, carId, groupId, Helper.getEncodedUrl(criteria)));
             if(r.getStatus() != 200){
                 return Response.status(404).build();
             }
