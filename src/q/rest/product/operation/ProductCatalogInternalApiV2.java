@@ -48,7 +48,6 @@ public class ProductCatalogInternalApiV2 {
     }
 
     @ValidApp
-
     @Path("groups")
     @GET
     public Response searchGroups(@Context UriInfo info){
@@ -74,15 +73,15 @@ public class ProductCatalogInternalApiV2 {
             return Response.status(500).build();
         }
     }
-
-    @SecuredUser
-    @Path("parts/make/{makeId}/car/{carId}/group/{groupId}/criteria/{criteria}")
+    @ValidApp
+    @Path("parts")
     @GET
-    public Response searchGroups(@PathParam(value = "groupId") String groupId,
-                                 @PathParam(value = "carId") String carId,
-                                 @PathParam(value = "makeId") int makeId,
-                                 @PathParam(value = "criteria") String criteria){
-        try{
+    public Response searchParts(@Context UriInfo info) {
+        try {
+            Integer makeId = Integer.parseInt(info.getQueryParameters().getFirst("makeid"));
+            String groupId = info.getQueryParameters().getFirst("groupid");
+            String criteria = info.getQueryParameters().getFirst("criteria");
+            String carId = info.getQueryParameters().getFirst("carid");
             String catalogId = this.getCatalogIdFromMakeId(makeId);
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogParts(catalogId, carId, groupId, Helper.getEncodedUrl(criteria)));
             if(r.getStatus() != 200){
@@ -91,7 +90,7 @@ public class ProductCatalogInternalApiV2 {
             CatalogPart catalogPart = r.readEntity(CatalogPart.class);
             initProductHolders(catalogPart, makeId);
             return Response.status(200).entity(catalogPart).build();
-        }catch (Exception e){
+        }catch (Exception ex){
             return Response.status(500).build();
         }
     }
