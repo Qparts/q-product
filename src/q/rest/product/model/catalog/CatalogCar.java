@@ -8,7 +8,16 @@ public class CatalogCar {
     private String brand;
     private String carId;
     private String criteria;
+    private String modelId;
     private List<CatalogCarParameter> parameters;
+
+    public String getModelId() {
+        return modelId;
+    }
+
+    public void setModelId(String modelId) {
+        this.modelId = modelId;
+    }
 
     public String getTitle() {
         return title;
