@@ -1,7 +1,6 @@
 package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
-import q.rest.product.filter.SecuredUser;
 import q.rest.product.filter.ValidApp;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
@@ -34,8 +33,7 @@ public class ProductCatalogInternalApiV2 {
     public Response searchVin(@Context UriInfo info) {
         try{
             String vin = info.getQueryParameters().getFirst("vin");
-            Integer makeId = Integer.parseInt(info.getQueryParameters().getFirst("makeid"));
-            String catalogId = this.getCatalogIdFromMakeId(makeId);
+            String catalogId = info.getQueryParameters().getFirst("catalogid");
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
             if(r.getStatus() != 200){
                 return Response.status(404).build();
@@ -52,12 +50,10 @@ public class ProductCatalogInternalApiV2 {
     @GET
     public Response searchGroups(@Context UriInfo info){
         try{
-            Integer makeId = Integer.parseInt(info.getQueryParameters().getFirst("makeid"));
+            String catalogId = info.getQueryParameters().getFirst("catalogid");
             String groupId = info.getQueryParameters().getFirst("groupid");
             String criteria = info.getQueryParameters().getFirst("criteria");
             String carId = info.getQueryParameters().getFirst("carid");
-
-            String catalogId = this.getCatalogIdFromMakeId(makeId);
             if(groupId == null || groupId == ""){
                 groupId = null;
             }
@@ -78,17 +74,16 @@ public class ProductCatalogInternalApiV2 {
     @GET
     public Response searchParts(@Context UriInfo info) {
         try {
-            Integer makeId = Integer.parseInt(info.getQueryParameters().getFirst("makeid"));
+            String catalogId = info.getQueryParameters().getFirst("catalogid");
             String groupId = info.getQueryParameters().getFirst("groupid");
             String criteria = info.getQueryParameters().getFirst("criteria");
             String carId = info.getQueryParameters().getFirst("carid");
-            String catalogId = this.getCatalogIdFromMakeId(makeId);
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogParts(catalogId, carId, groupId, Helper.getEncodedUrl(criteria)));
             if(r.getStatus() != 200){
                 return Response.status(404).build();
             }
             CatalogPart catalogPart = r.readEntity(CatalogPart.class);
-            initProductHolders(catalogPart, makeId);
+            //initProductHolders(catalogPart, makeId);
             return Response.status(200).entity(catalogPart).build();
         }catch (Exception ex){
             return Response.status(500).build();
