@@ -2,6 +2,7 @@ package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.SecuredUser;
+import q.rest.product.filter.ValidApp;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.catalog.*;
@@ -27,7 +28,24 @@ public class ProductCatalogInternalApiV2 {
     private DAO dao;
 
 
-
+    @ValidApp
+    @Path("cars")
+    @GET
+    public Response searchVin(@Context UriInfo info) {
+        try{
+            String vin = info.getQueryParameters().getFirst("vin");
+            Integer makeId = Integer.parseInt(info.getQueryParameters().getFirst("makeid"));
+            String catalogId = this.getCatalogIdFromMakeId(makeId);
+            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
+            if(r.getStatus() != 200){
+                return Response.status(404).build();
+            }
+            List<CatalogCar> catalogCars = r.readEntity(new GenericType<List<CatalogCar>>(){});
+            return Response.status(200).entity(catalogCars).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
 
     @SecuredUser
     @Path("cars/make/{makeId}/vin/{vin}")
