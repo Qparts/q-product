@@ -27,6 +27,8 @@ public class ProductCatalogInternalApiV2 {
     private DAO dao;
 
 
+
+
     @SecuredUser
     @Path("cars/make/{makeId}/vin/{vin}")
     @GET

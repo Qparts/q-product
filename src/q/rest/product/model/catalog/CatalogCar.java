@@ -1,8 +1,10 @@
 package q.rest.product.model.catalog;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CatalogCar {
     private String title;
     private String catalogId;
@@ -11,15 +13,6 @@ public class CatalogCar {
     private String criteria;
     private String modelId;
     private List<CatalogCarParameter> parameters;
-    private List<CatalogOptionCodes> optionCodes;
-
-    public List<CatalogOptionCodes> getOptionCodes() {
-        return optionCodes;
-    }
-
-    public void setOptionCodes(List<CatalogOptionCodes> optionCodes) {
-        this.optionCodes = optionCodes;
-    }
 
     public String getModelId() {
         return modelId;
