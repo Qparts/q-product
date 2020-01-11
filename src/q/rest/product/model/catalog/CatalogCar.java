@@ -10,6 +10,15 @@ public class CatalogCar {
     private String criteria;
     private String modelId;
     private List<CatalogCarParameter> parameters;
+    private List<CatalogOptionCodes> optionCodes;
+
+    public List<CatalogOptionCodes> getOptionCodes() {
+        return optionCodes;
+    }
+
+    public void setOptionCodes(List<CatalogOptionCodes> optionCodes) {
+        this.optionCodes = optionCodes;
+    }
 
     public String getModelId() {
         return modelId;
