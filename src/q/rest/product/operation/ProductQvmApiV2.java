@@ -198,7 +198,6 @@ public class ProductQvmApiV2 {
             //SEARRCH FROM STOCK
             String undecorated = "%" + Helper.undecorate(query) + "%";
             String jpql = "select distinct on (part_number, brand_name) * from prd_vendor_stock where part_number like '" + undecorated + "'";
-//        List<VendorStock> vendorStocks = dao.getJPQLParams(VendorStock.class, jpql, undecorated);
             List<VendorStock> vendorStocks = dao.getNative(VendorStock.class, jpql);
             for (VendorStock vendorStock : vendorStocks) {
                 QvmObject searchResult = new QvmObject();
@@ -218,8 +217,8 @@ public class ProductQvmApiV2 {
                 searchResult.setLastUpdate(vendorStock.getCreated());
                 searchResult.setAvailability(new ArrayList<>());
 
-                String sql = "select b from VendorStock b where b.partNumber like :value0";
-                List<VendorStock> subs = dao.getJPQLParams(VendorStock.class, sql, undecorated);
+                String sql = "select b from VendorStock b where b.partNumber = :value0 and b.vendorId = :value1 and b.brandName = :value2";
+                List<VendorStock> subs = dao.getJPQLParams(VendorStock.class, sql, vendorStock.getPartNumber(), vendorStock.getVendorId(), vendorStock.getBrandName());
                 for (VendorStock vs : subs) {
                     QvmAvailability sa = new QvmAvailability();
                     QvmBranch sb = new QvmBranch();
