@@ -7,7 +7,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/VendorUploadRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/dao/DAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/dao/DAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/filter/SecuredVendorAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/filter/SecuredVendorAgent.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -46,23 +49,23 @@
     <property name="settings.editor.selected.configurable" value="preferences.applicationServers" />
   </component>
   <component name="RecentsManager">
-    <key name="CreateClassDialog.RecentsKey">
-      <recent name="q.rest.product.model.catalog" />
-      <recent name="q.rest.product.model.entity" />
-    </key>
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="q.rest.product.filter" />
-      <recent name="q.rest.product.operation" />
-      <recent name="q.rest.product.helper" />
-      <recent name="q.rest.product.model.entity" />
-      <recent name="q.rest.product.model.lucene" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/web/WEB-INF" />
       <recent name="$PROJECT_DIR$/src/q/rest/product/filter" />
       <recent name="$PROJECT_DIR$/src/q/rest/product/model/qvm" />
       <recent name="$PROJECT_DIR$/web/WEB-INF/lib" />
       <recent name="$PROJECT_DIR$/src/q/rest/product/model/contract" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="q.rest.product.model.qvm" />
+      <recent name="q.rest.product.filter" />
+      <recent name="q.rest.product.operation" />
+      <recent name="q.rest.product.helper" />
+      <recent name="q.rest.product.model.entity" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="q.rest.product.model.catalog" />
+      <recent name="q.rest.product.model.entity" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -211,7 +214,7 @@
       <workItem from="1578310484898" duration="2569000" />
       <workItem from="1578553099754" duration="5878000" />
       <workItem from="1578935705757" duration="108000" />
-      <workItem from="1579095825580" duration="803000" />
+      <workItem from="1579095825580" duration="11601000" />
     </task>
     <servers />
   </component>

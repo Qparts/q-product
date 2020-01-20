@@ -2,8 +2,10 @@ package q.rest.product.operation;
 
 
 import q.rest.product.dao.DAO;
+import q.rest.product.filter.SecuredUser;
 import q.rest.product.filter.SecuredUserVendor;
 import q.rest.product.filter.SecuredVendor;
+import q.rest.product.filter.ValidApp;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.PublicProduct;
 import q.rest.product.model.contract.PublicReview;
@@ -33,7 +35,7 @@ public class ProductQvmApiV2 {
     @EJB
     private DAO dao;
 
-    @SecuredVendor
+    @ValidApp
     @PUT
     @Path("update-stock")
     public Response updateStock(UploadStock uploadStock){
@@ -44,6 +46,83 @@ public class ProductQvmApiV2 {
            return Response.status(500).build();
        }
    }
+
+
+
+    @SecuredUserVendor
+    @Path("upload-requests/{vendorId}")
+    @GET
+    public Response getUploadRequests(@HeaderParam("Authorization") String header, @PathParam(value = "vendorId") int vendorId){
+        try {
+            String sql = "select b from VendorUploadRequest b where b.vendorId = :value0 order by b.created desc";
+            List<VendorUploadRequest> list = dao.getJPQLParams(VendorUploadRequest.class, sql , vendorId);
+            return Response.status(200).entity(list).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @ValidApp
+    @Path("upload-request")
+    @PUT
+    public Response updateRequestUpload(VendorUploadRequest uploadRequest){
+        try{
+            uploadRequest.setCompleted(new Date());
+            dao.update(uploadRequest);
+            return Response.status(201).build();
+        }catch (Exception ee){
+            return Response.status(500).build();
+        }
+    }
+
+
+    @SecuredUser
+    @GET
+    @Path("vendor-uploads/pending")
+    public Response getPendingVendorUploads(){
+        try{
+            String sql = "select b from VendorUploadRequests b where b.status = :value0  order by b.created desc";
+            List<VendorUploadRequest> uploads = dao.getJPQLParams(VendorUploadRequest.class, sql, 'R');
+            return Response.status(200).entity(uploads).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
+    @SecuredUser
+    @GET
+    @Path("vendor-uploads")
+    public Response getVendorUploads(){
+        try{
+            List<VendorUploadRequest> uploads = dao.getOrderByOriented(VendorUploadRequest.class, "created", "desc");
+            return Response.status(200).entity(uploads).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredVendor
+    @Path("upload-request")
+    @POST
+    public Response requestUpload(VendorUploadRequest uploadRequest){
+        try{
+            Date date = Helper.addMinutes(new Date(), 5*-1);
+            String jpql = "select b from VendorUploadRequest b where b.branchId = :value0 and b.created > :value1 and b.vendorId = :value2 and b.uploadSource = :value3";
+            List<VendorUploadRequest> check = dao.getJPQLParams(VendorUploadRequest.class, jpql, uploadRequest.getBranchId(), date, uploadRequest.getVendorId(), uploadRequest.getUploadSource());
+            if(check.isEmpty()){
+                dao.persist(uploadRequest);
+                return Response.status(200).entity(uploadRequest).build();
+            }
+            else{
+                return Response.status(403).build();
+            }
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
 
 
     @Asynchronous
