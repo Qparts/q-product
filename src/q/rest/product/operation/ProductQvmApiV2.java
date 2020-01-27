@@ -237,38 +237,6 @@ public class ProductQvmApiV2 {
         return results;
     }
 
-    private void searchLiveAPis(List<QvmObject> results, QvmSearchRequest sr){
-        try {
-            for (QvmVendorCredentials cred : sr.getVendorCreds()) {
-                String endpoint = cred.getEndpointAddress() + sr.getQuery();
-                String header = "Bearer " + cred.getSecret();
-
-
-                Response r = getSecuredRequest(endpoint, header);
-                if (r.getStatus() == 200) {
-                    List<QvmObject> rs = r.readEntity(new GenericType<List<QvmObject>>() {
-                    });
-                    for (QvmObject result : rs) {
-                        result.setSource('L');
-                        if (sr.isAttachProduct()) {
-                            String partNumber = Helper.undecorate(result.getPartNumber());
-                            String jpql = "select b from PublicProduct b where b.productNumber = :value0 and b.status =:value1";
-                            List<PublicProduct> publicProducts = dao.getJPQLParams(PublicProduct.class, jpql, partNumber, 'A');
-                            for (PublicProduct publicProduct : publicProducts) {
-                                initPublicProduct(publicProduct);
-                            }
-                            result.setQpartsProducts(publicProducts);
-                        }
-                        result.setVendorId(cred.getVendorId());
-                    }
-                    results.addAll(rs);
-                }
-            }
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
-
 
 
     private List<QvmObject> searchVendorStock(String query, boolean attachProduct){
@@ -299,7 +267,7 @@ public class ProductQvmApiV2 {
                 String sql = "select b from VendorStock b where b.partNumber = :value0 and b.vendorId = :value1 and b.brandName = :value2";
                 List<VendorStock> subs = dao.getJPQLParams(VendorStock.class, sql, vendorStock.getPartNumber(), vendorStock.getVendorId(), vendorStock.getBrandName());
                 for (VendorStock vs : subs) {
-                    QvmAvailability sa = new QvmAvailability();
+                    QvmAvailabilityRemote sa = new QvmAvailabilityRemote();
                     QvmBranch sb = new QvmBranch();
                     sb.setqBranchId(vs.getBranchId());
                     sb.setqCityId(vs.getCityId());

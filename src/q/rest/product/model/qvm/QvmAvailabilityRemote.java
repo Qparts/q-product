@@ -1,13 +1,13 @@
 package q.rest.product.model.qvm;
 
-public class QvmAvailability {
+public class QvmAvailabilityRemote {
     private QvmBranch branch;
     private Integer quantity;
 
-    public QvmAvailability() {
+    public QvmAvailabilityRemote() {
     }
 
-    public QvmAvailability(String name, String id, String cityName, Integer quantity) {
+    public QvmAvailabilityRemote(String name, String id, String cityName, Integer quantity) {
         this.branch = new QvmBranch(name, id, cityName);
         this.quantity = quantity;
     }

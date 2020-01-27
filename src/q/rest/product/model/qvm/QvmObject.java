@@ -17,7 +17,7 @@ public class QvmObject implements Serializable {
     private Double wholesalesPrice;
     private Boolean available;
     private Date lastUpdate;
-    private List<QvmAvailability> availability;
+    private List<QvmAvailabilityRemote> availability;
 
     public char getSource() {
         return source;
@@ -91,11 +91,11 @@ public class QvmObject implements Serializable {
         this.available = available;
     }
 
-    public List<QvmAvailability> getAvailability() {
+    public List<QvmAvailabilityRemote> getAvailability() {
         return availability;
     }
 
-    public void setAvailability(List<QvmAvailability> availability) {
+    public void setAvailability(List<QvmAvailabilityRemote> availability) {
         this.availability = availability;
     }
 
