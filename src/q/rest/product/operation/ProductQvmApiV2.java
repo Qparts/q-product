@@ -12,7 +12,11 @@ import q.rest.product.model.contract.PublicReview;
 import q.rest.product.model.contract.PublicSpec;
 import q.rest.product.model.entity.Product;
 import q.rest.product.model.entity.ProductSpec;
+import q.rest.product.model.entity.stock.VendorSpecialOfferUploadRequest;
 import q.rest.product.model.qvm.*;
+import q.rest.product.model.contract.UploadStock;
+import q.rest.product.model.entity.stock.VendorStock;
+import q.rest.product.model.entity.stock.VendorUploadRequest;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
@@ -62,6 +66,23 @@ public class ProductQvmApiV2 {
         }
     }
 
+
+    @SecuredUserVendor
+    @Path("upload-special-offer-requests/{vendorId}")
+    @GET
+    public Response getUploadSpecialOfferRequests(@HeaderParam("Authorization") String header, @PathParam(value = "vendorId") int vendorId){
+        try {
+            String sql = "select b from VendorSpecialOfferUploadRequest b where b.vendorId = :value0 order by b.created desc";
+            List<VendorSpecialOfferUploadRequest> list = dao.getJPQLParams(VendorSpecialOfferUploadRequest.class, sql , vendorId);
+            return Response.status(200).entity(list).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
+
+
     @ValidApp
     @Path("upload-request")
     @PUT
@@ -102,6 +123,43 @@ public class ProductQvmApiV2 {
         }
     }
 
+
+
+    @ValidApp
+    @Path("special-offer-upload-request")
+    @PUT
+    public Response updateSpecialOfferRequestUpload(VendorSpecialOfferUploadRequest uploadRequest){
+        try{
+            uploadRequest.setCompleted(new Date());
+            dao.update(uploadRequest);
+            return Response.status(201).build();
+        }catch (Exception ee){
+            return Response.status(500).build();
+        }
+    }
+
+    @ValidApp
+    @Path("special-offer-upload-request")
+    @POST
+    public Response requestUploadSpecialOffer(VendorSpecialOfferUploadRequest uploadRequest){
+        try{
+            Date date = Helper.addMinutes(new Date(), 5*-1);
+            String jpql = "select b from VendorSpecialOfferUploadRequest b where b.branchId = :value0 and b.created > :value1 and b.vendorId = :value2 and b.uploadSource = :value3";
+            List<VendorSpecialOfferUploadRequest> check = dao.getJPQLParams(VendorSpecialOfferUploadRequest.class, jpql, uploadRequest.getBranchId(), date, uploadRequest.getVendorId(), uploadRequest.getUploadSource());
+            if(check.isEmpty()){
+                uploadRequest.setCreated(new Date());
+                dao.persist(uploadRequest);
+                return Response.status(200).entity(uploadRequest).build();
+            }
+            else{
+                return Response.status(409).build();
+            }
+
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
     @SecuredVendor
     @Path("upload-request")
     @POST
@@ -115,7 +173,7 @@ public class ProductQvmApiV2 {
                 return Response.status(200).entity(uploadRequest).build();
             }
             else{
-                return Response.status(403).build();
+                return Response.status(409).build();
             }
         }catch (Exception ex){
             return Response.status(500).build();

@@ -1,17 +1,28 @@
-package q.rest.product.model.qvm;
+package q.rest.product.model.contract;
+
+import q.rest.product.model.entity.stock.VendorSpecialOfferStock;
+import q.rest.product.model.entity.stock.VendorStock;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class UploadStock implements Serializable {
     private List<VendorStock> vendorStocks;
+    private List<VendorSpecialOfferStock> specialOfferStocks;
     private int vendorId;
     private int createdByVendor;
     private int createdBy;
     private int branchId;
     private Date date;
+
+    public List<VendorSpecialOfferStock> getSpecialOfferStocks() {
+        return specialOfferStocks;
+    }
+
+    public void setSpecialOfferStocks(List<VendorSpecialOfferStock> specialOfferStocks) {
+        this.specialOfferStocks = specialOfferStocks;
+    }
 
     public Date getDate() {
         return date;

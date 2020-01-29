@@ -1,4 +1,4 @@
-package q.rest.product.model.qvm;
+package q.rest.product.model.entity.stock;
 
 import javax.persistence.*;
 import java.io.Serializable;
