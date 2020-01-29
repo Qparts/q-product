@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name="vnd_vendor_special_offer_stock")
+@Table(name="prd_vendor_special_offer_stock")
 public class VendorSpecialOfferStock implements Serializable {
 
     @Id
