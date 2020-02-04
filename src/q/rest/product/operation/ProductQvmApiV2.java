@@ -12,6 +12,7 @@ import q.rest.product.model.contract.PublicReview;
 import q.rest.product.model.contract.PublicSpec;
 import q.rest.product.model.entity.Product;
 import q.rest.product.model.entity.ProductSpec;
+import q.rest.product.model.entity.stock.VendorSpecialOfferStock;
 import q.rest.product.model.entity.stock.VendorSpecialOfferUploadRequest;
 import q.rest.product.model.qvm.*;
 import q.rest.product.model.contract.UploadStock;
@@ -52,6 +53,19 @@ public class ProductQvmApiV2 {
    }
 
 
+    @ValidApp
+    @PUT
+    @Path("update-special-offer-stock")
+    public Response updateSpecialOfferStock(UploadStock uploadStock){
+        try{
+            updateSpecialOfferStockAsync(uploadStock);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
 
     @SecuredUserVendor
     @Path("upload-requests/{vendorId}")
@@ -83,6 +97,7 @@ public class ProductQvmApiV2 {
 
 
 
+    //update upload request
     @ValidApp
     @Path("upload-request")
     @PUT
@@ -113,7 +128,7 @@ public class ProductQvmApiV2 {
 
     @SecuredUser
     @GET
-    @Path("vendor-uploads")
+    @Path("vendor-uploads/stock")
     public Response getVendorUploads(){
         try{
             List<VendorUploadRequest> uploads = dao.getOrderByOriented(VendorUploadRequest.class, "created", "desc");
@@ -124,9 +139,22 @@ public class ProductQvmApiV2 {
     }
 
 
+    @SecuredUser
+    @GET
+    @Path("vendor-uploads/special-offer")
+    public Response getVendorSpecialOfferUploads(){
+        try{
+            List<VendorSpecialOfferUploadRequest> uploads = dao.getOrderByOriented(VendorSpecialOfferUploadRequest.class, "created", "desc");
+            return Response.status(200).entity(uploads).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
 
     @ValidApp
-    @Path("special-offer-upload-request")
+    @Path("upload-special-offer-request")
     @PUT
     public Response updateSpecialOfferRequestUpload(VendorSpecialOfferUploadRequest uploadRequest){
         try{
@@ -181,6 +209,51 @@ public class ProductQvmApiV2 {
     }
 
 
+    @Asynchronous
+    private void updateSpecialOfferStockAsync(UploadStock uploadStock){
+        try{
+            for(var vs : uploadStock.getSpecialOfferStocks()){
+                vs.setPartNumber(Helper.undecorate(vs.getPartNumber()));
+                String sql = "select b from VendorSpecialOfferStock b where b.partNumber = :value0 and b.vendorId = :value1 and b.brandName = :value2 and b.branchId = :value3";
+                VendorSpecialOfferStock so = dao.findJPQLParams(VendorSpecialOfferStock.class, sql, vs.getPartNumber(), vs.getVendorId(), vs.getBrandName(), vs.getBranchId());
+                if(so != null){
+                    so.setCreated(uploadStock.getDate());
+                    so.setQuantity(vs.getQuantity());
+                    so.setSpecialPrice(vs.getSpecialPrice());
+                    so.setCreatedBy(uploadStock.getCreatedBy());
+                    so.setOfferEnd(vs.getOfferEnd());
+                    so.setOfferStart(vs.getOfferEnd());
+                    so.setCreatedByVendor(uploadStock.getCreatedByVendor());
+                    if(so.getProductId() == 0){
+                        String jpql = "select b from Product b where b.productNumber = :value0 and lower(b.brand.name) = :value1";
+                        Product product = dao.findJPQLParams(Product.class, jpql, vs.getPartNumber(), vs.getBrandName().toLowerCase());
+                        if(product != null){
+                            so.setProductId(product.getId());
+                        }
+                    }
+                    dao.update(so);
+                }
+                else{
+                    vs.setCreated(uploadStock.getDate());
+                    String jpql = "select b from Product b where b.productNumber = :value0 and lower(b.brand.name) = :value1";
+                    Product product = dao.findJPQLParams(Product.class, jpql, vs.getPartNumber(), vs.getBrandName().toLowerCase());
+                    if(product != null){
+                        vs.setProductId(product.getId());
+                        vs.setBrandName(product.getBrand().getName());
+                    }
+                    dao.persist(vs);
+                }
+            }//end for loop
+            //delete anything before newdate for the same vendor, same branch
+            Helper h = new Helper();
+            String sql = "delete from prd_vendor_special_offer_stock where vendor_id = " + uploadStock.getVendorId() +
+                    " and branch_id = " + uploadStock.getBranchId() + " and created < '" +  h.getDateFormat(uploadStock.getDate()) +"'";
+            dao.updateNative(sql);
+        }catch (Exception ex){
+            System.out.println("an error occured");
+        }
+    }
+
 
 
     @Asynchronous
@@ -234,9 +307,11 @@ public class ProductQvmApiV2 {
     @Path("search-availability")
     public Response searchAvailability(QvmSearchRequest sr) {
         try {
+            List<QvmObject> fromSpecialOffer = searchVendorSpecialOffer(sr.getQuery(), sr.isAttachProduct());
             List<QvmObject> fromApi = searchLiveAPIs(sr);
             List<QvmObject> fromStock = searchVendorStock(sr.getQuery(), sr.isAttachProduct());
             List<QvmObject> results = new ArrayList<>();
+            results.addAll(fromSpecialOffer);
             results.addAll(fromApi);
             results.addAll(fromStock);
             return Response.status(200).entity(results).build();
@@ -296,6 +371,54 @@ public class ProductQvmApiV2 {
     }
 
 
+    private List<QvmObject> searchVendorSpecialOffer(String query, boolean attachProduct){
+        try{
+            List<QvmObject> results = new ArrayList<>();
+            //SEARRCH FROM SPECIAL OFFER
+            String undecorated = "%" + Helper.undecorate(query) + "%";
+            Helper h = new Helper();
+            String todayString = h.getDateFormat(new Date(), "yyyy-MM-dd");
+            String jpql = "select distinct on (part_number, brand_name) * from prd_vendor_special_offer_stock where part_number like '" + undecorated + "' and '" + todayString +"' between cast(offer_start_date as date) and cast(offer_end_date as date)";
+            List<VendorSpecialOfferStock> soStocks = dao.getNative(VendorSpecialOfferStock.class, jpql);
+            for (VendorSpecialOfferStock sos : soStocks) {
+                QvmObject qvmObject = new QvmObject();
+                qvmObject.setQpartsProducts(new ArrayList<>());
+                if (attachProduct) {
+                    PublicProduct product = dao.find(PublicProduct.class, sos.getProductId());
+                    if(product != null ) {
+                        initPublicProduct(product);
+                        qvmObject.getQpartsProducts().add(product);
+                    }
+                }
+                qvmObject.setSource('S');
+                qvmObject.setVendorId(sos.getVendorId());
+                qvmObject.setAvailable(true);
+                qvmObject.setBrand(sos.getBrandName());
+                qvmObject.setPartNumber(sos.getPartNumber());
+                qvmObject.setSpecialOfferPrice(sos.getSpecialPrice());
+                qvmObject.setLastUpdate(sos.getCreated());
+                qvmObject.setAvailability(new ArrayList<>());
+                qvmObject.setOfferEnd(sos.getOfferEnd());
+                String sql = "select b from VendorSpecialOfferStock b where b.partNumber = :value0 and b.vendorId = :value1 and b.brandName = :value2 and cast(:value3 as date) between cast(b.offerStart as date) and cast(b.offerEnd as date)";
+                List<VendorSpecialOfferStock> subs = dao.getJPQLParams(VendorSpecialOfferStock.class, sql, sos.getPartNumber(), sos.getVendorId(), sos.getBrandName(), new Date());
+                for (VendorSpecialOfferStock vsos : subs) {
+                    QvmAvailabilityRemote sa = new QvmAvailabilityRemote();
+                    QvmBranch sb = new QvmBranch();
+                    sb.setqBranchId(vsos.getBranchId());
+                    sb.setqCityId(vsos.getCityId());
+                    sa.setBranch(sb);
+                    sa.setQuantity(vsos.getQuantity());
+                    sa.setOfferEnd(vsos.getOfferEnd());
+                    qvmObject.getAvailability().add(sa);
+                }
+                results.add(qvmObject);
+            }
+            return results;
+        }catch (Exception ex){
+            return new ArrayList<>();
+        }
+    }
+
 
     private List<QvmObject> searchVendorStock(String query, boolean attachProduct){
         try {
@@ -309,8 +432,10 @@ public class ProductQvmApiV2 {
                 searchResult.setQpartsProducts(new ArrayList<>());
                 if (attachProduct) {
                     PublicProduct product = dao.find(PublicProduct.class, vendorStock.getProductId());
-                    initPublicProduct(product);
-                    searchResult.getQpartsProducts().add(product);
+                    if(product != null) {
+                        initPublicProduct(product);
+                        searchResult.getQpartsProducts().add(product);
+                    }
                 }
                 searchResult.setSource('U');
                 searchResult.setVendorId(vendorStock.getVendorId());

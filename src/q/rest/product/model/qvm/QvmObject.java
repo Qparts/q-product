@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 public class QvmObject implements Serializable {
-    private char source;//L = live integration, U = stock upload, Q = Q Parts
+    private char source;//L = live integration, U = stock upload, S = special offer
     private Integer vendorId;
     private String partNumber;
     private String brandPartNumber;
@@ -15,9 +15,28 @@ public class QvmObject implements Serializable {
     private String brand;
     private Double retailPrice;
     private Double wholesalesPrice;
+    private Double specialOfferPrice;
+    private Date offerEnd;
     private Boolean available;
     private Date lastUpdate;
     private List<QvmAvailabilityRemote> availability;
+
+
+    public Date getOfferEnd() {
+        return offerEnd;
+    }
+
+    public void setOfferEnd(Date offerEnd) {
+        this.offerEnd = offerEnd;
+    }
+
+    public Double getSpecialOfferPrice() {
+        return specialOfferPrice;
+    }
+
+    public void setSpecialOfferPrice(Double specialOfferPrice) {
+        this.specialOfferPrice = specialOfferPrice;
+    }
 
     public char getSource() {
         return source;
