@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name="prd_vin_not_found")
+    @Table(name="prd_vin_not_found")
 public class VinNotFound implements Serializable {
 
 

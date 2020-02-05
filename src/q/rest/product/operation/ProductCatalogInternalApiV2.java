@@ -34,6 +34,7 @@ public class ProductCatalogInternalApiV2 {
             String catalogId = info.getQueryParameters().getFirst("catalogid");
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
             if(r.getStatus() != 200){
+                System.out.println("part not found");
                 vinNotFound(vin, catalogId);
                 return Response.status(404).build();
             }
@@ -51,7 +52,7 @@ public class ProductCatalogInternalApiV2 {
             vinNotFound.setVin(vin);
             vinNotFound.setCreated(new Date());
         }catch (Exception ignore){
-
+            System.out.println("an exception occured!!!");
         }
     }
 
