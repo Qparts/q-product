@@ -33,8 +33,9 @@ public class ProductCatalogInternalApiV2 {
             String vin = info.getQueryParameters().getFirst("vin");
             String catalogId = info.getQueryParameters().getFirst("catalogid");
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
+            System.out.println("status vin search " + r.getStatus());
             if(r.getStatus() != 200){
-                System.out.println("part not found");
+                System.out.println("vin not found");
                 vinNotFound(vin, catalogId);
                 return Response.status(404).build();
             }
