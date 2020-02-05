@@ -52,6 +52,7 @@ public class ProductCatalogInternalApiV2 {
             vinNotFound.setCatId(catalogId);
             vinNotFound.setVin(vin);
             vinNotFound.setCreated(new Date());
+            dao.persist(vinNotFound);
         }catch (Exception ignore){
             System.out.println("an exception occured!!!");
         }
