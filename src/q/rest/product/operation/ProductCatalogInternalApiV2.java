@@ -6,16 +6,14 @@ import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.catalog.*;
 import q.rest.product.model.contract.ProductHolder;
-import q.rest.product.model.entity.Category;
-import q.rest.product.model.entity.Product;
-import q.rest.product.model.entity.ProductPrice;
-import q.rest.product.model.entity.ProductSpec;
+import q.rest.product.model.entity.*;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.*;
+import java.util.Date;
 import java.util.List;
 
 @Path("/internal/api/v2/catalog/")
@@ -36,12 +34,24 @@ public class ProductCatalogInternalApiV2 {
             String catalogId = info.getQueryParameters().getFirst("catalogid");
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
             if(r.getStatus() != 200){
+                vinNotFound(vin, catalogId);
                 return Response.status(404).build();
             }
             List<CatalogCar> catalogCars = r.readEntity(new GenericType<List<CatalogCar>>(){});
             return Response.status(200).entity(catalogCars).build();
         }catch (Exception ex){
             return Response.status(500).build();
+        }
+    }
+
+    private void vinNotFound(String vin, String catalogId){
+        try{
+            VinNotFound vinNotFound = new VinNotFound();
+            vinNotFound.setCatId(catalogId);
+            vinNotFound.setVin(vin);
+            vinNotFound.setCreated(new Date());
+        }catch (Exception ignore){
+
         }
     }
 
