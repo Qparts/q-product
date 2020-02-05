@@ -33,13 +33,14 @@ public class ProductCatalogInternalApiV2 {
             String vin = info.getQueryParameters().getFirst("vin");
             String catalogId = info.getQueryParameters().getFirst("catalogid");
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
-            System.out.println("status vin search " + r.getStatus());
             if(r.getStatus() != 200){
-                System.out.println("vin not found");
                 vinNotFound(vin, catalogId);
                 return Response.status(404).build();
             }
             List<CatalogCar> catalogCars = r.readEntity(new GenericType<List<CatalogCar>>(){});
+            if(catalogCars.isEmpty()){
+                vinNotFound(vin, catalogId);
+            }
             return Response.status(200).entity(catalogCars).build();
         }catch (Exception ex){
             return Response.status(500).build();
