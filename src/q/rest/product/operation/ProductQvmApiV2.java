@@ -290,11 +290,14 @@ public class ProductQvmApiV2 {
                     dao.persist(vs);
                 }
             }//end for loop
+
             //delete anything before newdate for the same vendor, same branch
-            Helper h = new Helper();
-            String sql = "delete from prd_vendor_stock where vendor_id = " + uploadStock.getVendorId() +
-                    " and branch_id = " + uploadStock.getBranchId() + " and created < '" +  h.getDateFormat(uploadStock.getDate()) +"'";
-            dao.updateNative(sql);
+            if(uploadStock.isOverridePrevious()) {
+                Helper h = new Helper();
+                String sql = "delete from prd_vendor_stock where vendor_id = " + uploadStock.getVendorId() +
+                        " and branch_id = " + uploadStock.getBranchId() + " and created < '" + h.getDateFormat(uploadStock.getDate()) + "'";
+                dao.updateNative(sql);
+            }
 
         }catch (Exception ex){
             System.out.println("an error occured");

@@ -15,6 +15,15 @@ public class UploadStock implements Serializable {
     private int createdBy;
     private int branchId;
     private Date date;
+    private boolean overridePrevious;
+
+    public boolean isOverridePrevious() {
+        return overridePrevious;
+    }
+
+    public void setOverridePrevious(boolean overridePrevious) {
+        this.overridePrevious = overridePrevious;
+    }
 
     public List<VendorSpecialOfferStock> getSpecialOfferStocks() {
         return specialOfferStocks;
