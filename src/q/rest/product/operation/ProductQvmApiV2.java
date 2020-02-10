@@ -23,6 +23,7 @@ import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
@@ -39,6 +40,9 @@ public class ProductQvmApiV2 {
 
     @EJB
     private DAO dao;
+
+    @EJB
+    private AsyncProductApi async;
 
     @ValidApp
     @PUT
@@ -308,10 +312,10 @@ public class ProductQvmApiV2 {
     @SecuredUserVendor
     @POST
     @Path("search-availability")
-    public Response searchAvailability(QvmSearchRequest sr) {
+    public Response searchAvailability(@HeaderParam("Authorization") String header, QvmSearchRequest sr) {
         try {
             List<QvmObject> fromSpecialOffer = searchVendorSpecialOffer(sr.getQuery(), sr.isAttachProduct());
-            List<QvmObject> fromApi = searchLiveAPIs(sr);
+            List<QvmObject> fromApi = searchLiveAPIs2(sr, header);
             List<QvmObject> fromStock = searchVendorStock(sr.getQuery(), sr.isAttachProduct());
             List<QvmObject> results = new ArrayList<>();
             results.addAll(fromSpecialOffer);
@@ -372,6 +376,27 @@ public class ProductQvmApiV2 {
         //all threads ended
         return results;
     }
+
+
+
+    private List<QvmObject> searchLiveAPIs2(QvmSearchRequest sr, String header) {
+        List<QvmObject> results = Collections.synchronizedList(new ArrayList<>());
+        for (int i = 0; i < sr.getVendorCreds().size(); i++) {
+            QvmVendorCredentials vendorCreds = sr.getVendorCreds().get(i);
+            List<QvmObject> qvmObjects = new ArrayList<>();
+            QvmObject qvmObject = new QvmObject();
+            qvmObject.setStatus('W');
+            qvmObject.setVendorId(vendorCreds.getVendorId());
+            qvmObject.setSource('L');
+            qvmObjects.add(qvmObject);
+            results.addAll(qvmObjects);
+            async.callVendorAPI(vendorCreds, sr.getQuery(), sr.getRequesterId(), sr.getRequesterType(), header);//async
+        }
+        System.out.println("returning result");
+        return results;
+    }
+
+
 
 
     private List<QvmObject> searchVendorSpecialOffer(String query, boolean attachProduct){
@@ -533,4 +558,15 @@ public class ProductQvmApiV2 {
         Response r = b.get();
         return r;
     }
+
+
+    public <T> Response postSecuredRequest(String link, T t, String authHeader) {
+        Invocation.Builder b = ClientBuilder.newClient().target(link).request();
+        b.header(HttpHeaders.AUTHORIZATION, authHeader);
+        Response r = b.post(Entity.entity(t, "application/json"));
+        return r;
+    }
+
+
+
 }

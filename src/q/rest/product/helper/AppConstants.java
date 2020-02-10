@@ -16,10 +16,16 @@ public class AppConstants {
     private static final String PARTS_CATALOG_API = "https://api.parts-catalogs.com/v1/";
     public static final String PARTS_CATALOG_API_KEY = "OEM-API-9BC9464D-D8ED-4D69-8943-32CF9FA0D3F7";
 
+
     public static final String CUSTOMER_MATCH_TOKEN = CUSTOMER_SERVICE + "match-token";
     public static final String USER_MATCH_TOKEN = USER_SERVICE + "match-token";
     public static final String VENDOR_MATCH_TOKEN = VENDOR_SERVICE + "match-token";
+    public static final String VENDOR_MATCH_TOKEN_WS = VENDOR_SERVICE + "match-token/ws";
+    public static final String USER_MATCH_TOKEN_WS = USER_SERVICE + "match-token/ws";
 
+
+    //VENDOR SERVICE
+    public static final String PUT_UPDATE_SEARCH_AVAILABILITY_WITH_BRANCHES = VENDOR_SERVICE + "search-availability/update-branches";
 
     public static final String getProductImage(long id){
         return AMAZON_S3_PATH + PRODUCT_BUCKET_NAME + "/" + id + ".png";

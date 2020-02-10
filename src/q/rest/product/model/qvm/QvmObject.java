@@ -1,7 +1,6 @@
 package q.rest.product.model.qvm;
 
 import q.rest.product.model.contract.PublicProduct;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +18,7 @@ public class QvmObject implements Serializable {
     private Date offerEnd;
     private Boolean available;
     private Date lastUpdate;
+    private Character status;//in live only, W = waiting for response , C = completed
     private List<QvmAvailabilityRemote> availability;
 
 
@@ -124,5 +124,13 @@ public class QvmObject implements Serializable {
 
     public void setLastUpdate(Date lastUpdate) {
         this.lastUpdate = lastUpdate;
+    }
+
+    public Character getStatus() {
+        return status;
+    }
+
+    public void setStatus(Character status) {
+        this.status = status;
     }
 }

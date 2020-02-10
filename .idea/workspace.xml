@@ -7,8 +7,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/q/rest/product/operation/socket/AvailabilitySearchUserServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/q/rest/product/operation/socket/AvailabilitySearchVendorServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/gson-2.8.6.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/jackson-core-2.9.0.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/jackson-databind-2.9.0.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/UploadStock.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/UploadStock.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/q-rest-product.iml" beforeDir="false" afterPath="$PROJECT_DIR$/q-rest-product.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmBranch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmBranch.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmSearchRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmSearchRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -36,9 +46,14 @@
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
     <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1564262565059" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/web/WEB-INF" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/web/WEB-INF/lib" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -52,17 +67,17 @@
       <recent name="q.rest.product.model.entity" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="q.rest.product.operation.socket" />
       <recent name="q.rest.product.model.qvm" />
       <recent name="q.rest.product.filter" />
       <recent name="q.rest.product.operation" />
       <recent name="q.rest.product.helper" />
-      <recent name="q.rest.product.model.entity" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/web/WEB-INF/lib" />
       <recent name="$PROJECT_DIR$/web/WEB-INF" />
       <recent name="$PROJECT_DIR$/src/q/rest/product/filter" />
       <recent name="$PROJECT_DIR$/src/q/rest/product/model/qvm" />
-      <recent name="$PROJECT_DIR$/web/WEB-INF/lib" />
       <recent name="$PROJECT_DIR$/src/q/rest/product/model/contract" />
     </key>
   </component>
@@ -216,7 +231,8 @@
       <workItem from="1579648066194" duration="1626000" />
       <workItem from="1579929596545" duration="4000" />
       <workItem from="1580080110589" duration="11733000" />
-      <workItem from="1580730190714" duration="9151000" />
+      <workItem from="1580730190714" duration="20487000" />
+      <workItem from="1581335940628" duration="1066000" />
     </task>
     <servers />
   </component>

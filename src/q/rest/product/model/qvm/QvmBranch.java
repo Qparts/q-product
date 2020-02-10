@@ -1,6 +1,7 @@
 package q.rest.product.model.qvm;
 
 public class QvmBranch {
+    private Object localBranch;
     private int qBranchId;
     private int qCityId;
     private String branchName;
@@ -8,6 +9,14 @@ public class QvmBranch {
     private String branchId;
     private String cityName;
     private String cityNameAr;
+
+    public Object getLocalBranch() {
+        return localBranch;
+    }
+
+    public void setLocalBranch(Object localBranch) {
+        this.localBranch = localBranch;
+    }
 
     public QvmBranch() {
     }

@@ -5,7 +5,25 @@ import java.util.List;
 public class QvmSearchRequest {
     private String query;
     private boolean attachProduct;
+    private int requesterId;
+    private char requesterType;//--V = vendor , -U = user
     private List<QvmVendorCredentials> vendorCreds;
+
+    public char getRequesterType() {
+        return requesterType;
+    }
+
+    public void setRequesterType(char requesterType) {
+        this.requesterType = requesterType;
+    }
+
+    public int getRequesterId() {
+        return requesterId;
+    }
+
+    public void setRequesterId(int requesterId) {
+        this.requesterId = requesterId;
+    }
 
     public boolean isAttachProduct() {
         return attachProduct;
