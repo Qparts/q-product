@@ -453,7 +453,7 @@ public class ProductQvmApiV2 {
             List<QvmObject> results = new ArrayList<>();
             //SEARRCH FROM STOCK
             String undecorated = "%" + Helper.undecorate(query) + "%";
-            String jpql = "select distinct on (part_number, brand_name) * from prd_vendor_stock where part_number like '" + undecorated + "'";
+            String jpql = "select distinct on (part_number, brand_name, vendor_id) * from prd_vendor_stock where part_number like '" + undecorated + "'";
             List<VendorStock> vendorStocks = dao.getNative(VendorStock.class, jpql);
             for (VendorStock vendorStock : vendorStocks) {
                 QvmObject searchResult = new QvmObject();
