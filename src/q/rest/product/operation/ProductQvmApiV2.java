@@ -344,6 +344,7 @@ public class ProductQvmApiV2 {
         }
     }
 
+    /*
     private List<QvmObject> searchLiveAPIs(QvmSearchRequest sr){
         List results = Collections.synchronizedList(new ArrayList<>());
         ExecutorService es = Executors.newFixedThreadPool(sr.getVendorCreds().size());
@@ -376,6 +377,7 @@ public class ProductQvmApiV2 {
         //all threads ended
         return results;
     }
+     */
 
 
 
