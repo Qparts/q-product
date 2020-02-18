@@ -155,6 +155,35 @@ public class ProductQvmApiV2 {
         }
     }
 
+    @SecuredVendor
+    @GET
+    @Path("vendor-uploads/special-offers/live")
+    public Response getVendorSpecialOfferUpload(){
+        try{
+            String sql = "select b from VendorSpecialOfferUploadRequest b where :value0 between b.startDate and b.endDate and b.status = :value1 order by b.startDate";
+            List<VendorSpecialOfferUploadRequest> list = dao.getJPQLParams(VendorSpecialOfferUploadRequest.class, sql, new Date(), 'C');
+            return Response.status(200).entity(list).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredVendor
+    @GET
+    @Path("vendor-uploads/special-offer/{soId}")
+    public Response getVendorSepcialOffer(@PathParam(value = "soId") int id){
+        try{
+            String sql = "select b from VendorSpecialOfferUploadRequest b where :value0 between b.startDate and b.endDate and b.status = :value1 and b.id = :value2";
+            VendorSpecialOfferUploadRequest so = dao.findJPQLParams(VendorSpecialOfferUploadRequest.class, sql ,new Date(), 'C', id);
+            List<VendorSpecialOfferStock> stock = dao.getCondition(VendorSpecialOfferStock.class, "specialOfferRequestId", id);
+            so.setSpecialOfferStocks(stock);
+            return Response.status(200).entity(so).build();
+        }
+        catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
 
 
     @ValidApp

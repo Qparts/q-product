@@ -42,6 +42,16 @@ public class VendorSpecialOfferStock implements Serializable {
     @Column(name="offer_end_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date offerEnd;
+    @Column(name="special_offer_request_id")
+    private int specialOfferRequestId;
+
+    public int getSpecialOfferRequestId() {
+        return specialOfferRequestId;
+    }
+
+    public void setSpecialOfferRequestId(int specialOfferRequestId) {
+        this.specialOfferRequestId = specialOfferRequestId;
+    }
 
     public long getId() {
         return id;

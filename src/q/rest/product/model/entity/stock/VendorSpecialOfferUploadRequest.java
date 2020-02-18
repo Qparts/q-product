@@ -3,6 +3,7 @@ package q.rest.product.model.entity.stock;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Table(name="prd_vendor_special_offer_upload_request")
 @Entity
@@ -13,6 +14,8 @@ public class VendorSpecialOfferUploadRequest implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "prd_vendor_special_offer_upload_request_id_seq_gen")
     @Column(name="id")
     private int id;
+    @Column(name="offer_name")
+    private String offerName;
     @Column(name="vendor_id")
     private int vendorId;
     @Column(name="created_by")
@@ -47,6 +50,16 @@ public class VendorSpecialOfferUploadRequest implements Serializable {
     @Column(name="offer_end_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
+    @Transient
+    private List<VendorSpecialOfferStock> specialOfferStocks;
+
+    public List<VendorSpecialOfferStock> getSpecialOfferStocks() {
+        return specialOfferStocks;
+    }
+
+    public void setSpecialOfferStocks(List<VendorSpecialOfferStock> specialOfferStocks) {
+        this.specialOfferStocks = specialOfferStocks;
+    }
 
     public Date getStartDate() {
         return startDate;
@@ -174,5 +187,13 @@ public class VendorSpecialOfferUploadRequest implements Serializable {
 
     public void setCompleted(Date completed) {
         this.completed = completed;
+    }
+
+    public String getOfferName() {
+        return offerName;
+    }
+
+    public void setOfferName(String offerName) {
+        this.offerName = offerName;
     }
 }
