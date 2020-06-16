@@ -7,12 +7,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/Branch.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/PullStockRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/stock/VendorSpecialOfferStock.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/stock/VendorSpecialOfferStock.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/stock/VendorSpecialOfferUploadRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/stock/VendorSpecialOfferUploadRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/q-rest-product.iml" beforeDir="false" afterPath="$PROJECT_DIR$/q-rest-product.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/Helper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/Helper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogInternalApiV2.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -30,6 +33,11 @@
   </component>
   <component name="ProjectId" id="1UGaAoC6WvvWGwtXmOrcSxBOcaq" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
     <property name="Downloaded.Files.Path" value="$PROJECT_DIR$/web/WEB-INF/lib" />
     <property name="Downloaded.Files.Path.Enabled" value="true" />
@@ -44,7 +52,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1564262565059" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/web/WEB-INF/lib" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/q/rest/product/model/contract" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -53,9 +61,12 @@
     <property name="settings.editor.selected.configurable" value="preferences.applicationServers" />
   </component>
   <component name="RecentsManager">
-    <key name="CreateClassDialog.RecentsKey">
-      <recent name="q.rest.product.model.catalog" />
-      <recent name="q.rest.product.model.entity" />
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/q/rest/product/model/contract" />
+      <recent name="$PROJECT_DIR$/web/WEB-INF/lib" />
+      <recent name="$PROJECT_DIR$/web/WEB-INF" />
+      <recent name="$PROJECT_DIR$/src/q/rest/product/filter" />
+      <recent name="$PROJECT_DIR$/src/q/rest/product/model/qvm" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="q.rest.product.operation.socket" />
@@ -64,25 +75,10 @@
       <recent name="q.rest.product.operation" />
       <recent name="q.rest.product.helper" />
     </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/web/WEB-INF/lib" />
-      <recent name="$PROJECT_DIR$/web/WEB-INF" />
-      <recent name="$PROJECT_DIR$/src/q/rest/product/filter" />
-      <recent name="$PROJECT_DIR$/src/q/rest/product/model/qvm" />
-      <recent name="$PROJECT_DIR$/src/q/rest/product/model/contract" />
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="q.rest.product.model.catalog" />
+      <recent name="q.rest.product.model.entity" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager">
     <configuration name="JBoss 14.0.1 Final (Remote)" type="JBossConfiguration" factoryName="Remote" APPLICATION_SERVER_NAME="JBoss 14.0.1.Final" ALTERNATIVE_JRE_ENABLED="false">
@@ -132,6 +128,28 @@
         </option>
       </method>
     </configuration>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="JBoss Server" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              </path>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="JBoss Server" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+                <item name="Running" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              </path>
+            </expand>
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -226,6 +244,16 @@
       <workItem from="1581335940628" duration="3121000" />
       <workItem from="1581423918268" duration="932000" />
       <workItem from="1581928374013" duration="4086000" />
+      <workItem from="1582405970105" duration="1268000" />
+      <workItem from="1583341939266" duration="560000" />
+      <workItem from="1584016158338" duration="880000" />
+      <workItem from="1584835728297" duration="603000" />
+      <workItem from="1585079624789" duration="227000" />
+      <workItem from="1585592807856" duration="1632000" />
+      <workItem from="1590797306916" duration="6000" />
+      <workItem from="1591303146380" duration="279000" />
+      <workItem from="1591831684736" duration="617000" />
+      <workItem from="1592253087120" duration="8231000" />
     </task>
     <servers />
   </component>
@@ -253,6 +281,21 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser" timestamp="1592264564616">
+      <screen x="0" y="23" width="1440" height="798" />
+    </state>
+    <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser/0.23.1440.798@0.23.1440.798" timestamp="1592264564616" />
+    <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser/0.23.1440.801@0.23.1440.801" timestamp="1592263520746" />
+    <state x="458" y="194" key="#com.intellij.util.ui.classpath.ChooseLibrariesDialog" timestamp="1592253112185">
+      <screen x="0" y="23" width="1440" height="797" />
+    </state>
+    <state x="458" y="194" key="#com.intellij.util.ui.classpath.ChooseLibrariesDialog/0.23.1440.797@0.23.1440.797" timestamp="1592253112185" />
+    <state x="208" y="23" key="SettingsEditor" timestamp="1592253114521">
+      <screen x="0" y="23" width="1440" height="797" />
+    </state>
+    <state x="208" y="23" key="SettingsEditor/0.23.1440.797@0.23.1440.797" timestamp="1592253114521" />
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />

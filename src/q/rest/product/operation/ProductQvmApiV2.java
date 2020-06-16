@@ -7,15 +7,12 @@ import q.rest.product.filter.SecuredUserVendor;
 import q.rest.product.filter.SecuredVendor;
 import q.rest.product.filter.ValidApp;
 import q.rest.product.helper.Helper;
-import q.rest.product.model.contract.PublicProduct;
-import q.rest.product.model.contract.PublicReview;
-import q.rest.product.model.contract.PublicSpec;
+import q.rest.product.model.contract.*;
 import q.rest.product.model.entity.Product;
 import q.rest.product.model.entity.ProductSpec;
 import q.rest.product.model.entity.stock.VendorSpecialOfferStock;
 import q.rest.product.model.entity.stock.VendorSpecialOfferUploadRequest;
 import q.rest.product.model.qvm.*;
-import q.rest.product.model.contract.UploadStock;
 import q.rest.product.model.entity.stock.VendorStock;
 import q.rest.product.model.entity.stock.VendorUploadRequest;
 
@@ -25,13 +22,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Path("/qvm/api/v2/")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -356,6 +350,44 @@ public class ProductQvmApiV2 {
         }
     }
 
+//    @SecuredUser
+    @POST
+    @Path("pull-stock")
+    public Response pullStock(PullStockRequest psr ){
+        String header = "Bearer " + psr.getSecret();
+        Response r  = async.getSecuredRequest(psr.getAllStockEndPoint() + "count", header);
+        if(r.getStatus() == 200){
+            Map<String,Integer> countResult = r.readEntity(Map.class);
+            int count = countResult.get("count");
+            List<String> links = Helper.getPullDataLinks(count, psr.getAllStockEndPoint());
+            async.callPullData(links, header, psr);
+            return Response.status(200).entity(links).build();
+        }
+        return Response.status(404).build();
+    }
+
+
+
+
+    private List<QvmObject> searchLiveAPIs2(QvmSearchRequest sr, String header) {
+        List<QvmObject> results = Collections.synchronizedList(new ArrayList<>());
+        for (int i = 0; i < sr.getVendorCreds().size(); i++) {
+            QvmVendorCredentials vendorCreds = sr.getVendorCreds().get(i);
+            List<QvmObject> qvmObjects = new ArrayList<>();
+            QvmObject qvmObject = new QvmObject();
+            qvmObject.setStatus('W');
+            qvmObject.setVendorId(vendorCreds.getVendorId());
+            qvmObject.setSource('L');
+            qvmObjects.add(qvmObject);
+            results.addAll(qvmObjects);
+            async.callVendorAPI(vendorCreds, sr.getQuery(), sr.getRequesterId(), sr.getRequesterType(), header);//async
+        }
+        System.out.println("returning result");
+        return results;
+    }
+
+
+
     @SecuredUserVendor
     @POST
     @Path("search-parts")
@@ -410,22 +442,6 @@ public class ProductQvmApiV2 {
 
 
 
-    private List<QvmObject> searchLiveAPIs2(QvmSearchRequest sr, String header) {
-        List<QvmObject> results = Collections.synchronizedList(new ArrayList<>());
-        for (int i = 0; i < sr.getVendorCreds().size(); i++) {
-            QvmVendorCredentials vendorCreds = sr.getVendorCreds().get(i);
-            List<QvmObject> qvmObjects = new ArrayList<>();
-            QvmObject qvmObject = new QvmObject();
-            qvmObject.setStatus('W');
-            qvmObject.setVendorId(vendorCreds.getVendorId());
-            qvmObject.setSource('L');
-            qvmObjects.add(qvmObject);
-            results.addAll(qvmObjects);
-            async.callVendorAPI(vendorCreds, sr.getQuery(), sr.getRequesterId(), sr.getRequesterType(), header);//async
-        }
-        System.out.println("returning result");
-        return results;
-    }
 
 
 

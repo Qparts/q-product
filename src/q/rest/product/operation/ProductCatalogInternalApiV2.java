@@ -24,7 +24,6 @@ public class ProductCatalogInternalApiV2 {
     @EJB
     private DAO dao;
 
-
     @ValidApp
     @Path("cars")
     @GET

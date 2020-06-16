@@ -17,6 +17,24 @@ public class Helper {
         return tag.toLowerCase().trim().replaceAll(" ", "_");
     }
 
+
+
+    public static List<String> getPullDataLinks(int count, String base){
+        final int N = 500;
+        List<Integer> ints = new ArrayList<>();
+        int temp = 0;
+        while(count > 0){
+            ints.add(temp);
+            if(count >= N) count -= N;
+            else count -= count;
+            temp += N;
+        }
+        List<String> links = new ArrayList<>();
+        ints.forEach(g -> links.add(base + "offset/"+ g +"/max/" + N));
+        return links;
+    }
+
+
     public static String undecorate(String string) {
         return string.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
     }
