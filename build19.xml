@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Can be compoiled with wildfly version 15.0.1.Final only-->
-<project basedir="web" default="war" name="q-rest-invoice">
+<project basedir="web" default="war" name="q-rest-product">
 
   <property name="debuglevel" value="source,lines,vars"/>
-  <property name="compiler.args.q-rest-invoice" value="-encoding UTF-8 -source 11 -target 11 ${compiler.args}"/>
+  <property name="compiler.args.q-rest-product" value="-encoding UTF-8 -source 11 -target 11 ${compiler.args}"/>
 
   <path id="library.jboss.classpath">
     <pathelement location="/srv/wildfly/modules/system/layers/base/javax/annotation/api/main/jboss-annotations-api_1.3_spec-2.0.1.Final.jar"/>
@@ -29,7 +29,7 @@
   </path>
 
 
-  <path id="q-rest-invoice.classpath">
+  <path id="q-rest-product.classpath">
     <pathelement location="build/classes"/>
     <path refid="library.jboss.classpath"/>
     <path refid="library.app.classpath"/>
@@ -51,13 +51,13 @@
     <echo message="${ant.project.name}: ${ant.file}"/>
       <javac debug="true" encoding="utf-8" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false">
          <src path="src"/>
-         <classpath refid="q-rest-invoice.classpath"/>
+         <classpath refid="q-rest-product.classpath"/>
        </javac>
     </target>
 
   <target name="war" depends="build-project">
     <echo message="${ant.project.name}: ${ant.file}"/>    
-    <war destfile="build/dist/q-rest-invoice.war" webxml="web/WEB-INF/web.xml">
+    <war destfile="build/dist/q-rest-product.war" webxml="web/WEB-INF/web.xml">
       <fileset dir="web"/>
       <classes dir="build/classes"/>
     </war>

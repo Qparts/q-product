@@ -7,71 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/exception/GlobalException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/filter/annotation/InternalApp.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/filter/annotation/SubscriberJwt.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/filter/annotation/UserJwt.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/filter/annotation/UserSubscriberJwt.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/filter/annotation/V3ValidApp.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/filter/jwt/JwtFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/filter/jwt/JwtFilterSubscriber.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/filter/jwt/JwtFilterUser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/filter/jwt/JwtFilterUserSubscriber.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/filter/jwt/ValidAppAgent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/helper/KeyConstant.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/Error.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/OfferHolder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/StockHolder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/stock/CompanyProduct.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/stock/CompanyStock.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/stock/CompanyStockOffer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/stock/DataPullHistory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/FastInfoset-1.2.15.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/bcprov-jdk15on-1.65.01.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/byte-buddy-1.10.10.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/classmate-1.5.1.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/dom4j-2.1.3.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/hibernate-commons-annotations-5.1.0.Final.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/hibernate-core-5.4.18.Final.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/hibernate-types-52-2.9.11.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/istack-commons-runtime-3.0.7.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/jandex-2.1.3.Final.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/javassist-3.24.0-GA.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/javax.activation-api-1.2.0.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/javax.persistence-api-2.2.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/jaxb-api-2.3.1.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/jaxb-runtime-2.3.1.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/jboss-logging-3.3.2.Final.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/jboss-transaction-api_1.2_spec-1.1.1.Final.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/jjwt-api-0.11.1.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/jjwt-impl-0.11.1.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/jjwt-jackson-0.11.1.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/stax-ex-1.8.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/txw2-2.3.1.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/q_rest_product.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/q_rest_product.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/q-rest-product.iml" beforeDir="false" afterPath="$PROJECT_DIR$/q-rest-product.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/META-INF/persistence.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/META-INF/persistence.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/Helper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/Helper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/Branch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/Branch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/PullStockRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/PullStockRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/UploadStock.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/UploadHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/QvmSearchKeyword.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/stock/VendorSpecialOfferStock.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/stock/VendorSpecialOfferUploadRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/stock/CompanyOfferUploadRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/stock/VendorStock.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/stock/VendorUploadRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/stock/CompanyUploadRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmAvailabilityRemote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmObjectStock.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmBranch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmBranch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmSearchRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmVendorCredentials.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/web/WEB-INF/web.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build19.xml" beforeDir="false" afterPath="$PROJECT_DIR$/build19.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,12 +59,12 @@
     <property name="settings.editor.selected.configurable" value="preferences.applicationServers" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/web/WEB-INF/lib" />
-      <recent name="$PROJECT_DIR$/src/q/rest/product/filter/jwt" />
-      <recent name="$PROJECT_DIR$/src/q/rest/product/filter/annotation" />
-      <recent name="$PROJECT_DIR$/src/q/rest/product/model/contract" />
-      <recent name="$PROJECT_DIR$/web/WEB-INF" />
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="q.rest.product.model.catalog" />
+      <recent name="q.rest.product.model.entity" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="q.rest.product.model.contract.v3" />
@@ -136,9 +73,12 @@
       <recent name="q.rest.product.filter.annotation" />
       <recent name="q.rest.product.operation" />
     </key>
-    <key name="CreateClassDialog.RecentsKey">
-      <recent name="q.rest.product.model.catalog" />
-      <recent name="q.rest.product.model.entity" />
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/web" />
+      <recent name="$PROJECT_DIR$/web/WEB-INF/lib" />
+      <recent name="$PROJECT_DIR$/src/q/rest/product/filter/jwt" />
+      <recent name="$PROJECT_DIR$/src/q/rest/product/filter/annotation" />
+      <recent name="$PROJECT_DIR$/src/q/rest/product/model/contract" />
     </key>
   </component>
   <component name="RunManager">
@@ -320,7 +260,8 @@
       <workItem from="1593162836563" duration="76000" />
       <workItem from="1593438152511" duration="946000" />
       <workItem from="1593507813738" duration="807000" />
-      <workItem from="1593510961895" duration="2766000" />
+      <workItem from="1593510961895" duration="3131000" />
+      <workItem from="1593531060221" duration="18000" />
     </task>
     <servers />
   </component>
