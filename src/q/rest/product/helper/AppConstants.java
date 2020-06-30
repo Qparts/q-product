@@ -4,6 +4,7 @@ public class AppConstants {
 
     //SERVICES
     private static final String USER_SERVICE =  SysProps.getValue("userService");
+    private static final String SUBSCRIBER_SERVICE =  SysProps.getValue("subscriberService");
     private static final String CUSTOMER_SERVICE = SysProps.getValue("customerService");
     private static final String VENDOR_SERVICE = SysProps.getValue("vendorService");
 
@@ -23,6 +24,9 @@ public class AppConstants {
     public static final String VENDOR_MATCH_TOKEN_WS = VENDOR_SERVICE + "match-token/ws";
     public static final String USER_MATCH_TOKEN_WS = USER_SERVICE + "match-token/ws";
 
+
+    //Subscriber Service
+    public static final String POST_SAVE_SEARCH_KEYWORD = SUBSCRIBER_SERVICE + "search-keyword";
 
     //VENDOR SERVICE
     public static final String PUT_UPDATE_SEARCH_AVAILABILITY_WITH_BRANCHES = VENDOR_SERVICE + "search-availability/update-branches";

@@ -1,25 +1,16 @@
 package q.rest.product.model.qvm;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class QvmBranch {
-    private Object localBranch;
-    private int qBranchId;
-    private int qCityId;
     private String branchName;
     private String branchNameAr;
     private String branchId;
     private String cityName;
     private String cityNameAr;
 
-    public Object getLocalBranch() {
-        return localBranch;
-    }
-
-    public void setLocalBranch(Object localBranch) {
-        this.localBranch = localBranch;
-    }
-
-    public QvmBranch() {
-    }
+    public QvmBranch(){}
 
     public QvmBranch(String branchName, String branchId, String cityName) {
         this.branchName = branchName;
@@ -67,19 +58,5 @@ public class QvmBranch {
         this.cityName = cityName;
     }
 
-    public int getqBranchId() {
-        return qBranchId;
-    }
 
-    public void setqBranchId(int qBranchId) {
-        this.qBranchId = qBranchId;
-    }
-
-    public int getqCityId() {
-        return qCityId;
-    }
-
-    public void setqCityId(int qCityId) {
-        this.qCityId = qCityId;
-    }
 }

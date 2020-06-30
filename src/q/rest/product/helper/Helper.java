@@ -18,6 +18,9 @@ public class Helper {
     }
 
 
+    public static Date addDays(Date original, long days) {
+        return new Date(original.getTime() + (1000L * 60 * 60 * 24 * days));
+    }
 
     public static List<String> getPullDataLinks(int count, String base){
         final int N = 500;
@@ -36,7 +39,9 @@ public class Helper {
 
 
     public static String undecorate(String string) {
-        return string.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
+        if(string != null) {
+            return string.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
+        }else return null;
     }
 
     public static List<Integer> extractParams(List<String> params){

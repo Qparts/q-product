@@ -1,74 +1,19 @@
 package q.rest.product.model.qvm;
 
-import q.rest.product.model.contract.PublicProduct;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class QvmObject implements Serializable {
-    private char source;//L = live integration, U = stock upload, S = special offer
-    private Integer vendorId;
     private String partNumber;
-    private String brandPartNumber;
-    private List<PublicProduct> qpartsProducts;
     private String brand;
+    private String brandPartNumber;
     private Double retailPrice;
     private Double wholesalesPrice;
-    private Double specialOfferPrice;
-    private Date offerEnd;
     private Boolean available;
-    private Date lastUpdate;
-    private Character status;//in live only, W = waiting for response , C = completed
-    private List<QvmAvailabilityRemote> availability;
+    private List<QvmObjectStock> availability;
 
-
-    public Date getOfferEnd() {
-        return offerEnd;
-    }
-
-    public void setOfferEnd(Date offerEnd) {
-        this.offerEnd = offerEnd;
-    }
-
-    public Double getSpecialOfferPrice() {
-        return specialOfferPrice;
-    }
-
-    public void setSpecialOfferPrice(Double specialOfferPrice) {
-        this.specialOfferPrice = specialOfferPrice;
-    }
-
-    public char getSource() {
-        return source;
-    }
-
-    public void setSource(char source) {
-        this.source = source;
-    }
-
-    public String getBrandPartNumber() {
-        return brandPartNumber;
-    }
-
-    public void setBrandPartNumber(String brandPartNumber) {
-        this.brandPartNumber = brandPartNumber;
-    }
-
-    public List<PublicProduct> getQpartsProducts() {
-        return qpartsProducts;
-    }
-
-    public void setQpartsProducts(List<PublicProduct> qpartsProducts) {
-        this.qpartsProducts = qpartsProducts;
-    }
-
-    public Integer getVendorId() {
-        return vendorId;
-    }
-
-    public void setVendorId(Integer vendorId) {
-        this.vendorId = vendorId;
-    }
 
     public String getPartNumber() {
         return partNumber;
@@ -84,6 +29,14 @@ public class QvmObject implements Serializable {
 
     public void setBrand(String brand) {
         this.brand = brand;
+    }
+
+    public String getBrandPartNumber() {
+        return brandPartNumber;
+    }
+
+    public void setBrandPartNumber(String brandPartNumber) {
+        this.brandPartNumber = brandPartNumber;
     }
 
     public Double getRetailPrice() {
@@ -110,27 +63,11 @@ public class QvmObject implements Serializable {
         this.available = available;
     }
 
-    public List<QvmAvailabilityRemote> getAvailability() {
+    public List<QvmObjectStock> getAvailability() {
         return availability;
     }
 
-    public void setAvailability(List<QvmAvailabilityRemote> availability) {
+    public void setAvailability(List<QvmObjectStock> availability) {
         this.availability = availability;
-    }
-
-    public Date getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public void setLastUpdate(Date lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
-
-    public Character getStatus() {
-        return status;
-    }
-
-    public void setStatus(Character status) {
-        this.status = status;
     }
 }

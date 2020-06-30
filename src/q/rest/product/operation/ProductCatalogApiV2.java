@@ -23,7 +23,7 @@ import javax.ws.rs.core.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Path("/api/v2/catalog/")
+@Path("/api/v3/catalog/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class ProductCatalogApiV2 {
