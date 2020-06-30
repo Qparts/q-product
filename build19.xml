@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Can be compoiled with wildfly version 15.0.1.Final only-->
-<project basedir="web" default="war" name="q-rest-product">
+<project basedir="." default="war" name="q-rest-product">
 
   <property name="debuglevel" value="source,lines,vars"/>
   <property name="compiler.args.q-rest-product" value="-encoding UTF-8 -source 11 -target 11 ${compiler.args}"/>
@@ -36,7 +36,7 @@
   </path>
 
   <target name="init">
-    <delete dir="build"/> 
+    <delete dir="build"/>
     <mkdir dir="build/classes"/>
     <mkdir dir="build/dist"/>
     <copy includeemptydirs="false" todir="build/classes">
@@ -49,14 +49,14 @@
 
   <target depends="init" name="build-project">
     <echo message="${ant.project.name}: ${ant.file}"/>
-      <javac debug="true" encoding="utf-8" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false">
-         <src path="src"/>
-         <classpath refid="q-rest-product.classpath"/>
-       </javac>
-    </target>
+    <javac debug="true" encoding="utf-8" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false">
+      <src path="src"/>
+      <classpath refid="q-rest-product.classpath"/>
+    </javac>
+  </target>
 
   <target name="war" depends="build-project">
-    <echo message="${ant.project.name}: ${ant.file}"/>    
+    <echo message="${ant.project.name}: ${ant.file}"/>
     <war destfile="build/dist/q-rest-product.war" webxml="web/WEB-INF/web.xml">
       <fileset dir="web"/>
       <classes dir="build/classes"/>
