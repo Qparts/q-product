@@ -117,8 +117,11 @@ public class ProductCatalogApiV3 {
         try{
             System.out.println("received here");
             String vin = info.getQueryParameters().getFirst("vin");
+            System.out.println("1");
             String catalogId = info.getQueryParameters().getFirst("catalogid");
+            System.out.println("2");
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
+            System.out.println("received " + r.getStatus());
             if(r.getStatus() != 200){
                 async.saveVinSearch(vin, catalogId, header, false);
                 return Response.status(404).build();
