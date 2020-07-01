@@ -77,7 +77,7 @@ public class ProductCatalogApiV3 {
             }
             List<CatalogGroup> catalogGroups = r.readEntity(new GenericType<List<CatalogGroup>>(){});
             catalogGroups.forEach(cg -> {
-                cg.setImg(cg.getImg().substring("//img.parts-catalogs.com/".length()));
+                cg.setImg(AppConstants.getImageReplacedLink(cg.getImg()));
             });
             return Response.status(200).entity(catalogGroups).build();
 

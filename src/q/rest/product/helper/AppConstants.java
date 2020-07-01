@@ -5,6 +5,7 @@ public class AppConstants {
     //SERVICES
 //    private static final String USER_SERVICE =  SysProps.getValue("userService");
     private static final String SUBSCRIBER_SERVICE =  SysProps.getValue("subscriberService");
+    private static final String APP_BASE = SysProps.getValue("qvmWebAppBase");
   //  private static final String CUSTOMER_SERVICE = SysProps.getValue("customerService");
     //private static final String VENDOR_SERVICE = SysProps.getValue("vendorService");
 
@@ -30,6 +31,10 @@ public class AppConstants {
 
     //VENDOR SERVICE
     public static final String PUT_UPDATE_SEARCH_AVAILABILITY_WITH_BRANCHES =  "search-availability/update-branches";
+
+    public static String getImageReplacedLink(String string){
+        return APP_BASE + "app/cat-img/" +string.substring("//img.parts-catalogs.com/".length());
+    }
 
     public static final String getProductImage(long id){
         return AMAZON_S3_PATH + PRODUCT_BUCKET_NAME + "/" + id + ".png";
