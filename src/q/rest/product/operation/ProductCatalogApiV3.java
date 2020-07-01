@@ -29,6 +29,41 @@ public class ProductCatalogApiV3 {
     @EJB
     private AsyncProductApi async;
 
+
+
+
+
+    @SubscriberJwt
+    @Path("cars")
+    @GET
+    public Response searchVin(@HeaderParam (HttpHeaders.AUTHORIZATION) String header, @Context UriInfo info) {
+        try{
+            System.out.println("received here");
+            String vin = info.getQueryParameters().getFirst("vin");
+            System.out.println("1");
+            String catalogId = info.getQueryParameters().getFirst("catalogid");
+            System.out.println("catalogid is null? " + catalogId == null);
+            System.out.println("2" + AppConstants.getCatalogCarsByVin(catalogId, vin));
+            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
+            System.out.println("received " + r.getStatus());
+            if(r.getStatus() != 200){
+                async.saveVinSearch(vin, catalogId, header, false);
+                return Response.status(404).build();
+            }
+            List<CatalogCar> catalogCars = r.readEntity(new GenericType<List<CatalogCar>>(){});
+            if(catalogCars.isEmpty()){
+                async.saveVinSearch(vin, catalogId, header, false);
+            }else{
+                async.saveVinSearch(vin, catalogId, header, true);
+            }
+            return Response.status(200).entity(catalogCars).build();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return Response.status(500).build();
+        }
+    }
+
+
     @SubscriberJwt
     @Path("groups")
     @GET
@@ -109,35 +144,6 @@ public class ProductCatalogApiV3 {
         String sql = "select avg(b.price + (b.price * b.salesPercentage)) from ProductPrice b where b.productId = :value0 and b.status = :value1";
         Number n = dao.findJPQLParams(Number.class, sql , productId, 'A');
         return n.doubleValue();
-    }
-
-    @SubscriberJwt
-    @Path("cars")
-    @GET
-    public Response searchVin(@HeaderParam (HttpHeaders.AUTHORIZATION) String header, @Context UriInfo info) {
-        try{
-            System.out.println("received here");
-            String vin = info.getQueryParameters().getFirst("vin");
-            System.out.println("1");
-            String catalogId = info.getQueryParameters().getFirst("catalogid");
-            System.out.println("2" + AppConstants.getCatalogCarsByVin(catalogId, vin));
-            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
-            System.out.println("received " + r.getStatus());
-            if(r.getStatus() != 200){
-                async.saveVinSearch(vin, catalogId, header, false);
-                return Response.status(404).build();
-            }
-            List<CatalogCar> catalogCars = r.readEntity(new GenericType<List<CatalogCar>>(){});
-            if(catalogCars.isEmpty()){
-                async.saveVinSearch(vin, catalogId, header, false);
-            }else{
-                async.saveVinSearch(vin, catalogId, header, true);
-            }
-            return Response.status(200).entity(catalogCars).build();
-        }catch (Exception ex){
-            ex.printStackTrace();
-            return Response.status(500).build();
-        }
     }
 
 
