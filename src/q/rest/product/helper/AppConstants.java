@@ -3,10 +3,10 @@ package q.rest.product.helper;
 public class AppConstants {
 
     //SERVICES
-    private static final String USER_SERVICE =  SysProps.getValue("userService");
+//    private static final String USER_SERVICE =  SysProps.getValue("userService");
     private static final String SUBSCRIBER_SERVICE =  SysProps.getValue("subscriberService");
-    private static final String CUSTOMER_SERVICE = SysProps.getValue("customerService");
-    private static final String VENDOR_SERVICE = SysProps.getValue("vendorService");
+  //  private static final String CUSTOMER_SERVICE = SysProps.getValue("customerService");
+    //private static final String VENDOR_SERVICE = SysProps.getValue("vendorService");
 
     //AWS
     private static final String AMAZON_S3_PATH = SysProps.getValue("amazonS3Path");
@@ -18,18 +18,18 @@ public class AppConstants {
     public static final String PARTS_CATALOG_API_KEY = "OEM-API-9BC9464D-D8ED-4D69-8943-32CF9FA0D3F7";
 
 
-    public static final String CUSTOMER_MATCH_TOKEN = CUSTOMER_SERVICE + "match-token";
-    public static final String USER_MATCH_TOKEN = USER_SERVICE + "match-token";
-    public static final String VENDOR_MATCH_TOKEN = VENDOR_SERVICE + "match-token";
-    public static final String VENDOR_MATCH_TOKEN_WS = VENDOR_SERVICE + "match-token/ws";
-    public static final String USER_MATCH_TOKEN_WS = USER_SERVICE + "match-token/ws";
+    public static final String CUSTOMER_MATCH_TOKEN =  "match-token";
+    public static final String USER_MATCH_TOKEN =  "match-token";
+    public static final String VENDOR_MATCH_TOKEN =  "match-token";
+    public static final String VENDOR_MATCH_TOKEN_WS =  "match-token/ws";
+    public static final String USER_MATCH_TOKEN_WS = "match-token/ws";
 
 
     //Subscriber Service
     public static final String POST_SAVE_SEARCH_KEYWORD = SUBSCRIBER_SERVICE + "search-keyword";
 
     //VENDOR SERVICE
-    public static final String PUT_UPDATE_SEARCH_AVAILABILITY_WITH_BRANCHES = VENDOR_SERVICE + "search-availability/update-branches";
+    public static final String PUT_UPDATE_SEARCH_AVAILABILITY_WITH_BRANCHES =  "search-availability/update-branches";
 
     public static final String getProductImage(long id){
         return AMAZON_S3_PATH + PRODUCT_BUCKET_NAME + "/" + id + ".png";
