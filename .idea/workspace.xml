@@ -8,6 +8,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/exception/GlobalException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/exception/GlobalException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV3.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -269,7 +270,7 @@
       <workItem from="1593531060221" duration="417000" />
       <workItem from="1593531511962" duration="14000" />
       <workItem from="1593543904130" duration="3004000" />
-      <workItem from="1593594488032" duration="3683000" />
+      <workItem from="1593594488032" duration="3868000" />
     </task>
     <servers />
   </component>

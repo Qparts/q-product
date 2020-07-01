@@ -49,6 +49,7 @@ public class ProductCatalogApiV3 {
             return Response.status(200).entity(catalogGroups).build();
 
         }catch (Exception e){
+            System.out.println("there is an error !!!");
             e.printStackTrace();
             return Response.status(500).build();
         }
@@ -119,7 +120,7 @@ public class ProductCatalogApiV3 {
             String vin = info.getQueryParameters().getFirst("vin");
             System.out.println("1");
             String catalogId = info.getQueryParameters().getFirst("catalogid");
-            System.out.println("2");
+            System.out.println("2" + AppConstants.getCatalogCarsByVin(catalogId, vin));
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
             System.out.println("received " + r.getStatus());
             if(r.getStatus() != 200){
