@@ -33,7 +33,7 @@ public class AppConstants {
     public static final String PUT_UPDATE_SEARCH_AVAILABILITY_WITH_BRANCHES =  "search-availability/update-branches";
 
     public static String getImageReplacedLink(String string){
-        return APP_BASE + "app/cat-img/" +string.substring("//img.parts-catalogs.com/".length());
+        return APP_BASE + "cat-img/" +string.substring("//img.parts-catalogs.com/".length());
     }
 
     public static final String getProductImage(long id){
