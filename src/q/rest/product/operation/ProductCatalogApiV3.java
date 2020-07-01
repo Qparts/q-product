@@ -115,23 +115,23 @@ public class ProductCatalogApiV3 {
     @GET
     public Response searchVin(@HeaderParam (HttpHeaders.AUTHORIZATION) String header, @Context UriInfo info) {
         try{
+            System.out.println("received here");
             String vin = info.getQueryParameters().getFirst("vin");
             String catalogId = info.getQueryParameters().getFirst("catalogid");
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
             if(r.getStatus() != 200){
                 async.saveVinSearch(vin, catalogId, header, false);
-                vinNotFound(vin, catalogId);
                 return Response.status(404).build();
             }
             List<CatalogCar> catalogCars = r.readEntity(new GenericType<List<CatalogCar>>(){});
             if(catalogCars.isEmpty()){
                 async.saveVinSearch(vin, catalogId, header, false);
-                vinNotFound(vin, catalogId);
             }else{
                 async.saveVinSearch(vin, catalogId, header, true);
             }
             return Response.status(200).entity(catalogCars).build();
         }catch (Exception ex){
+            ex.printStackTrace();
             return Response.status(500).build();
         }
     }
