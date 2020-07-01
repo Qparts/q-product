@@ -7,8 +7,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/VinSearch.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build19.xml" beforeDir="false" afterPath="$PROJECT_DIR$/build19.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogPartsList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogPartsList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV3.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,12 +62,16 @@
     <property name="settings.editor.selected.configurable" value="preferences.applicationServers" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-    </key>
     <key name="CreateClassDialog.RecentsKey">
       <recent name="q.rest.product.model.catalog" />
       <recent name="q.rest.product.model.entity" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/web" />
+      <recent name="$PROJECT_DIR$/web/WEB-INF/lib" />
+      <recent name="$PROJECT_DIR$/src/q/rest/product/filter/jwt" />
+      <recent name="$PROJECT_DIR$/src/q/rest/product/filter/annotation" />
+      <recent name="$PROJECT_DIR$/src/q/rest/product/model/contract" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="q.rest.product.model.contract.v3" />
@@ -73,12 +80,8 @@
       <recent name="q.rest.product.filter.annotation" />
       <recent name="q.rest.product.operation" />
     </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/web" />
-      <recent name="$PROJECT_DIR$/web/WEB-INF/lib" />
-      <recent name="$PROJECT_DIR$/src/q/rest/product/filter/jwt" />
-      <recent name="$PROJECT_DIR$/src/q/rest/product/filter/annotation" />
-      <recent name="$PROJECT_DIR$/src/q/rest/product/model/contract" />
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
     </key>
   </component>
   <component name="RunManager">
@@ -263,7 +266,8 @@
       <workItem from="1593510961895" duration="3131000" />
       <workItem from="1593531060221" duration="417000" />
       <workItem from="1593531511962" duration="14000" />
-      <workItem from="1593543904130" duration="144000" />
+      <workItem from="1593543904130" duration="3004000" />
+      <workItem from="1593594488032" duration="3009000" />
     </task>
     <servers />
   </component>
@@ -287,12 +291,13 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser" timestamp="1593151968629">
-      <screen x="0" y="23" width="1440" height="793" />
+    <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser" timestamp="1593605633615">
+      <screen x="0" y="23" width="1440" height="795" />
     </state>
     <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser/-1024.23.1024.745/0.23.1440.793@0.23.1440.793" timestamp="1592999995043" />
     <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser/-1024.23.1024.745/0.23.1440.797@0.23.1440.797" timestamp="1592984874146" />
-    <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser/0.23.1440.793@0.23.1440.793" timestamp="1593151968629" />
+    <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser/0.23.1440.793@0.23.1440.793" timestamp="1593589430507" />
+    <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser/0.23.1440.795@0.23.1440.795" timestamp="1593605633615" />
     <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser/0.23.1440.797@0.23.1440.797" timestamp="1592913616091" />
     <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser/0.23.1440.798@0.23.1440.798" timestamp="1592264564616" />
     <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser/0.23.1440.801@0.23.1440.801" timestamp="1592263520746" />

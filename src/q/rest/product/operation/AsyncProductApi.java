@@ -1,10 +1,15 @@
 package q.rest.product.operation;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import q.rest.product.dao.DAO;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
+import q.rest.product.helper.KeyConstant;
 import q.rest.product.model.contract.v3.Branch;
 import q.rest.product.model.contract.v3.PullStockRequest;
+import q.rest.product.model.entity.VinNotFound;
+import q.rest.product.model.entity.VinSearch;
 import q.rest.product.model.entity.v3.stock.CompanyProduct;
 import q.rest.product.model.entity.v3.stock.CompanyStock;
 import q.rest.product.model.entity.v3.stock.DataPullHistory;
@@ -19,6 +24,8 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import java.security.PublicKey;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -160,11 +167,38 @@ public class AsyncProductApi {
         return r;
     }
 
+
+
+    @Asynchronous
+    public void saveVinSearch(String vin, String catalogId, String header, boolean found){
+        try{
+            VinSearch vinSearch = new VinSearch();
+            vinSearch.setCatalogId(catalogId);
+            vinSearch.setVin(vin);
+            vinSearch.setCreated(new Date());
+            int[] claims = readClaims(header);
+            vinSearch.setCompanyId(claims[0]);
+            vinSearch.setSubscriberId(claims[1]);
+            vinSearch.setFound(found);
+            dao.persist(vinSearch);
+        }catch (Exception ignore){
+            System.out.println("an exception occured!!!");
+        }
+    }
+
     public <T> Response postSecuredRequest(String link, T t, String authHeader) {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();
         b.header(HttpHeaders.AUTHORIZATION, authHeader);
         Response r = b.post(Entity.entity(t, "application/json"));
         return r;
+    }
+
+    public int[] readClaims(String header) throws Exception{
+        String token = header.substring("Bearer".length()).trim();
+        Claims claims = Jwts.parserBuilder().setSigningKey(KeyConstant.PUBLIC_KEY).build().parseClaimsJws(token).getBody();
+        int companyId = Integer.parseInt(claims.get("comp").toString());
+        int subscriberId = Integer.parseInt(claims.get("sub").toString());
+        return new int[]{companyId, subscriberId};
     }
 
 
