@@ -13,8 +13,6 @@ public class GlobalException implements ExceptionMapper<Throwable> {
 
     @Override
     public Response toResponse(Throwable ex) {
-        System.out.println("omg an error in the global");
-        ex.printStackTrace();
         Response.StatusType type = getStatusType(ex);
         Error error = new Error(
                 type.getStatusCode(),

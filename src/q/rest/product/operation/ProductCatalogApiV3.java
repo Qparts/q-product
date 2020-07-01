@@ -38,14 +38,9 @@ public class ProductCatalogApiV3 {
     @GET
     public Response searchVin(@HeaderParam (HttpHeaders.AUTHORIZATION) String header, @Context UriInfo info) {
         try{
-            System.out.println("received here");
             String vin = info.getQueryParameters().getFirst("vin");
-            System.out.println("1");
             String catalogId = info.getQueryParameters().getFirst("catalogid");
-            System.out.println("catalogid is null? " + catalogId == null);
-            System.out.println("2" + AppConstants.getCatalogCarsByVin(catalogId, vin));
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
-            System.out.println("received " + r.getStatus());
             if(r.getStatus() != 200){
                 async.saveVinSearch(vin, catalogId, header, false);
                 return Response.status(404).build();
@@ -81,6 +76,9 @@ public class ProductCatalogApiV3 {
                 return Response.status(404).build();
             }
             List<CatalogGroup> catalogGroups = r.readEntity(new GenericType<List<CatalogGroup>>(){});
+            catalogGroups.forEach(cg -> {
+                cg.setImg(cg.getImg().substring("//img.parts-catalogs.com/".length()));
+            });
             return Response.status(200).entity(catalogGroups).build();
 
         }catch (Exception e){
