@@ -82,7 +82,6 @@ public class ProductCatalogApiV3 {
             return Response.status(200).entity(catalogGroups).build();
 
         }catch (Exception e){
-            System.out.println("there is an error !!!");
             e.printStackTrace();
             return Response.status(500).build();
         }
@@ -102,6 +101,7 @@ public class ProductCatalogApiV3 {
                 return Response.status(404).build();
             }
             CatalogPart catalogPart = r.readEntity(CatalogPart.class);
+            catalogPart.setImg(AppConstants.getImageReplacedLink(catalogPart.getImg()));
             initProductHolders(catalogPart);
             return Response.status(200).entity(catalogPart).build();
         }catch (Exception ex){
