@@ -8,7 +8,6 @@ import q.rest.product.helper.Helper;
 import q.rest.product.helper.KeyConstant;
 import q.rest.product.model.contract.v3.Branch;
 import q.rest.product.model.contract.v3.PullStockRequest;
-import q.rest.product.model.entity.VinNotFound;
 import q.rest.product.model.entity.VinSearch;
 import q.rest.product.model.entity.v3.stock.CompanyProduct;
 import q.rest.product.model.entity.v3.stock.CompanyStock;
@@ -151,7 +150,8 @@ public class AsyncProductApi {
             Helper h = new Helper();
             String sql = "delete from prd_company_stock where created < '" + h.getDateFormat(dph.getCreated()) + "' " +
                     "and company_product_id in (select d.id from prd_company_product d where d.company_id = " +dph.getCompanyId() +")";
-            dao.updateNative(sql);
+            System.out.println(sql);
+           // dao.updateNative(sql);
             dph.setStatus('C');
         }catch (Exception ex){
             dph.setStatus('F');

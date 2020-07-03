@@ -37,6 +37,29 @@ public class ProductQvmApiV3 {
     @EJB
     private AsyncProductApi async;
 
+
+    @UserJwt
+    @GET
+    @Path("vin-search-activity/from/{from}/to/{to}")
+    public Response getQuotationsItemsDailyReport(@PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong) {
+        try {
+            Helper h = new Helper();
+            List<Date> dates = h.getAllDatesBetween(new Date(fromLong), new Date(toLong));
+            List<Map> kgs = new ArrayList<>();
+            for (Date date : dates) {
+                String sql = "select count(*) from VinSearch b where cast(b.created as date) = cast(:value0 as date)";
+                Number n = dao.findJPQLParams(Number.class, sql, date);
+                Map<String, Object> map = new HashMap<>();
+                map.put("count", n.intValue());
+                map.put("date", date.getTime());
+                kgs.add(map);
+            }
+            return Response.status(200).entity(kgs).build();
+        } catch (Exception ex) {
+            return Response.status(500).build();
+        }
+    }
+
     //new
     @UserJwt
     @PUT

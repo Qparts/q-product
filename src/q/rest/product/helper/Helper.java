@@ -6,10 +6,13 @@ import q.rest.product.model.entity.Category;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Helper {
 
@@ -17,6 +20,33 @@ public class Helper {
         return tag.toLowerCase().trim().replaceAll(" ", "_");
     }
 
+    public List<Date> getAllDatesBetween(Date from, Date to){
+        from = new Date(from.getTime() - (1000*60*60*24));
+        to = new Date(to.getTime() + (1000*60*60*24));
+        LocalDate fromLocal = convertToLocalDate(from);
+        LocalDate toLocal = convertToLocalDate(to);
+
+        List<LocalDate> localDates = fromLocal.datesUntil(toLocal)
+                .collect(Collectors.toList());
+
+        List<Date> dates = new ArrayList<>();
+        for(LocalDate ld : localDates){
+            dates.add(convertToDate(ld));
+        }
+        return dates;
+    }
+
+
+    public static LocalDate convertToLocalDate(Date dateToConvert) {
+        return LocalDate.ofInstant(
+                dateToConvert.toInstant(), ZoneId.systemDefault());
+    }
+
+    public static Date convertToDate(LocalDate dateToConvert) {
+        return Date.from(dateToConvert.atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
+    }
 
     public static Date addDays(Date original, long days) {
         return new Date(original.getTime() + (1000L * 60 * 60 * 24 * days));
