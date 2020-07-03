@@ -55,7 +55,6 @@ public class AsyncProductApi {
                     String url = links.get(ii);
                     try {
                         Response r = getSecuredRequest(url, header);
-                        System.out.println("requested data received");
                         if (r.getStatus() == 200) {
                             List<QvmObject> rs = r.readEntity(new GenericType<List<QvmObject>>() {
                             });
@@ -86,7 +85,6 @@ public class AsyncProductApi {
 
     private synchronized void updateStock(List<QvmObject> qvmObjects, PullStockRequest psr, DataPullHistory dph) {
         try {
-            System.out.println("updating stock");
             for (var qvmObject : qvmObjects) {
                 qvmObject.setPartNumber(Helper.undecorate(qvmObject.getPartNumber()));
                 qvmObject.setBrandPartNumber(Helper.undecorate(qvmObject.getBrandPartNumber()));
@@ -150,8 +148,7 @@ public class AsyncProductApi {
             Helper h = new Helper();
             String sql = "delete from prd_company_stock where created < '" + h.getDateFormat(dph.getCreated()) + "' " +
                     "and company_product_id in (select d.id from prd_company_product d where d.company_id = " +dph.getCompanyId() +")";
-            System.out.println(sql);
-           // dao.updateNative(sql);
+            dao.updateNative(sql);
             dph.setStatus('C');
         }catch (Exception ex){
             dph.setStatus('F');
