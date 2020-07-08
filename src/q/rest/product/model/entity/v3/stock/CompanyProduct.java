@@ -58,6 +58,7 @@ public class CompanyProduct {
     public CompanyProduct(OfferHolder offerVar, UploadHolder holder, CompanyOfferUploadRequest req){
         this.companyId = holder.getCompanyId();
         this.partNumber = offerVar.getPartNumber();
+        this.alternativeNumber = offerVar.getAlternativeNumber();
         this.brandName = offerVar.getBrand();
         this.retailPrice = 0;
         this.wholesalesPrice = 0;
@@ -73,6 +74,9 @@ public class CompanyProduct {
     public void updateAfterUploadStock(StockHolder stockVar, UploadHolder holder){
         this.retailPrice = stockVar.getRetailPrice();
         this.wholesalesPrice = stockVar.getWholesalesPrice();
+        if((this.alternativeNumber == null || this.alternativeNumber.length() == 0) && stockVar.getAlternativeNumber() != null){
+            this.alternativeNumber = stockVar.getAlternativeNumber();
+        }
         //availability
         CompanyStock cs = this.getStockFromBranchId(holder.getBranchId());
         if(cs == null){
@@ -92,6 +96,9 @@ public class CompanyProduct {
     @JsonIgnore
     public void updateAfterUploadOffer(OfferHolder offerVar, UploadHolder holder, CompanyOfferUploadRequest req){
         //availability
+        if((this.alternativeNumber == null || this.alternativeNumber.length() == 0) && offerVar.getAlternativeNumber() != null){
+            this.alternativeNumber = offerVar.getAlternativeNumber();
+        }
         if(stock.isEmpty()){
             //create temp stock (offer only = true)
             CompanyStock cs = new CompanyStock(offerVar, holder);

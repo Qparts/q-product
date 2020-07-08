@@ -45,7 +45,6 @@ public class AsyncProductApi {
 
     @Asynchronous
     public void callPullData(List<String> links, String header, PullStockRequest psr, DataPullHistory dph) {
-        System.out.println("received links " + links.size());
         ExecutorService es = Executors.newFixedThreadPool(10);
         for (int i = 0; i < links.size(); i++) {
             final int ii = i;

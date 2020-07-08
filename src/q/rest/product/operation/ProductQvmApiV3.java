@@ -8,12 +8,12 @@ import q.rest.product.filter.annotation.UserSubscriberJwt;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.*;
 import q.rest.product.model.contract.v3.PullStockRequest;
+import q.rest.product.model.contract.v3.SummaryReport;
 import q.rest.product.model.contract.v3.UploadHolder;
+import q.rest.product.model.contract.v3.UploadsSummary;
 import q.rest.product.model.entity.ProductSpec;
-import q.rest.product.model.entity.v3.stock.CompanyProduct;
-import q.rest.product.model.entity.v3.stock.CompanyOfferUploadRequest;
-import q.rest.product.model.entity.v3.stock.CompanyUploadRequest;
-import q.rest.product.model.entity.v3.stock.DataPullHistory;
+import q.rest.product.model.entity.VinSearch;
+import q.rest.product.model.entity.v3.stock.*;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
@@ -219,6 +219,64 @@ public class ProductQvmApiV3 {
         }
     }
 
+
+    @UserJwt
+    @GET
+    @Path("summary-report/company/{id}")
+    public Response getCompanySummaryRepoort(@PathParam(value = "id") int id) {
+        String sql = "select count(*) from VinSearch b where b.companyId = :value0" ;
+        int totalVinSearches = dao.findJPQLParams(Number.class, sql, id).intValue();
+        sql = "select coalesce(sum(stk.quantity * pcp.retailPrice),0) from CompanyStock stk left join CompanyProduct pcp on stk.companyProductId = pcp.id where pcp.companyId = :value0";
+        double stockValue = dao.findJPQLParams(Number.class, sql, id).doubleValue();
+        sql = "select coalesce(sum(b.quantity * b.offerPrice),0) from CompanyStockOffer b where now() between b.offerStartDate and b.offerEndDate " +
+                "and b.companyProductId in (select c.id from CompanyProduct c where c.companyId = :value0)";
+        double offersValue = dao.findJPQLParams(Number.class, sql, id).doubleValue();
+        sql = "select b from VinSearch b where b.companyId = :value0 order by b.created desc";
+        List<VinSearch> vinSearches = dao.getJPQLParamsMax(VinSearch.class, sql, 50, id);
+        SummaryReport report = new SummaryReport();
+        report.setOffersValue(offersValue);
+        report.setStockValue(stockValue);
+        report.setTopVins(vinSearches);
+        report.setTotalVinSearches(totalVinSearches);
+        return Response.ok().entity(report).build();
+    }
+
+
+    @UserJwt
+    @GET
+    @Path("uploads-summary/company/{id}")
+    public Response getUploadsSummary(@PathParam(value = "id") int id) {
+        String sql = "select b from CompanyUploadRequest b where b.companyId = :value0 order by created desc";
+        List<CompanyUploadRequest> stockRequests = dao.getJPQLParams(CompanyUploadRequest.class, sql , id);
+        sql = "select b from CompanyOfferUploadRequest b where b.companyId = :value0 order by created desc";
+        List<CompanyOfferUploadRequest> offerRequests = dao.getJPQLParams(CompanyOfferUploadRequest.class, sql, id);
+        UploadsSummary us = new UploadsSummary();
+        us.setOfferRequests(offerRequests);
+        us.setStockRequests(stockRequests);
+        return Response.ok().entity(us).build();
+    }
+
+
+    @UserJwt
+    @GET
+    @Path("summary-report")
+    public Response getHomeSummary() {
+        String sql = "select count(*) from VinSearch b where cast(b.created as date) = cast(now() as date)";
+        int vinSearchesToday = dao.findJPQLParams(Number.class, sql).intValue();
+        sql = "select coalesce(sum(stk.quantity * pcp.retailPrice),0) from CompanyStock stk left join CompanyProduct pcp on stk.companyProductId = pcp.id";
+        double stockValue = dao.findJPQLParams(Number.class, sql).doubleValue();
+        sql = "select coalesce(sum(b.quantity * b.offerPrice),0) from CompanyStockOffer b where now() between b.offerStartDate and b.offerEndDate";
+        double offersValue = dao.findJPQLParams(Number.class, sql).doubleValue();
+        sql = "select b from VinSearch b order by b.created desc";
+        List<VinSearch> vinSearches = dao.getJPQLParamsMax(VinSearch.class, sql, 50);
+        SummaryReport report = new SummaryReport();
+        report.setVinSearchesToday(vinSearchesToday);
+        report.setStockValue(stockValue);
+        report.setOffersValue(offersValue);
+        report.setTopVins(vinSearches);
+        return Response.ok().entity(report).build();
+    }
+
     @UserSubscriberJwt
     @Path("special-offer-upload-request")
     @POST
@@ -254,13 +312,13 @@ public class ProductQvmApiV3 {
         return Response.status(200).entity(uploadRequest).build();
     }
 
-    //old
     @Asynchronous
     private void updateSpecialOfferStockAsync(UploadHolder holder) {
         try {
             CompanyOfferUploadRequest req = dao.find(CompanyOfferUploadRequest.class, holder.getOfferId());
             for (var offerVar : holder.getOfferVars()) {
                 offerVar.setPartNumber(Helper.undecorate(offerVar.getPartNumber()));
+                offerVar.setAlternativeNumber(Helper.undecorate(offerVar.getAlternativeNumber()));
                 String sql = "select b from CompanyProduct b where b.partNumber = :value0 and b.companyId =:value1 and b.brandName = :value2";
                 CompanyProduct cp = dao.findJPQLParams(CompanyProduct.class, sql, offerVar.getPartNumber(), holder.getCompanyId(), offerVar.getBrand());
                 if (cp != null) {
@@ -283,6 +341,7 @@ public class ProductQvmApiV3 {
         try {
             for (var stockVar : holder.getStockVars()) {
                 stockVar.setPartNumber(Helper.undecorate(stockVar.getPartNumber()));
+                stockVar.setAlternativeNumber(Helper.undecorate(stockVar.getAlternativeNumber()));
                 String sql = "select b from CompanyProduct b where b.partNumber = :value0 and b.companyId =:value1 and b.brandName = :value2";
                 CompanyProduct cp = dao.findJPQLParams(CompanyProduct.class, sql, stockVar.getPartNumber(), holder.getCompanyId(), stockVar.getBrand());
                 if (cp != null) {
@@ -335,6 +394,9 @@ public class ProductQvmApiV3 {
     @Path("search-company-products")
     public Response searchCompanyProduct(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, Object> sr) {
         final String query = (String) sr.get("query");
+        if(query.length() == 0){
+            return Response.status(404).build();
+        }
         List<CompanyProduct> companyProducts = searchCompanyProducts(query);
         async.saveSearch(header, sr);
         return Response.ok().entity(companyProducts).build();
@@ -344,7 +406,8 @@ public class ProductQvmApiV3 {
     private List<CompanyProduct> searchCompanyProducts(String query) {
         try {
             String undecorated = "%" + Helper.undecorate(query) + "%";
-            String sql = "select b from CompanyProduct b where (b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
+            String sql = "select b from CompanyProduct b where " +
+                    "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
                     " select c.companyProductId from CompanyStock c where c.offerOnly =:value1)" +
                     " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " +
                     " and b.id in (" +
@@ -392,6 +455,9 @@ public class ProductQvmApiV3 {
     public Response searchParts(Map<String, String> map) {
         try {
             String query = map.get("query");
+            if(query == null || query.length() == 0){
+                return Response.status(404).build();
+            }
             String partNumber = "%" + Helper.undecorate(query) + "%";
             String jpql = "select b from PublicProduct b where b.productNumber like :value0 and b.status =:value1";
             List<PublicProduct> publicProducts = dao.getJPQLParams(PublicProduct.class, jpql, partNumber, 'A');

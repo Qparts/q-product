@@ -3,8 +3,17 @@ package q.rest.product.model.contract.v3;
 public class OfferHolder {
     private double offerPrice;
     private String partNumber;
+    private String alternativeNumber;
     private String brand;
     private int quantity;
+
+    public String getAlternativeNumber() {
+        return alternativeNumber;
+    }
+
+    public void setAlternativeNumber(String alternativeNumber) {
+        this.alternativeNumber = alternativeNumber;
+    }
 
     public double getOfferPrice() {
         return offerPrice;
