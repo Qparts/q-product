@@ -7,12 +7,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/SummaryReport.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/UploadsSummary.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/dao/DAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/dao/DAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/OfferHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/OfferHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/stock/CompanyProduct.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/stock/CompanyProduct.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" afterDir="false" />
     </list>
@@ -146,6 +141,11 @@
                 <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
                 <item name="JBoss Server" type="7427dc5b:ServiceModel$ServiceGroupNode" />
               </path>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="JBoss Server" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+                <item name="Running" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              </path>
             </expand>
             <select />
           </treeState>
@@ -277,7 +277,8 @@
       <workItem from="1593803798343" duration="9766000" />
       <workItem from="1594130685678" duration="4056000" />
       <workItem from="1594150983700" duration="5161000" />
-      <workItem from="1594202340190" duration="1251000" />
+      <workItem from="1594202340190" duration="1893000" />
+      <workItem from="1594321908436" duration="3466000" />
     </task>
     <servers />
   </component>

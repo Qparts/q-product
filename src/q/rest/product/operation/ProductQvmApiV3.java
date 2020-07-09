@@ -192,6 +192,7 @@ public class ProductQvmApiV3 {
     }
 
     //new
+    //this is bullshit, its loading all, it shouldn't
     @UserSubscriberJwt
     @GET
     @Path("company-uploads/special-offer/{soId}")
@@ -202,6 +203,47 @@ public class ProductQvmApiV3 {
         List<CompanyProduct> stock = dao.getJPQLParams(CompanyProduct.class, sql2, id);
         so.setProducts(stock);
         return Response.status(200).entity(so).build();
+    }
+
+
+
+
+    @UserSubscriberJwt
+    @GET
+    @Path("company-uploads/special-offer/{soId}/products/offset/{offset}/max/{max}")
+    public Response getVendorSepcialOffer(@PathParam(value = "soId") int id, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max){
+        String sql2 = "select b from CompanyProduct b " +
+                " where b.id in (" +
+                " select c.companyProductId from CompanyStockOffer c " +
+                " where c.offerRequestId = :value0)" +
+                " order by b.partNumber";
+        List<CompanyProduct> so = dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql2, offset, max, id);
+        return Response.status(200).entity(so).build();
+    }
+
+
+    @UserSubscriberJwt
+    @GET
+    @Path("company-uploads/special-offer/{soId}/products/offset/{offset}/max/{max}/search/{search}")
+    public Response getVendorSepcialOffer(@PathParam(value = "soId") int id, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max, @PathParam(value = "search") String search){
+        search = "%" + Helper.undecorate(search) + "%";
+        String sql = "select count(*) from CompanyProduct b " +
+                " where b.id in (" +
+                " select c.companyProductId from CompanyStockOffer c " +
+                " where c.offerRequestId = :value0)" +
+                " and b.partNumber like :value1";
+        Number count = dao.findJPQLParams(Number.class, sql, id, search);
+        String sql2 = "select b from CompanyProduct b " +
+                " where b.id in (" +
+                " select c.companyProductId from CompanyStockOffer c " +
+                " where c.offerRequestId = :value0)" +
+                " and b.partNumber like :value1" +
+                " order by b.partNumber";
+        List<CompanyProduct> so = dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql2, offset, max, id, search);
+        Map<String,Object> map = new HashMap<>();
+        map.put("products", so);
+        map.put("count", count);
+        return Response.status(200).entity(map).build();
     }
 
 
@@ -401,7 +443,6 @@ public class ProductQvmApiV3 {
         async.saveSearch(header, sr);
         return Response.ok().entity(companyProducts).build();
     }
-
 
     private List<CompanyProduct> searchCompanyProducts(String query) {
         try {

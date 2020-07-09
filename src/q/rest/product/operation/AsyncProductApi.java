@@ -23,7 +23,6 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import java.security.PublicKey;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
