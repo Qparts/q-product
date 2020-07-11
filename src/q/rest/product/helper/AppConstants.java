@@ -2,10 +2,13 @@ package q.rest.product.helper;
 
 public class AppConstants {
 
+    public static final String INTERNAL_APP_SECRET = "INTERNAL_APP";
     //SERVICES
+
 //    private static final String USER_SERVICE =  SysProps.getValue("userService");
     private static final String SUBSCRIBER_SERVICE =  SysProps.getValue("subscriberService");
     private static final String APP_BASE = SysProps.getValue("qvmWebAppBase");
+    private static final String LOCATION_SERVICE = SysProps.getValue("locationService").replace("/v2/", "/v3/");
   //  private static final String CUSTOMER_SERVICE = SysProps.getValue("customerService");
     //private static final String VENDOR_SERVICE = SysProps.getValue("vendorService");
 
@@ -19,6 +22,9 @@ public class AppConstants {
     public static final String PARTS_CATALOG_API_KEY = "OEM-API-9BC9464D-D8ED-4D69-8943-32CF9FA0D3F7";
 
 
+    //LOCATION SERVICE
+    public static final String POST_CITIES_REDUCED = LOCATION_SERVICE + "cities/reduced";
+
     public static final String CUSTOMER_MATCH_TOKEN =  "match-token";
     public static final String USER_MATCH_TOKEN =  "match-token";
     public static final String VENDOR_MATCH_TOKEN =  "match-token";
@@ -28,6 +34,7 @@ public class AppConstants {
 
     //Subscriber Service
     public static final String POST_SAVE_SEARCH_KEYWORD = SUBSCRIBER_SERVICE + "search-keyword";
+    public static final String POST_COMPANIES_REDUCED = SUBSCRIBER_SERVICE + "companies/reduced";
 
     //VENDOR SERVICE
     public static final String PUT_UPDATE_SEARCH_AVAILABILITY_WITH_BRANCHES =  "search-availability/update-branches";

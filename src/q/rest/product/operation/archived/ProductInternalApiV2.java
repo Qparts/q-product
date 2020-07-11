@@ -1,4 +1,4 @@
-package q.rest.product.operation;
+package q.rest.product.operation.archived;
 
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.SecuredUser;

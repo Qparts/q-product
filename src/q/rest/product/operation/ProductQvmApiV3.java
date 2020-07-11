@@ -440,7 +440,7 @@ public class ProductQvmApiV3 {
             return Response.status(404).build();
         }
         List<CompanyProduct> companyProducts = searchCompanyProducts(query);
-        async.saveSearch(header, sr);
+        async.saveSearch(header, sr, !companyProducts.isEmpty());
         return Response.ok().entity(companyProducts).build();
     }
 

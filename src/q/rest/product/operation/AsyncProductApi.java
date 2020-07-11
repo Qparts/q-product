@@ -36,8 +36,9 @@ public class AsyncProductApi {
     private DAO dao;
 
     @Asynchronous
-    public void saveSearch(String header, Map<String, Object> map) {
+    public void saveSearch(String header, Map<String, Object> map, boolean found) {
         if (map.get("companyId") != null) {
+            map.put("found", found);
             this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
         }
     }
