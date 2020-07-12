@@ -7,22 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/filter/jwt/InternalAppAgent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/subscriber/BranchReduced.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/subscriber/CompanyContactReduced.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/subscriber/CompanyReduced.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/reduced/CompanyProductReduced.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/reduced/CompanyStockOfferReduced.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/reduced/CompanyStockReduced.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/operation/MorniPublic.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV2.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogInternalApiV2.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/archived/ProductInternalApiV2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV2.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/MorniPublic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/MorniPublic.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -297,7 +283,7 @@
       <workItem from="1594130685678" duration="4056000" />
       <workItem from="1594150983700" duration="5161000" />
       <workItem from="1594202340190" duration="1893000" />
-      <workItem from="1594321908436" duration="13070000" />
+      <workItem from="1594321908436" duration="14703000" />
     </task>
     <servers />
   </component>

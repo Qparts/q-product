@@ -3,23 +3,21 @@ package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.annotation.InternalApp;
-import q.rest.product.filter.annotation.UserSubscriberJwt;
+import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
-import q.rest.product.model.contract.subscriber.BranchReduced;
+import q.rest.product.model.catalog.CatalogCar;
+import q.rest.product.model.catalog.CatalogGroup;
+import q.rest.product.model.catalog.CatalogPart;
 import q.rest.product.model.contract.subscriber.CompanyReduced;
 import q.rest.product.model.entity.v3.reduced.CompanyProductReduced;
-import q.rest.product.model.entity.v3.stock.CompanyProduct;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.util.*;
 
 
@@ -31,6 +29,83 @@ public class MorniPublic {
 
     @EJB
     private DAO dao;
+
+
+    @InternalApp
+    @Path("cars")
+    @GET
+    public Response searchVin(@HeaderParam (HttpHeaders.AUTHORIZATION) String header, @Context UriInfo info) {
+        try{
+            String vin = info.getQueryParameters().getFirst("vin");
+            String catalogId = info.getQueryParameters().getFirst("catalogid");
+            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
+           if(r.getStatus() != 200){
+//                async.saveVinSearch(vin, catalogId, header, false);
+                return Response.status(404).build();
+            }
+            List<CatalogCar> catalogCars = r.readEntity(new GenericType<List<CatalogCar>>(){});
+        //    if(catalogCars.isEmpty()){
+  //              async.saveVinSearch(vin, catalogId, header, false);
+          //  }else{
+    //            async.saveVinSearch(vin, catalogId, header, true);
+            //}
+            return Response.status(200).entity(catalogCars).build();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return Response.status(500).build();
+        }
+    }
+
+
+    @InternalApp
+    @Path("parts")
+    @GET
+    public Response searchParts(@Context UriInfo info) {
+        try {
+            String catalogId = info.getQueryParameters().getFirst("catalogid");
+            String groupId = info.getQueryParameters().getFirst("groupid");
+            String criteria = info.getQueryParameters().getFirst("criteria");
+            String carId = info.getQueryParameters().getFirst("carid");
+            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogParts(catalogId, carId, groupId, Helper.getEncodedUrl(criteria)));
+            if(r.getStatus() != 200){
+                return Response.status(404).build();
+            }
+            CatalogPart catalogPart = r.readEntity(CatalogPart.class);
+            catalogPart.setImg(AppConstants.getImageReplacedLink(catalogPart.getImg()));
+            //initProductHolders(catalogPart);
+            return Response.status(200).entity(catalogPart).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+    
+    @InternalApp
+    @Path("groups")
+    @GET
+    public Response searchGroups(@Context UriInfo info){
+        try{
+            String catalogId = info.getQueryParameters().getFirst("catalogid");
+            String groupId = info.getQueryParameters().getFirst("groupid");
+            String criteria = info.getQueryParameters().getFirst("criteria");
+            String carId = info.getQueryParameters().getFirst("carid");
+            if(groupId == null || groupId == ""){
+                groupId = null;
+            }
+            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogGroups(catalogId, carId, groupId, Helper.getEncodedUrl(criteria)));
+            if(r.getStatus() != 200){
+                return Response.status(404).build();
+            }
+            List<CatalogGroup> catalogGroups = r.readEntity(new GenericType<List<CatalogGroup>>(){});
+            catalogGroups.forEach(cg -> {
+                cg.setImg(AppConstants.getImageReplacedLink(cg.getImg()));
+            });
+            return Response.status(200).entity(catalogGroups).build();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return Response.status(500).build();
+        }
+    }
 
     //new
     @InternalApp
@@ -46,6 +121,7 @@ public class MorniPublic {
         addCities(companyProducts);
         return Response.ok().entity(companyProducts).build();
     }
+
 
     private List<CompanyProductReduced> searchCompanyProducts(String query) {
         try {
@@ -114,6 +190,14 @@ public class MorniPublic {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();
         b.header(HttpHeaders.AUTHORIZATION, authHeader);
         return b.post(Entity.entity(t, "application/json"));
+    }
+
+
+    private Response getCatalogSecuredRequest(String link) {
+        Invocation.Builder b = ClientBuilder.newClient().target(link).request();
+        b.header(HttpHeaders.AUTHORIZATION, AppConstants.PARTS_CATALOG_API_KEY);
+        Response r = b.get();
+        return r;
     }
 
 }
