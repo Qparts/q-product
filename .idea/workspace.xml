@@ -8,6 +8,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/MorniPublic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/MorniPublic.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -283,7 +284,7 @@
       <workItem from="1594130685678" duration="4056000" />
       <workItem from="1594150983700" duration="5161000" />
       <workItem from="1594202340190" duration="1893000" />
-      <workItem from="1594321908436" duration="14703000" />
+      <workItem from="1594321908436" duration="15141000" />
     </task>
     <servers />
   </component>

@@ -39,6 +39,8 @@ public class MorniPublic {
             String vin = info.getQueryParameters().getFirst("vin");
             String catalogId = info.getQueryParameters().getFirst("catalogid");
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
+            System.out.println("catalog call : " + AppConstants.getCatalogCarsByVin(catalogId, vin));
+            System.out.println("status from catalog call " + r.getStatus());
            if(r.getStatus() != 200){
 //                async.saveVinSearch(vin, catalogId, header, false);
                 return Response.status(404).build();
@@ -78,7 +80,7 @@ public class MorniPublic {
             return Response.status(500).build();
         }
     }
-    
+
     @InternalApp
     @Path("groups")
     @GET
@@ -138,7 +140,6 @@ public class MorniPublic {
     private void addCities(List<CompanyProductReduced> products){
         Set<Integer> cityIds = new HashSet<>();
         products.forEach(g-> g.getStock().forEach(h-> cityIds.add(h.getCityId())));
-
         Map<String,Object> map = new HashMap<>();
         map.put("cityIds", cityIds);
         Response r = this.postSecuredRequest(AppConstants.POST_CITIES_REDUCED, map, "Bearer "+AppConstants.INTERNAL_APP_SECRET);

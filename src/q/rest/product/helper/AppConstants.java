@@ -5,12 +5,9 @@ public class AppConstants {
     public static final String INTERNAL_APP_SECRET = "INTERNAL_APP";
     //SERVICES
 
-//    private static final String USER_SERVICE =  SysProps.getValue("userService");
     private static final String SUBSCRIBER_SERVICE =  SysProps.getValue("subscriberService");
     private static final String APP_BASE = SysProps.getValue("qvmWebAppBase");
     private static final String LOCATION_SERVICE = SysProps.getValue("locationService").replace("/v2/", "/v3/");
-  //  private static final String CUSTOMER_SERVICE = SysProps.getValue("customerService");
-    //private static final String VENDOR_SERVICE = SysProps.getValue("vendorService");
 
     //AWS
     private static final String AMAZON_S3_PATH = SysProps.getValue("amazonS3Path");
