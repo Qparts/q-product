@@ -38,19 +38,12 @@ public class MorniPublic {
         try{
             String vin = info.getQueryParameters().getFirst("vin");
             String catalogId = info.getQueryParameters().getFirst("catalogid");
+            System.out.println("morni called vin " + vin + " catalogid " + catalogId);
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
-            System.out.println("catalog call : " + AppConstants.getCatalogCarsByVin(catalogId, vin));
-            System.out.println("status from catalog call " + r.getStatus());
            if(r.getStatus() != 200){
-//                async.saveVinSearch(vin, catalogId, header, false);
                 return Response.status(404).build();
             }
             List<CatalogCar> catalogCars = r.readEntity(new GenericType<List<CatalogCar>>(){});
-        //    if(catalogCars.isEmpty()){
-  //              async.saveVinSearch(vin, catalogId, header, false);
-          //  }else{
-    //            async.saveVinSearch(vin, catalogId, header, true);
-            //}
             return Response.status(200).entity(catalogCars).build();
         }catch (Exception ex){
             ex.printStackTrace();
@@ -68,13 +61,13 @@ public class MorniPublic {
             String groupId = info.getQueryParameters().getFirst("groupid");
             String criteria = info.getQueryParameters().getFirst("criteria");
             String carId = info.getQueryParameters().getFirst("carid");
+            System.out.println("morni called parts " + groupId);
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogParts(catalogId, carId, groupId, Helper.getEncodedUrl(criteria)));
             if(r.getStatus() != 200){
                 return Response.status(404).build();
             }
             CatalogPart catalogPart = r.readEntity(CatalogPart.class);
             catalogPart.setImg(AppConstants.getImageReplacedLink(catalogPart.getImg()));
-            //initProductHolders(catalogPart);
             return Response.status(200).entity(catalogPart).build();
         }catch (Exception ex){
             return Response.status(500).build();
@@ -90,6 +83,7 @@ public class MorniPublic {
             String groupId = info.getQueryParameters().getFirst("groupid");
             String criteria = info.getQueryParameters().getFirst("criteria");
             String carId = info.getQueryParameters().getFirst("carid");
+            System.out.println("morni called groups " + groupId);
             if(groupId == null || groupId == ""){
                 groupId = null;
             }
@@ -115,6 +109,7 @@ public class MorniPublic {
     @Path("search-products")
     public Response searchCompanyProduct(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, Object> sr) {
         final String query = (String) sr.get("query");
+        System.out.println("morni called search parts: " + query);
         if(query.length() == 0){
             return Response.status(404).build();
         }
