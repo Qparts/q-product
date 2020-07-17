@@ -29,11 +29,7 @@ public class ProductCatalogApiV3 {
     @EJB
     private AsyncProductApi async;
 
-
-
-
-
-//    @SubscriberJwt
+    @SubscriberJwt
     @Path("cars")
     @GET
     public Response searchVin(@HeaderParam (HttpHeaders.AUTHORIZATION) String header, @Context UriInfo info) {
@@ -59,7 +55,7 @@ public class ProductCatalogApiV3 {
     }
 
 
- //   @SubscriberJwt
+    @SubscriberJwt
     @Path("groups")
     @GET
     public Response searchGroups(@Context UriInfo info){
@@ -87,7 +83,7 @@ public class ProductCatalogApiV3 {
         }
     }
 
- //   @SubscriberJwt
+    @SubscriberJwt
     @Path("parts")
     @GET
     public Response searchParts(@Context UriInfo info) {
