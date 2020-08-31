@@ -151,23 +151,6 @@ public class ProductQvmApiV3 {
         }
     }
 
-
-    /*
-    //old
-    @UserJwt
-    @GET
-    @Path("vendor-uploads/stock")
-    public Response getVendorUploads() {
-        try {
-            List<VendorUploadRequest> uploads = dao.getOrderByOriented(VendorUploadRequest.class, "created", "desc");
-            return Response.status(200).entity(uploads).build();
-        } catch (Exception ex) {
-            return Response.status(500).build();
-        }
-    }
-     */
-
-
     //new
     @UserJwt
     @GET
@@ -206,6 +189,23 @@ public class ProductQvmApiV3 {
     }
 
 
+
+    //for lazy
+    private List<CompanyProduct> searchCompanyProducts(String query, int offset, int max) {
+        try {
+            String undecorated = "%" + Helper.undecorate(query) + "%";
+            String sql = "select b from CompanyProduct b where " +
+                    "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
+                    " select c.companyProductId from CompanyStock c where c.offerOnly =:value1)" +
+                    " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " +
+                    " and b.id in (" +
+                    " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
+                    ")))";
+            return dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql, offset, max, undecorated, false, true);
+        } catch (Exception ex) {
+            return new ArrayList<>();
+        }
+    }
 
 
     @UserSubscriberJwt
@@ -430,6 +430,67 @@ public class ProductQvmApiV3 {
     }
 
 
+    //for lazy loading
+    @UserSubscriberJwt
+    @POST
+    @Path("search-company-products-lazy/size")
+    public Response searchCompanyProductSize(@HeaderParam(HttpHeaders.AUTHORIZATION) String header,Map<String, Object> sr){
+        String query = (String) sr.get("query");
+        if(query.length() == 0){
+            return Response.status(404).build();
+        }
+        int size = searchCompanyProductSize(query);
+        async.saveSearch(header, sr, size > 0);
+        Map<String,Integer> map = new HashMap<>();
+        map.put("search-size", size);
+        return Response.status(200).entity(map).build();
+    }
+
+
+    @SubscriberJwt
+    @POST
+    @Path("search-company-products-lazy")
+    public Response searchCompanyProductLazy(Map<String, Object> map){
+        String query = (String) map.get("query");
+        int offset = (int) map.get("offset");
+        int max = (int) map.get("max");
+        List<CompanyProduct> so = this.searchCompanyProducts(query, offset, max);
+        return Response.status(200).entity(so).build();
+    }
+
+    @SubscriberJwt
+    @POST
+    @Path("search-company-products-lazy/filtered")
+    public Response searchCompanyProductLazyFiltered(Map<String, Object> map){
+        String query = (String) map.get("query");
+        int offset = (int) map.get("offset");
+        int max = (int) map.get("max");
+        String filter = (String) map.get("filter");
+        String undecorated = "%" + Helper.undecorate(query) + "%";
+        String filterUndecorated = "%" + Helper.undecorate(filter) + "%";
+        String sql = "select count(*) from CompanyProduct z where z.id in (select b.id from CompanyProduct b where " +
+                "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
+                " select c.companyProductId from CompanyStock c where c.offerOnly =:value1)" +
+                " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " +
+                " and b.id in (" +
+                " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
+                ")))) and z.partNumber like :value3";
+        int size = dao.findJPQLParams(Number.class, sql, undecorated, false, true, filterUndecorated).intValue();
+        sql = "select z from CompanyProduct z where z.id in (select b.id from CompanyProduct b where " +
+                "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
+                " select c.companyProductId from CompanyStock c where c.offerOnly =:value1)" +
+                " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " +
+                " and b.id in (" +
+                " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
+                ")))) and z.partNumber like :value3";
+        List<CompanyProduct> so =  dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql, offset, max, undecorated, false, true, filterUndecorated);
+        Map<String,Object> mp = new HashMap<>();
+        mp.put("products", so);
+        mp.put("count", size);
+        return Response.status(200).entity(mp).build();
+    }
+
+
     //new
     @UserSubscriberJwt
     @POST
@@ -444,6 +505,24 @@ public class ProductQvmApiV3 {
         return Response.ok().entity(companyProducts).build();
     }
 
+    //for lazy (size only)
+    private int searchCompanyProductSize(String query){
+        try {
+            String undecorated = "%" + Helper.undecorate(query) + "%";
+            String sql = "select count(*) from CompanyProduct b where " +
+                    "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
+                    " select c.companyProductId from CompanyStock c where c.offerOnly =:value1)" +
+                    " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " +
+                    " and b.id in (" +
+                    " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
+                    ")))";
+            return dao.findJPQLParams(Number.class, sql, undecorated, false, true).intValue();
+        } catch (Exception ex) {
+            return 0;
+        }
+    }
+
+    //for eager
     private List<CompanyProduct> searchCompanyProducts(String query) {
         try {
             String undecorated = "%" + Helper.undecorate(query) + "%";
@@ -459,6 +538,7 @@ public class ProductQvmApiV3 {
             return new ArrayList<>();
         }
     }
+
 
 
     @UserJwt
