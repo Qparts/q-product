@@ -3,7 +3,6 @@ package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.annotation.InternalApp;
-import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.catalog.CatalogCar;

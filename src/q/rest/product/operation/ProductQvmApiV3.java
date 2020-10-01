@@ -38,6 +38,8 @@ public class ProductQvmApiV3 {
     private AsyncProductApi async;
 
 
+
+
     @UserJwt
     @GET
     @Path("vin-search-activity/from/{from}/to/{to}")
@@ -59,8 +61,6 @@ public class ProductQvmApiV3 {
             return Response.status(500).build();
         }
     }
-
-    //new
     @UserJwt
     @PUT
     @Path("update-stock")
@@ -537,6 +537,17 @@ public class ProductQvmApiV3 {
         } catch (Exception ex) {
             return new ArrayList<>();
         }
+    }
+
+    @SubscriberJwt
+    @GET
+    @Path("sample-products/company/{companyId}")
+    public Response getSampleProducts(@PathParam(value = "companyId") int companyId){
+        String sql = "select b from CompanyProduct b where b.companyId = :value0" +
+                " and b.id in (" +
+                " select c.companyProductId from CompanyStock c where c.offerOnly =:value1)";
+        List<CompanyProduct> products = dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql, 0, 10, companyId, false);
+        return Response.ok().entity(products).build();
     }
 
 
