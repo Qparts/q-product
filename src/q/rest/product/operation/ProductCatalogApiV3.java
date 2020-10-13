@@ -79,12 +79,13 @@ public class ProductCatalogApiV3 {
     public Response getCarFiltersByModel(@Context UriInfo info){
         String catalogId = info.getQueryParameters().getFirst("catalogid");
         String modelId = info.getQueryParameters().getFirst("modelid");
-        Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarFiltersByModel(catalogId, modelId));
+        String params = info.getQueryParameters().getFirst("params");
+        Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarFiltersByModel(catalogId, modelId, params));
         if(r.getStatus() == 200){
             return Response.ok().entity(r.readEntity(Object.class)).build();
         }
         Map<String,Object> map = r.readEntity(Map.class);
-        map.putIfAbsent("requested", AppConstants.getCatalogCarFiltersByModel(catalogId, modelId));
+        map.putIfAbsent("requested", AppConstants.getCatalogCarFiltersByModel(catalogId, modelId,params));
         return Response.status(r.getStatus()).entity(map).build();
     }
 

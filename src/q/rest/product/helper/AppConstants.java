@@ -70,8 +70,11 @@ public class AppConstants {
         return PARTS_CATALOG_API + "catalogs/" + catalog + "/cars2?modelId=" + modelId;
     }
 
-    public static String getCatalogCarFiltersByModel(String catalog, String modelId){
-        return PARTS_CATALOG_API + "catalogs/" + catalog + "/cars-parameters?modelId=" + modelId;
+    public static String getCatalogCarFiltersByModel(String catalog, String modelId, String params){
+        String link =  PARTS_CATALOG_API + "catalogs/" + catalog + "/cars-parameters?modelId=" + modelId;
+        if(params != null)
+            link += "&parameter=" +params;
+        return link;
     }
 
     public static final String getCatalogGroups(String catalogId, String carId, String groupId, String criteria){
