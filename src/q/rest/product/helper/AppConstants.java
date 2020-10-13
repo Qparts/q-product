@@ -16,7 +16,7 @@ public class AppConstants {
 
     //PARTS CATALOG
     private static final String PARTS_CATALOG_API = "https://api.parts-catalogs.com/v1/";
-    public static final String PARTS_CATALOG_API_KEY = "OEM-API-9BC9464D-D8ED-4D69-8943-32CF9FA0D3F7";
+    public static final String PARTS_CATALOG_API_KEY = SysProps.getValue("tradesoftCatKey");
 
 
     //LOCATION SERVICE
@@ -36,6 +36,14 @@ public class AppConstants {
     //VENDOR SERVICE
     public static final String PUT_UPDATE_SEARCH_AVAILABILITY_WITH_BRANCHES =  "search-availability/update-branches";
 
+
+    public static final String GET_CATALOGS = PARTS_CATALOG_API + "catalogs/";
+
+
+    public static String getCatalogModels(String catId){
+        return PARTS_CATALOG_API + "catalogs/" + catId + "/models";
+    }
+
     public static String getImageReplacedLink(String string){
         try {
             return APP_BASE + "cat-img/" + string.substring("//img.parts-catalogs.com/".length());
@@ -43,6 +51,7 @@ public class AppConstants {
             return string;
         }
     }
+
 
     public static final String getProductImage(long id){
         return AMAZON_S3_PATH + PRODUCT_BUCKET_NAME + "/" + id + ".png";
@@ -57,6 +66,9 @@ public class AppConstants {
         return PARTS_CATALOG_API + "catalogs/" + catalogId + "/cars-by-vin?vin=" + vin;
     }
 
+    public static String getCatalogCarsByModel(String catalog, String modelId){
+        return PARTS_CATALOG_API + "catalogs/" + catalog + "/carts2?modelId=" + modelId;
+    }
 
     public static final String getCatalogGroups(String catalogId, String carId, String groupId, String criteria){
         String link = PARTS_CATALOG_API + "catalogs/" + catalogId + "/groups2?carId=" + carId;

@@ -29,6 +29,34 @@ public class ProductCatalogApiV3 {
     @EJB
     private AsyncProductApi async;
 
+
+
+    @SubscriberJwt
+    @Path("models")
+    @GET
+    public Response getModels(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @Context UriInfo info){
+        String catalogId = info.getQueryParameters().getFirst("catalogid");
+        Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogModels(catalogId));
+        if(r.getStatus() == 200){
+            return Response.ok().entity(r.readEntity(Object.class)).build();
+        }
+        return Response.status(400).build();
+    }
+
+
+    @SubscriberJwt
+    @Path("catalogs")
+    @GET
+    public Response getCatalogs(){
+        Response r = this.getCatalogSecuredRequest(AppConstants.GET_CATALOGS);
+        if(r.getStatus() == 200){
+            return Response.ok().entity(r.readEntity(Object.class)).build();
+        }
+        return Response.status(400).build();
+    }
+
+
+
     @SubscriberJwt
     @Path("cars")
     @GET
