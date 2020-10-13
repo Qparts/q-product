@@ -67,7 +67,7 @@ public class AppConstants {
     }
 
     public static String getCatalogCarsByModel(String catalog, String modelId){
-        return PARTS_CATALOG_API + "catalogs/" + catalog + "/carts2?modelId=" + modelId;
+        return PARTS_CATALOG_API + "catalogs/" + catalog + "/cars2?modelId=" + modelId;
     }
 
     public static final String getCatalogGroups(String catalogId, String carId, String groupId, String criteria){
