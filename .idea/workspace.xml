@@ -296,7 +296,7 @@
       <workItem from="1602137237816" duration="576000" />
       <workItem from="1602159746405" duration="340000" />
       <workItem from="1602161637547" duration="1000" />
-      <workItem from="1602589478975" duration="6290000" />
+      <workItem from="1602589478975" duration="6560000" />
     </task>
     <servers />
   </component>
@@ -378,9 +378,10 @@
     <state width="671" height="185" key="GridCell.Tab.1.right/-1920.23.1920.973/0.23.1680.1027@-1920.23.1920.973" timestamp="1602604473454" />
     <state width="958" height="185" key="GridCell.Tab.1.right/0.23.1440.793@0.23.1440.793" timestamp="1601549639690" />
     <state width="958" height="185" key="GridCell.Tab.1.right/0.23.1440.795@0.23.1440.795" timestamp="1594705611618" />
-    <state x="385" y="140" width="670" height="676" key="search.everywhere.popup" timestamp="1594472178535">
-      <screen x="0" y="23" width="1440" height="793" />
+    <state x="-1407" y="167" width="894" height="830" key="search.everywhere.popup" timestamp="1602605918280">
+      <screen x="-1920" y="23" width="1920" height="973" />
     </state>
+    <state x="-1407" y="167" width="894" height="830" key="search.everywhere.popup/-1920.23.1920.973/0.23.1680.1027@-1920.23.1920.973" timestamp="1602605918280" />
     <state x="385" y="140" width="670" height="676" key="search.everywhere.popup/0.23.1440.793@0.23.1440.793" timestamp="1594472178535" />
   </component>
   <component name="antWorkspaceConfiguration">

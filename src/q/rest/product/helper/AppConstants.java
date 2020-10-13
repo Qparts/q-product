@@ -66,8 +66,11 @@ public class AppConstants {
         return PARTS_CATALOG_API + "catalogs/" + catalogId + "/cars-by-vin?vin=" + vin;
     }
 
-    public static String getCatalogCarsByModel(String catalog, String modelId){
-        return PARTS_CATALOG_API + "catalogs/" + catalog + "/cars2?modelId=" + modelId;
+    public static String getCatalogCarsByModel(String catalog, String modelId, String params){
+        String link =  PARTS_CATALOG_API + "catalogs/" + catalog + "/cars2?modelId=" + modelId;
+        if(params != null)
+            link += "&parameter=" +params;
+        return link;
     }
 
     public static String getCatalogCarFiltersByModel(String catalog, String modelId, String params){
