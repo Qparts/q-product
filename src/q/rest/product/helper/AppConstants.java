@@ -71,7 +71,7 @@ public class AppConstants {
     }
 
     public static String getCatalogCarFiltersByModel(String catalog, String modelId){
-        return PARTS_CATALOG_API + "catalogs/" + catalog + "/cars-parameters";
+        return PARTS_CATALOG_API + "catalogs/" + catalog + "/cars-parameters?modelId=" + modelId;
     }
 
     public static final String getCatalogGroups(String catalogId, String carId, String groupId, String criteria){
