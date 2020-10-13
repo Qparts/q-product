@@ -67,7 +67,7 @@ public class ProductCatalogApiV3 {
         if(r.getStatus() == 200){
             return Response.ok().entity(r.readEntity(Object.class)).build();
         }
-        return Response.status(400).build();
+        return Response.status(r.getStatus()).entity(r.readEntity(String.class)).build();
     }
 
 

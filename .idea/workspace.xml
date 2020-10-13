@@ -7,8 +7,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogModel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/catalog/Catalogs.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV3.java" afterDir="false" />
     </list>
@@ -292,7 +290,7 @@
       <workItem from="1602137237816" duration="576000" />
       <workItem from="1602159746405" duration="340000" />
       <workItem from="1602161637547" duration="1000" />
-      <workItem from="1602589478975" duration="4692000" />
+      <workItem from="1602589478975" duration="4899000" />
     </task>
     <servers />
   </component>
