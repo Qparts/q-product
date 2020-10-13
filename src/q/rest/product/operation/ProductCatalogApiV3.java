@@ -1,7 +1,6 @@
 package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
-import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.catalog.*;
@@ -31,7 +30,7 @@ public class ProductCatalogApiV3 {
     private AsyncProductApi async;
 
 
-    @SubscriberJwt
+//    @SubscriberJwt
     @Path("catalogs")
     @GET
     public Response getCatalogs(){
@@ -45,7 +44,7 @@ public class ProductCatalogApiV3 {
 
 
 
-    @SubscriberJwt
+//    @SubscriberJwt
     @Path("models")
     @GET
     public Response getModels(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @Context UriInfo info){
@@ -58,7 +57,7 @@ public class ProductCatalogApiV3 {
         return Response.status(400).build();
     }
 
-    @SubscriberJwt
+//    @SubscriberJwt
     @Path("cars-by-model")
     @GET
     public Response getCarsByModel(@Context UriInfo info){
@@ -74,7 +73,7 @@ public class ProductCatalogApiV3 {
         return Response.status(r.getStatus()).entity(map).build();
     }
 
-    @SubscriberJwt
+//    @SubscriberJwt
     @Path("car-filters-by-model")
     @GET
     public Response getCarFiltersByModel(@Context UriInfo info){
@@ -91,7 +90,7 @@ public class ProductCatalogApiV3 {
     }
 
 
-    @SubscriberJwt
+//    @SubscriberJwt
     @Path("cars")
     @GET
     public Response searchVin(@HeaderParam (HttpHeaders.AUTHORIZATION) String header, @Context UriInfo info) {
@@ -117,7 +116,7 @@ public class ProductCatalogApiV3 {
     }
 
 
-    @SubscriberJwt
+//    @SubscriberJwt
     @Path("groups")
     @GET
     public Response searchGroups(@Context UriInfo info){
@@ -145,7 +144,7 @@ public class ProductCatalogApiV3 {
         }
     }
 
-    @SubscriberJwt
+//    @SubscriberJwt
     @Path("parts")
     @GET
     public Response searchParts(@Context UriInfo info) {
