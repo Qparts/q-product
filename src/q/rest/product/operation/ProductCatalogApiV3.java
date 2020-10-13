@@ -30,6 +30,19 @@ public class ProductCatalogApiV3 {
     private AsyncProductApi async;
 
 
+    @SubscriberJwt
+    @Path("catalogs")
+    @GET
+    public Response getCatalogs(){
+        Response r = this.getCatalogSecuredRequest(AppConstants.GET_CATALOGS);
+        if(r.getStatus() == 200){
+            List<Catalogs> catalogs = r.readEntity(new GenericType<List<Catalogs>>(){});
+            return Response.ok().entity(catalogs).build();
+        }
+        return Response.status(400).build();
+    }
+
+
 
     @SubscriberJwt
     @Path("models")
@@ -38,17 +51,19 @@ public class ProductCatalogApiV3 {
         String catalogId = info.getQueryParameters().getFirst("catalogid");
         Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogModels(catalogId));
         if(r.getStatus() == 200){
-            return Response.ok().entity(r.readEntity(Object.class)).build();
+            List<CatalogModel> models = r.readEntity(new GenericType<List<CatalogModel>>(){});
+            return Response.ok().entity(models).build();
         }
         return Response.status(400).build();
     }
 
-
     @SubscriberJwt
-    @Path("catalogs")
+    @Path("cars-by-model")
     @GET
-    public Response getCatalogs(){
-        Response r = this.getCatalogSecuredRequest(AppConstants.GET_CATALOGS);
+    public Response getCarsByModel(@Context UriInfo info){
+        String catalogId = info.getQueryParameters().getFirst("catalogid");
+        String modelId = info.getQueryParameters().getFirst("modelid");
+        Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByModel(catalogId, modelId));
         if(r.getStatus() == 200){
             return Response.ok().entity(r.readEntity(Object.class)).build();
         }
