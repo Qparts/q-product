@@ -84,7 +84,7 @@ public class ProductCatalogApiV3 {
             return Response.ok().entity(r.readEntity(Object.class)).build();
         }
         Map<String,Object> map = r.readEntity(Map.class);
-        map.putIfAbsent("requested", AppConstants.getCatalogCarsByModel(catalogId, modelId));
+        map.putIfAbsent("requested", AppConstants.getCatalogCarFiltersByModel(catalogId, modelId));
         return Response.status(r.getStatus()).entity(map).build();
     }
 
