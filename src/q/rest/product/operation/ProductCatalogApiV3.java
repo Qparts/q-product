@@ -16,6 +16,7 @@ import javax.ws.rs.core.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Path("/api/v3/catalog/")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -67,7 +68,9 @@ public class ProductCatalogApiV3 {
         if(r.getStatus() == 200){
             return Response.ok().entity(r.readEntity(Object.class)).build();
         }
-        return Response.status(r.getStatus()).entity(r.readEntity(String.class)).build();
+        Map<String,Object> map = r.readEntity(Map.class);
+        map.putIfAbsent("requested", AppConstants.getCatalogCarsByModel(catalogId, modelId));
+        return Response.status(r.getStatus()).entity(map).build();
     }
 
 
