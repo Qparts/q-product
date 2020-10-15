@@ -37,12 +37,6 @@ public class AppConstants {
     public static final String PUT_UPDATE_SEARCH_AVAILABILITY_WITH_BRANCHES =  "search-availability/update-branches";
 
 
-    public static final String GET_CATALOGS = PARTS_CATALOG_API + "catalogs/";
-
-
-    public static String getCatalogModels(String catId){
-        return PARTS_CATALOG_API + "catalogs/" + catId + "/models";
-    }
 
     public static String getImageReplacedLink(String string){
         try {
@@ -62,7 +56,19 @@ public class AppConstants {
     }
 
 
-    public static final String getCatalogCarsByVin(String catalogId, String vin){
+    public static final String GET_CATALOGS = PARTS_CATALOG_API + "catalogs/";
+
+
+    public static String getCatalogModels(String catId){
+        return PARTS_CATALOG_API + "catalogs/" + catId + "/models";
+    }
+
+    public static String getCarInfo(String query){
+      return PARTS_CATALOG_API + "car/info?q=" + query;
+    }
+
+
+    public static String getCatalogCarsByVin(String catalogId, String vin){
         return PARTS_CATALOG_API + "catalogs/" + catalogId + "/cars-by-vin?vin=" + vin;
     }
 

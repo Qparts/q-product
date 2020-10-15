@@ -1,6 +1,7 @@
 package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
+import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.catalog.*;
@@ -86,6 +87,20 @@ public class ProductCatalogApiV3 {
         }
         Map<String,Object> map = r.readEntity(Map.class);
         map.putIfAbsent("requested", AppConstants.getCatalogCarFiltersByModel(catalogId, modelId,params));
+        return Response.status(r.getStatus()).entity(map).build();
+    }
+
+//    @SubscriberJwt
+    @Path("cars/info")
+    @GET
+    public Response getCarInfo(@Context UriInfo info){
+        String query = info.getQueryParameters().getFirst("query");
+        Response r = this.getCatalogSecuredRequest(AppConstants.getCarInfo(query));
+        if(r.getStatus() == 200){
+            return Response.ok().entity(r.readEntity(Object.class)).build();
+        }
+        Map<String,Object> map = r.readEntity(Map.class);
+        map.putIfAbsent("requested", AppConstants.getCarInfo(query));
         return Response.status(r.getStatus()).entity(map).build();
     }
 
