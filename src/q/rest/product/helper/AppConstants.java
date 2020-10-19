@@ -88,10 +88,8 @@ public class AppConstants {
 
     public static final String getCatalogGroups(String catalogId, String carId, String groupId, String criteria){
         String link = PARTS_CATALOG_API + "catalogs/" + catalogId + "/groups2?carId=" + carId;
-        link += "&criteria=" + criteria;
-        if(groupId != null) {
-            link+= "&groupId=" + groupId;
-        }
+        if(criteria != null ) link += "&criteria=" + criteria;
+        if(groupId != null) link+= "&groupId=" + groupId;
         return link;
     }
 

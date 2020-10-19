@@ -140,9 +140,8 @@ public class ProductCatalogApiV3 {
             String groupId = info.getQueryParameters().getFirst("groupid");
             String criteria = info.getQueryParameters().getFirst("criteria");
             String carId = info.getQueryParameters().getFirst("carid");
-            if(groupId == null || groupId == ""){
-                groupId = null;
-            }
+            if(groupId == null || groupId.equals("")) groupId = null;
+            if(criteria == null || criteria.equals("")) criteria = null;
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogGroups(catalogId, carId, groupId, Helper.getEncodedUrl(criteria)));
             if(r.getStatus() != 200){
                 return Response.status(404).build();
