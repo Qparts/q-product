@@ -141,8 +141,8 @@ public class ProductCatalogApiV3 {
             String criteria = info.getQueryParameters().getFirst("criteria");
             String carId = info.getQueryParameters().getFirst("carid");
             if(groupId == null || groupId.equals("")) groupId = null;
-            if(criteria == null || criteria.equals("")) criteria = null;
-            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogGroups(catalogId, carId, groupId, Helper.getEncodedUrl(criteria)));
+            String encodedCriteria = (criteria == null || criteria.equals("")) ? null : Helper.getEncodedUrl(criteria);
+            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogGroups(catalogId, carId, groupId, encodedCriteria));
             if(r.getStatus() != 200){
                 return Response.status(404).build();
             }
@@ -167,7 +167,8 @@ public class ProductCatalogApiV3 {
             String groupId = info.getQueryParameters().getFirst("groupid");
             String criteria = info.getQueryParameters().getFirst("criteria");
             String carId = info.getQueryParameters().getFirst("carid");
-            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogParts(catalogId, carId, groupId, Helper.getEncodedUrl(criteria)));
+            String encodedCriteria = (criteria == null || criteria.equals("")) ? null : Helper.getEncodedUrl(criteria);
+            Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogParts(catalogId, carId, groupId, encodedCriteria));
             if(r.getStatus() != 200){
                 return Response.status(404).build();
             }
