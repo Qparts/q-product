@@ -51,8 +51,9 @@ public class ProductCatalogApiV3 {
         String catalogId = info.getQueryParameters().getFirst("catalogid");
         Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogModels(catalogId));
         if (r.getStatus() == 200) {
-            List<CatalogModel> models = r.readEntity(new GenericType<List<CatalogModel>>() {
-            });
+            List<CatalogModel> models = r.readEntity(new GenericType<List<CatalogModel>>() {});
+
+            models.forEach(cg -> {cg.setImg(AppConstants.getImageReplacedLink(cg.getImg()));});
             return Response.ok().entity(models).build();
         }
         return Response.status(400).build();
@@ -136,9 +137,6 @@ public class ProductCatalogApiV3 {
             return Response.status(500).build();
         }
     }
-
-
-
 
     @SubscriberJwt
     @Path("groups")
