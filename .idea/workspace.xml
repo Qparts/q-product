@@ -8,6 +8,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogCar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogCar.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV3.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -296,7 +297,7 @@
       <workItem from="1602159746405" duration="340000" />
       <workItem from="1602161637547" duration="1000" />
       <workItem from="1602589478975" duration="12615000" />
-      <workItem from="1603098423819" duration="747000" />
+      <workItem from="1603098423819" duration="3256000" />
     </task>
     <servers />
   </component>
@@ -320,16 +321,12 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="-925" y="23" width="925" height="1057" key="#com.intellij.ide.util.MemberChooser" timestamp="1602603582848">
-      <screen x="-1920" y="23" width="1920" height="1057" />
+    <state x="-1920" y="23" width="740" height="972" key="#com.intellij.ide.util.MemberChooser" timestamp="1603272414962">
+      <screen x="-1920" y="23" width="1920" height="973" />
     </state>
     <state x="-925" y="23" width="925" height="1057" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.1057/0.23.1680.943@-1920.23.1920.1057" timestamp="1602603582848" />
-    <state x="-740" y="23" width="739" height="972" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.973/0.23.1680.1027@-1920.23.1920.973" timestamp="1602603044533" />
+    <state x="-1920" y="23" width="740" height="972" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.973/0.23.1680.1027@-1920.23.1920.973" timestamp="1603272414962" />
     <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser/0.23.1440.793@0.23.1440.793" timestamp="1598829328344" />
-    <state x="115" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1594466367631">
-      <screen x="0" y="23" width="1440" height="793" />
-    </state>
-    <state x="115" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.793@0.23.1440.793" timestamp="1594466367631" />
     <state width="188" height="185" key="GridCell.Tab.0.bottom" timestamp="1602850175943">
       <screen x="0" y="23" width="1440" height="798" />
     </state>
@@ -390,7 +387,6 @@
       <screen x="-1920" y="23" width="1920" height="973" />
     </state>
     <state x="-1407" y="167" width="894" height="830" key="search.everywhere.popup/-1920.23.1920.973/0.23.1680.1027@-1920.23.1920.973" timestamp="1602605918280" />
-    <state x="385" y="140" width="670" height="676" key="search.everywhere.popup/0.23.1440.793@0.23.1440.793" timestamp="1594472178535" />
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
