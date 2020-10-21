@@ -26,7 +26,6 @@ public class ProductCatalogApiV3 {
     @EJB
     private DAO dao;
 
-
     @EJB
     private AsyncProductApi async;
 
@@ -160,7 +159,7 @@ public class ProductCatalogApiV3 {
             List<CatalogGroup> catalogGroups = r.readEntity(new GenericType<List<CatalogGroup>>() {});
             catalogGroups.forEach(cg -> {cg.setImg(AppConstants.getImageReplacedLink(cg.getImg()));});
 
-            if(groupId == null)
+            if(groupId == null && criteria == null)
                 async.saveVinSearch(null, catalogId, header, true);
             return Response.status(200).entity(catalogGroups).build();
         } catch (Exception e) {

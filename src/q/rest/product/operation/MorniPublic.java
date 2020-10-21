@@ -29,7 +29,6 @@ public class MorniPublic {
     @EJB
     private DAO dao;
 
-
     @InternalApp
     @Path("cars")
     @GET
@@ -37,7 +36,6 @@ public class MorniPublic {
         try{
             String vin = info.getQueryParameters().getFirst("vin");
             String catalogId = info.getQueryParameters().getFirst("catalogid");
-            System.out.println("morni called vin " + vin + " catalogid " + catalogId);
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
            if(r.getStatus() != 200){
                 return Response.status(404).build();
