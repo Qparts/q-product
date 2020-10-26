@@ -166,7 +166,7 @@ public class ProductCatalogApiV3 {
         }
     }
 
-    //    @SubscriberJwt
+    @SubscriberJwt
     @Path("parts")
     @GET
     public Response searchParts(@Context UriInfo info) {
@@ -222,19 +222,6 @@ public class ProductCatalogApiV3 {
         String sql = "select avg(b.price + (b.price * b.salesPercentage)) from ProductPrice b where b.productId = :value0 and b.status = :value1";
         Number n = dao.findJPQLParams(Number.class, sql, productId, 'A');
         return n.doubleValue();
-    }
-
-
-    private void vinNotFound(String vin, String catalogId) {
-        try {
-            VinNotFound vinNotFound = new VinNotFound();
-            vinNotFound.setCatId(catalogId);
-            vinNotFound.setVin(vin);
-            vinNotFound.setCreated(new Date());
-            dao.persist(vinNotFound);
-        } catch (Exception ignore) {
-            System.out.println("an exception occured!!!");
-        }
     }
 
 

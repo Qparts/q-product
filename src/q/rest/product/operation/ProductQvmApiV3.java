@@ -1,11 +1,14 @@
 package q.rest.product.operation;
 
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.filter.annotation.UserJwt;
 import q.rest.product.filter.annotation.UserSubscriberJwt;
 import q.rest.product.helper.Helper;
+import q.rest.product.helper.KeyConstant;
 import q.rest.product.model.contract.*;
 import q.rest.product.model.contract.v3.PullStockRequest;
 import q.rest.product.model.contract.v3.SummaryReport;
@@ -225,7 +228,7 @@ public class ProductQvmApiV3 {
     @UserSubscriberJwt
     @GET
     @Path("company-uploads/special-offer/{soId}/products/offset/{offset}/max/{max}/search/{search}")
-    public Response getVendorSepcialOffer(@PathParam(value = "soId") int id, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max, @PathParam(value = "search") String search){
+    public Response getCompanySpecialOffer(@PathParam(value = "soId") int id, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max, @PathParam(value = "search") String search){
         search = "%" + Helper.undecorate(search) + "%";
         String sql = "select count(*) from CompanyProduct b " +
                 " where b.id in (" +
@@ -245,6 +248,28 @@ public class ProductQvmApiV3 {
         map.put("count", count);
         return Response.status(200).entity(map).build();
     }
+
+    @SubscriberJwt
+    @Path("special-offer/{offerId}")
+    @DELETE
+    public Response inactivateSpecialOffer(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "offerId") int id){
+        try {
+            int companyId = this.getCompanyIdFromHeader(header);
+            CompanyOfferUploadRequest offer = dao.find(CompanyOfferUploadRequest.class, id);
+            if(offer.getCompanyId() != companyId) throwError(401);
+            Helper h = new Helper();
+            Date expireDate = Helper.addMinutes(new Date(), -5);
+            String dateString = h.getDateFormat(expireDate);
+            String sql = "update prd_company_stock_offer set offer_end_date = '" + dateString + "' where offer_request_id = " + offer.getId();
+            dao.updateNative(sql);
+            offer.setEndDate(expireDate);
+            dao.update(offer);
+            return Response.status(200).build();
+        }catch (Exception e){
+            return Response.status(500).build();
+        }
+    }
+
 
 
     //new
@@ -680,6 +705,18 @@ public class ProductQvmApiV3 {
         return b.put(Entity.entity(t, "application/json"));
     }
 
+
+    public int getCompanyIdFromHeader(String header) throws Exception{
+        String token = header.substring("Bearer".length()).trim();
+        Claims claims = Jwts.parserBuilder().setSigningKey(KeyConstant.PUBLIC_KEY).build().parseClaimsJws(token).getBody();
+        return Integer.parseInt(claims.get("comp").toString());
+    }
+
+    public int getSubscriberIdFromHeader(String header) throws Exception{
+        String token = header.substring("Bearer".length()).trim();
+        Claims claims = Jwts.parserBuilder().setSigningKey(KeyConstant.PUBLIC_KEY).build().parseClaimsJws(token).getBody();
+        return Integer.parseInt(claims.get("sub").toString());
+    }
 
 
 
