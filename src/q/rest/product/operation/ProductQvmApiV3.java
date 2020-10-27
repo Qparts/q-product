@@ -439,7 +439,9 @@ public class ProductQvmApiV3 {
         //delete anything before new date in the branch
         if (holder.isOverridePrevious()) {
             Helper h = new Helper();
-            String sql = "delete from prd_company_stock_offer where company_product_id in (select b.id from prd_company_product where company_id = " + holder.getCompanyId() + ") and created < '" + h.getDateFormat(holder.getDate()) + "'";
+            String sql = "delete from prd_company_stock_offer " +
+                    "where company_product_id in (select b.id from prd_company_product b where b.company_id = " + holder.getCompanyId() + ")" +
+                    " and created < '" + h.getDateFormat(holder.getDate()) + "'";
             dao.updateNative(sql);
         }
     }
