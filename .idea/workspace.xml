@@ -7,59 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/product/PbBrand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/product/PbProduct.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/product/PbSpec.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/product/Brand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/product/Product.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/product/ProductSupply.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/article/ArticleCriteria.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/article/ArticleGeneric.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/article/ArticleImage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/article/ArticleLinkage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/article/ArticleMisc.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/article/ArticleOEMNumbers.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/article/ArticleResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/article/Articles.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/article/AssemblyGroupDetails.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/article/AssemblyGroupFacets.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/vehicle/VBVData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/vehicle/VBVDataSource.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/vehicle/VBVManufacturers.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/vehicle/VBVMatchingManufacturers.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/vehicle/VBVMatchingModels.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/vehicle/VBVMatchingVehicles.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/vehicle/VBVModels.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/vehicle/VBVRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/vehicle/VBVResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/vehicle/VBVVehicle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV3.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/operation/TechDocApi.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/exception/GlobalException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/exception/GlobalException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/Helper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/Helper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/Error.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/Error.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogPartsList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/catalog/CatalogPartsList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/ProductHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/ProductHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicBrand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicProduct.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicReview.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/PublicSpec.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/contract/SearchResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/SearchResult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/Brand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/product/Category.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/CategorySpec.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/CategoryTag.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/Product.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/ProductCategory.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/ProductSpec.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/product/ProductSpec.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/ProductTag.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/entity/Spec.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v3/product/Spec.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV3.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/archived/ProductInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/archived/ProductInternalApiV2.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -193,6 +142,11 @@
               <path>
                 <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
                 <item name="JBoss Server" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              </path>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="JBoss Server" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+                <item name="Running" type="7427dc5b:ServiceModel$ServiceGroupNode" />
               </path>
             </expand>
             <select />
@@ -352,7 +306,7 @@
       <workItem from="1604911542622" duration="6023000" />
       <workItem from="1604921905328" duration="11419000" />
       <workItem from="1605049784722" duration="754000" />
-      <workItem from="1605091859759" duration="102000" />
+      <workItem from="1605091859759" duration="806000" />
     </task>
     <servers />
   </component>

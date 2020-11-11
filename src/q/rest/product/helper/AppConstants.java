@@ -31,7 +31,6 @@ public class AppConstants {
     public static final String VENDOR_MATCH_TOKEN_WS =  "match-token/ws";
     public static final String USER_MATCH_TOKEN_WS = "match-token/ws";
 
-
     //Subscriber Service
     public static final String POST_SAVE_SEARCH_KEYWORD = SUBSCRIBER_SERVICE + "search-keyword";
     public static final String POST_SAVE_REPLACEMENTS_KEYWORD = SUBSCRIBER_SERVICE + "replacement-search-keyword";
