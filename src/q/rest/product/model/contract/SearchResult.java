@@ -1,12 +1,14 @@
 package q.rest.product.model.contract;
 
+import q.rest.product.model.contract.v3.product.PbProduct;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchResult {
 
     private int resultSize;
-    private List<PublicProduct> products;
+    private List<PbProduct> products;
     private List<SearchFilter> filterObjects;
 
     public SearchResult(){
@@ -23,11 +25,11 @@ public class SearchResult {
         this.resultSize = resultSize;
     }
 
-    public List<PublicProduct> getProducts() {
+    public List<PbProduct> getProducts() {
         return products;
     }
 
-    public void setProducts(List<PublicProduct> products) {
+    public void setProducts(List<PbProduct> products) {
         this.products = products;
     }
 

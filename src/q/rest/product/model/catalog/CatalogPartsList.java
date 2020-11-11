@@ -1,6 +1,7 @@
 package q.rest.product.model.catalog;
 
-import q.rest.product.model.contract.PublicProduct;
+
+import q.rest.product.model.contract.v3.product.PbProduct;
 
 import java.util.List;
 
@@ -12,13 +13,13 @@ public class CatalogPartsList {
     private String description;
     private String positionNumber;
     private String url;
-    private List<PublicProduct> products;
+    private List<PbProduct> products;
 
-    public List<PublicProduct> getProducts() {
+    public List<PbProduct> getProducts() {
         return products;
     }
 
-    public void setProducts(List<PublicProduct> products) {
+    public void setProducts(List<PbProduct> products) {
         this.products = products;
     }
 

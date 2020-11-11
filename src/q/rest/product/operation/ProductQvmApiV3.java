@@ -14,8 +14,10 @@ import q.rest.product.model.contract.v3.PullStockRequest;
 import q.rest.product.model.contract.v3.SummaryReport;
 import q.rest.product.model.contract.v3.UploadHolder;
 import q.rest.product.model.contract.v3.UploadsSummary;
-import q.rest.product.model.entity.ProductSpec;
+import q.rest.product.model.contract.v3.product.PbProduct;
 import q.rest.product.model.entity.VinSearch;
+import q.rest.product.model.entity.v3.product.Product;
+import q.rest.product.model.entity.v3.product.Spec;
 import q.rest.product.model.entity.v3.stock.*;
 
 import javax.ejb.Asynchronous;
@@ -41,8 +43,6 @@ public class ProductQvmApiV3 {
     private AsyncProductApi async;
 
 
-
-
     @UserJwt
     @GET
     @Path("vin-search-activity/from/{from}/to/{to}")
@@ -64,6 +64,9 @@ public class ProductQvmApiV3 {
             return Response.status(500).build();
         }
     }
+
+
+
     @UserJwt
     @PUT
     @Path("update-stock")
@@ -585,7 +588,6 @@ public class ProductQvmApiV3 {
     public Response pullStock(PullStockRequest psr) {
         validateDataPull(psr.getCompanyId());
         String header = "Bearer " + psr.getSecret();
-        //get count
         Response r = async.getSecuredRequest(psr.getAllStockEndPoint() + "count", header);
         if (r.getStatus() == 200) {
             Map<String, Integer> countResult = r.readEntity(Map.class);
@@ -618,73 +620,18 @@ public class ProductQvmApiV3 {
                 return Response.status(404).build();
             }
             String partNumber = "%" + Helper.undecorate(query) + "%";
-            String jpql = "select b from PublicProduct b where b.productNumber like :value0 and b.status =:value1";
-            List<PublicProduct> publicProducts = dao.getJPQLParams(PublicProduct.class, jpql, partNumber, 'A');
-            for (PublicProduct publicProduct : publicProducts) {
-                initPublicProduct(publicProduct);
+            String jpql = "select b from Product b where b.productNumber like :value0 and b.status =:value1";
+            List<Product> products = dao.getJPQLParams(Product.class, jpql, partNumber, 'A');
+            List<Spec> specs = dao.get(Spec.class);
+            List<PbProduct> pbProducts = new ArrayList<>();
+            for (var product : products) {
+                pbProducts.add(product.getPublicProduct(specs));
             }
-            return Response.status(200).entity(publicProducts).build();
+            return Response.status(200).entity(pbProducts).build();
         } catch (Exception ex) {
             return Response.status(500).build();
         }
     }
-
-
-    private void initPublicProduct(PublicProduct product) {
-        try {
-            initPublicProductNoVariant(product);
-            initVariants(product);
-        } catch (Exception ex) {
-            product = null;
-        }
-    }
-
-
-    private void initPublicProductNoVariant(PublicProduct product) {
-        product.setSpecs(getPublicSpecs(product.getId()));
-        product.setSalesPrice(getAveragedSalesPrice(product.getId()));
-        product.setReviews(getPublicReviews(product.getId()));
-        product.initImageLink();
-        product.getBrand().initImageLink();
-        product.setVariants(new ArrayList<>());
-    }
-
-    private void initVariants(PublicProduct product) {
-        //get variants
-        String sql = "select distinct b from PublicProduct b where b.status =:value0 and b.id in (" +
-                "select c.productId from Variant c where c.variantId =:value1) or b.id in " +
-                "(select d.variantId from Variant d where d.productId =:value1)";
-        List<PublicProduct> variants = dao.getJPQLParams(PublicProduct.class, sql, 'A', product.getId());
-        for (PublicProduct variant : variants) {
-            initPublicProductNoVariant(variant);
-        }
-        product.setVariants(variants);
-
-    }
-
-
-    private List<PublicReview> getPublicReviews(long productId) {
-        String jpql = "select b from PublicReview b where b.productId = :value0 and b.status =:value1 order by b.created desc";
-        List<PublicReview> reviews = dao.getJPQLParams(PublicReview.class, jpql, productId, 'A');
-        return reviews;
-    }
-
-    private double getAveragedSalesPrice(long productId) {
-        String sql = "select avg(b.price + (b.price * b.salesPercentage)) from ProductPrice b where b.productId = :value0 and b.status = :value1";
-        Number n = dao.findJPQLParams(Number.class, sql, productId, 'A');
-        return n.doubleValue();
-    }
-
-    private List<PublicSpec> getPublicSpecs(long productId) {
-        List<PublicSpec> publicSpecs = new ArrayList<>();
-        String sql = "select b from ProductSpec b where b.productId =:value0 and b.status =:value1 order by b.spec.id";
-        List<ProductSpec> productSpecs = dao.getJPQLParams(ProductSpec.class, sql, productId, 'A');
-        productSpecs.forEach(ps -> {
-            publicSpecs.add(ps.getPublicSpec());
-        });
-        return publicSpecs;
-    }
-
 
     public Response getSecuredRequest(String link, String header) {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();

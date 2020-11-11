@@ -19,6 +19,7 @@ public class GlobalException implements ExceptionMapper<Throwable> {
                 type.getReasonPhrase(),
                 ex.getLocalizedMessage()
         );
+        ex.printStackTrace();
 
         return Response
                 .status(error.getStatusCode())

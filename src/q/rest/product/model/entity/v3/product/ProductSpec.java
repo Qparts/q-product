@@ -1,61 +1,33 @@
-package q.rest.product.model.entity;
+package q.rest.product.model.entity.v3.product;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import q.rest.product.model.contract.PublicSpec;
-
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Table(name="prd_product_specification")
 @Entity
 @IdClass(ProductSpec.ProductSpecPK.class)
 public class ProductSpec implements Serializable {
-
-	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@JoinColumn(name="spec_id", referencedColumnName="id")
-	@ManyToOne
-	private Spec spec;
+	private int specId;
 	@Id
-	@Column(name="product_id")
+	@Column(name = "product_id")
 	private long productId;
-	@Column(name="value")
 	private String value;
-	@Column(name="value_ar")
 	private String valueAr;
-	@Column(name="created")
 	private Date created;
-	@Column(name="created_by")
 	private int createdBy;
-	@Column(name="status")
 	private char status;
 
-	@JsonIgnore
-	public PublicSpec getPublicSpec(){
-		PublicSpec ps = new PublicSpec();
-		ps.setSpecKey(this.spec.getName());
-		ps.setSpecKeyAr(this.spec.getNameAr());
-		ps.setSpecValue(this.value);
-		ps.setSpecValueAr(this.valueAr);
-		return ps;
+
+	public int getSpecId() {
+		return specId;
 	}
 
-	public Spec getSpec() {
-		return spec;
-	}
-
-	public void setSpec(Spec spec) {
-		this.spec = spec;
+	public void setSpecId(int specId) {
+		this.specId = specId;
 	}
 
 	public long getProductId() {
@@ -112,25 +84,19 @@ public class ProductSpec implements Serializable {
 		if (o == null || getClass() != o.getClass()) return false;
 		ProductSpec that = (ProductSpec) o;
 		return productId == that.productId &&
-				createdBy == that.createdBy &&
 				status == that.status &&
-				Objects.equals(spec, that.spec) &&
+				Objects.equals(specId, that.specId) &&
 				Objects.equals(value, that.value) &&
-				Objects.equals(valueAr, that.valueAr) &&
-				Objects.equals(created, that.created);
+				Objects.equals(valueAr, that.valueAr);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(spec, productId, value, valueAr, created, createdBy, status);
+		return Objects.hash(specId, productId, value, valueAr, status);
 	}
 
 	public static class ProductSpecPK implements Serializable{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		protected long spec;
+		protected int specId;
 		protected long productId;
 		
 		public ProductSpecPK() {}
@@ -140,7 +106,7 @@ public class ProductSpec implements Serializable {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + (int) (productId ^ (productId >>> 32));
-			result = prime * result + (int) (spec ^ (spec >>> 32));
+			result = prime * result + (specId ^ (specId >>> 32));
 			return result;
 		}
 
@@ -155,7 +121,7 @@ public class ProductSpec implements Serializable {
 			ProductSpecPK other = (ProductSpecPK) obj;
 			if (productId != other.productId)
 				return false;
-			if (spec != other.spec)
+			if (specId != other.specId)
 				return false;
 			return true;
 		}		

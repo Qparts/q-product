@@ -4,19 +4,22 @@ public class AppConstants {
 
     public static final String INTERNAL_APP_SECRET = "INTERNAL_APP";
     //SERVICES
-
     private static final String SUBSCRIBER_SERVICE =  SysProps.getValue("subscriberService");
     private static final String APP_BASE = SysProps.getValue("qvmWebAppBase");
     private static final String LOCATION_SERVICE = SysProps.getValue("locationService").replace("/v2/", "/v3/");
 
     //AWS
     private static final String AMAZON_S3_PATH = SysProps.getValue("amazonS3Path");
-    private static final String PRODUCT_BUCKET_NAME =SysProps.getValue("productBucketName");
+    private static final String PRODUCT_BUCKET_NAME = SysProps.getValue("productBucketName");
     private static final String BRAND_BUCKET_NAME = SysProps.getValue("brandBucketName");
 
     //PARTS CATALOG
     private static final String PARTS_CATALOG_API = "https://api.parts-catalogs.com/v1/";
     public static final String PARTS_CATALOG_API_KEY = SysProps.getValue("tradesoftCatKey");
+
+    //TECH DOC
+    public static final String TECH_DOC_API_LINK = "https://webservice.tecalliance.services/pegasus-3-0/services/TecdocToCatDLB.jsonEndpoint";
+    public static final String TECH_DOC_API_KEY = SysProps.getValue("techDocKey");
 
 
     //LOCATION SERVICE
@@ -31,6 +34,7 @@ public class AppConstants {
 
     //Subscriber Service
     public static final String POST_SAVE_SEARCH_KEYWORD = SUBSCRIBER_SERVICE + "search-keyword";
+    public static final String POST_SAVE_REPLACEMENTS_KEYWORD = SUBSCRIBER_SERVICE + "replacement-search-keyword";
     public static final String POST_COMPANIES_REDUCED = SUBSCRIBER_SERVICE + "companies/reduced";
 
     //VENDOR SERVICE

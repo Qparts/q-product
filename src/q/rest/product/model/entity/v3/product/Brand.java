@@ -1,13 +1,15 @@
-package q.rest.product.model.entity;
+package q.rest.product.model.entity.v3.product;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import q.rest.product.helper.AppConstants;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Table(name="prd_brand")
-public class Brand implements Serializable {
-    private static final long serialVersionUID = 1L;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Brand {
     @Id
     @SequenceGenerator(name = "prd_brand_id_seq_gen", sequenceName = "prd_brand_id_seq", initialValue=1000, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_brand_id_seq_gen")
@@ -23,15 +25,9 @@ public class Brand implements Serializable {
     private Date created;
     @Column(name="created_by")
     private int createdBy;
-    @Transient
-    private String imageString;
 
-    public String getImageString() {
-        return imageString;
-    }
-
-    public void setImageString(String imageString) {
-        this.imageString = imageString;
+    public String getImg() {
+        return AppConstants.getBrandImage(id);
     }
 
     public int getId() {

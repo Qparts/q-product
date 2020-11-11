@@ -18,6 +18,7 @@ import java.util.*;
 @Produces(MediaType.APPLICATION_JSON)
 public class ProductInternalApiV2 {
 
+    /*
     @EJB
     private DAO dao;
 
@@ -623,7 +624,6 @@ public class ProductInternalApiV2 {
             return Response.status(500).build();
         }
     }
-    */
 
     private boolean categoryExists(Category category){
         String sql = "select b from Category b where (lower(b.name) = :value0 or lower(b.nameAr) = :value1) and b.id != :value2";
@@ -805,5 +805,6 @@ public class ProductInternalApiV2 {
         List<Category> categories = dao.getJPQLParams(Category.class, sql, productId);
         return categories;
     }
+    */
 
 }

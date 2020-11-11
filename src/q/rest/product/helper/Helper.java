@@ -1,7 +1,7 @@
 package q.rest.product.helper;
 
 
-import q.rest.product.model.entity.Category;
+import q.rest.product.model.entity.v3.product.Category;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -134,7 +134,6 @@ public class Helper {
 
     public static String getCatalogIdFromMakeId(int makeId){
         return Bundler.getValue(String.valueOf(makeId));
-
     }
 
 

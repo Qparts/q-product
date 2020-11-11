@@ -24,6 +24,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -43,6 +44,26 @@ public class AsyncProductApi {
         }
     }
 
+
+
+    @Asynchronous
+    public void saveReplacementSearch(String header, String query , boolean found) {
+        //get company from header
+        Map<String,Object> map = new HashMap<>();
+        try {
+            int[] ints = this.readClaims(header);
+            map.put("query", query);
+            map.put("found", found);
+            map.put("companyId", ints[0]);
+            map.put("subscriberId", ints[1]);
+            this.postSecuredRequest(AppConstants.POST_SAVE_REPLACEMENTS_KEYWORD, map, header);
+        }catch (Exception ignore){
+
+        }
+    }
+
+
+
     @Asynchronous
     public void callPullData(List<String> links, String header, PullStockRequest psr, DataPullHistory dph) {
         ExecutorService es = Executors.newFixedThreadPool(10);
@@ -59,7 +80,6 @@ public class AsyncProductApi {
                             });
                             updateStock(rs, psr, dph);
                         }
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

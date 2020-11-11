@@ -37,4 +37,13 @@ public class Error {
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
+
+    @Override
+    public String toString() {
+        return "Error{" +
+                "statusCode=" + statusCode +
+                ", statusDescription='" + statusDescription + '\'' +
+                ", errorMessage='" + errorMessage + '\'' +
+                '}';
+    }
 }

@@ -1,13 +1,12 @@
-package q.rest.product.model.entity;
+package q.rest.product.model.entity.v3.product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name="prd_category")
@@ -16,33 +15,31 @@ public class Category implements Serializable {
     @Id
     @SequenceGenerator(name = "prd_category_id_seq_gen", sequenceName = "prd_category_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_category_id_seq_gen")
-    @Column(name="id")
     private int id;
-    @Column(name="name")
     private String name;
-    @Column(name="name_ar")
     private String nameAr;
-    @Column(name="root")
     private boolean root;
-    @Column(name="parent_node")
-    private Integer parentId;
-    @Column(name="status")
+    private Integer parentNode;
     private char status;
-    @Column(name="created")
     private Date created;
-    @Column(name="created_by")
     private int createdBy;
-    @Transient
-    private List<String> tags;
-    @Transient
-    private List<Spec> defaultSpecs;
-    @Transient
-    private String imageString;
-    @Transient
+    @OrderBy(value = "tag")
+    @ElementCollection(targetClass=String.class)
+    @CollectionTable(name = "prd_category_tag", joinColumns = @JoinColumn(name = "category_id"))
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<String> tag;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name="prd_category_specification",
+            joinColumns = @JoinColumn(name="category_id"),
+            inverseJoinColumns = @JoinColumn(name="spec_id"))
+    @OrderBy(value = "id")
+    private Set<Spec> defaultSpecs = new HashSet<>();
+    @OneToMany(mappedBy = "parentNode")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Category> children;
 
     public Category(){
-        this.tags = new ArrayList<>();
+        this.tag = new ArrayList<>();
         this.children = new ArrayList<>();
     }
 
@@ -60,28 +57,20 @@ public class Category implements Serializable {
         this.children = children;
     }
 
-    public List<Spec> getDefaultSpecs() {
+    public Set<Spec> getDefaultSpecs() {
         return defaultSpecs;
     }
 
-    public void setDefaultSpecs(List<Spec> defaultSpecs) {
+    public void setDefaultSpecs(Set<Spec> defaultSpecs) {
         this.defaultSpecs = defaultSpecs;
     }
 
     public List<String> getTags() {
-        return tags;
+        return tag;
     }
 
     public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-
-    public String getImageString() {
-        return imageString;
-    }
-
-    public void setImageString(String imageString) {
-        this.imageString = imageString;
+        this.tag = tags;
     }
 
     public int getId() {
@@ -116,12 +105,13 @@ public class Category implements Serializable {
         this.root = root;
     }
 
-    public Integer getParentId() {
-        return parentId;
+
+    public Integer getParentNode() {
+        return parentNode;
     }
 
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
+    public void setParentNode(Integer parentNode) {
+        this.parentNode = parentNode;
     }
 
     public char getStatus() {
@@ -159,16 +149,12 @@ public class Category implements Serializable {
                 createdBy == category.createdBy &&
                 Objects.equals(name, category.name) &&
                 Objects.equals(nameAr, category.nameAr) &&
-                Objects.equals(parentId, category.parentId) &&
-                Objects.equals(created, category.created) &&
-                Objects.equals(tags, category.tags) &&
-                Objects.equals(defaultSpecs, category.defaultSpecs) &&
-                Objects.equals(imageString, category.imageString) &&
-                Objects.equals(children, category.children);
+                Objects.equals(parentNode, category.parentNode) &&
+                Objects.equals(created, category.created);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, nameAr, root, parentId, status, created, createdBy, tags, defaultSpecs, imageString, children);
+        return Objects.hash(id, name, nameAr, root, parentNode, status, created, createdBy);
     }
 }

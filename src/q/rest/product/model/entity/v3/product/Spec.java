@@ -1,4 +1,4 @@
-package q.rest.product.model.entity;
+package q.rest.product.model.entity.v3.product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -17,14 +17,12 @@ public class Spec implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_specification_id_seq_gen")
     @Column(name="id", updatable = false)
     private int id;
-    @Column(name="spec_name")
+    @Column(name = "spec_name")
     private String name;
-    @Column(name="spec_name_ar")
+    @Column(name = "spec_name_ar")
     private String nameAr;
-    @Column(name="created")
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
-    @Column(name="created_by")
     private int createdBy;
     @Transient
     @JsonIgnore
@@ -85,15 +83,13 @@ public class Spec implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Spec spec = (Spec) o;
         return id == spec.id &&
-                createdBy == spec.createdBy &&
                 Objects.equals(name, spec.name) &&
-                Objects.equals(nameAr, spec.nameAr) &&
-                Objects.equals(created, spec.created);
+                Objects.equals(nameAr, spec.nameAr);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, nameAr, created, createdBy);
+        return Objects.hash(id, name, nameAr);
     }
 }
 

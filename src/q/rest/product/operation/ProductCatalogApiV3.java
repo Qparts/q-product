@@ -5,8 +5,6 @@ import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.catalog.*;
-import q.rest.product.model.contract.PublicProduct;
-import q.rest.product.model.entity.VinNotFound;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -14,7 +12,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -182,39 +179,10 @@ public class ProductCatalogApiV3 {
             }
             CatalogPart catalogPart = r.readEntity(CatalogPart.class);
             catalogPart.setImg(AppConstants.getImageReplacedLink(catalogPart.getImg()));
-            initProductHolders(catalogPart);
+         //   initProductHolders(catalogPart);
             return Response.status(200).entity(catalogPart).build();
         } catch (Exception ex) {
             return Response.status(500).build();
-        }
-    }
-
-
-    private void initProductHolders(CatalogPart catalogPart) {
-        for (CatalogPartsGroup cpg : catalogPart.getPartGroups()) {
-            for (CatalogPartsList parts : cpg.getParts()) {
-                parts.setProducts(getProducts(parts.getNumber()));
-            }
-        }
-    }
-
-    private List<PublicProduct> getProducts(String partNumber) {
-        String jpql = "select b from PublicProduct b where b.productNumber = :value0 and b.status =:value1";
-        List<PublicProduct> products = dao.getJPQLParams(PublicProduct.class, jpql, Helper.undecorate(partNumber), 'A');
-        if (products != null) {
-            products.forEach(this::initPublicProduct);
-        }
-        return products;
-    }
-
-    private void initPublicProduct(PublicProduct product) {
-        try {
-            product.setSalesPrice(getAveragedSalesPrice(product.getId()));
-            product.initImageLink();
-            product.getBrand().initImageLink();
-            product.setVariants(new ArrayList<>());
-        } catch (Exception ex) {
-            product = null;
         }
     }
 
