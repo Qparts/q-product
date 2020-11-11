@@ -41,9 +41,17 @@ public class AppConstants {
 
 
 
-    public static String getImageReplacedLink(String string){
+    public static String getCatalogImageReplacedLink(String string){
         try {
             return APP_BASE + "cat-img/" + string.substring("//img.parts-catalogs.com/".length());
+        }catch (Exception ex){
+            return string;
+        }
+    }
+
+    public static String getTechDocImageReplacedLink(String string){
+        try{
+            return APP_BASE + "rep-img/" + string.substring("https://digital-assets.tecalliance.services/images/".length());
         }catch (Exception ex){
             return string;
         }

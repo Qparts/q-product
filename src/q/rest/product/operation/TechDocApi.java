@@ -44,19 +44,15 @@ public class TechDocApi {
             ArticleResponse ar = r.readEntity(ArticleResponse.class);
             boolean found = !ar.getArticles().isEmpty();
             async.saveReplacementSearch(header, query, found);
+            for(var art : ar.getArticles()){
+                for(var img : art.getImages()){
+                    img.replaceImages();
+                }
+            }
             return Response.ok().entity(ar).build();
         }
         return Response.status(404).build();
     }
-
-
-
-
-
-
-
-
-
 
 
     public <T> Response postSecuredRequest(T t) {

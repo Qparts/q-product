@@ -64,7 +64,7 @@ public class MorniPublic {
                 return Response.status(404).build();
             }
             CatalogPart catalogPart = r.readEntity(CatalogPart.class);
-            catalogPart.setImg(AppConstants.getImageReplacedLink(catalogPart.getImg()));
+            catalogPart.setImg(AppConstants.getCatalogImageReplacedLink(catalogPart.getImg()));
             return Response.status(200).entity(catalogPart).build();
         }catch (Exception ex){
             return Response.status(500).build();
@@ -90,7 +90,7 @@ public class MorniPublic {
             }
             List<CatalogGroup> catalogGroups = r.readEntity(new GenericType<List<CatalogGroup>>(){});
             catalogGroups.forEach(cg -> {
-                cg.setImg(AppConstants.getImageReplacedLink(cg.getImg()));
+                cg.setImg(AppConstants.getCatalogImageReplacedLink(cg.getImg()));
             });
             return Response.status(200).entity(catalogGroups).build();
 

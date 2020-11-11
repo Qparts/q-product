@@ -1,6 +1,8 @@
 package q.rest.product.model.tecdoc.article;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import q.rest.product.helper.AppConstants;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ArticleImage {
@@ -12,6 +14,15 @@ public class ArticleImage {
     private String fileName;
     private String typeDescription;
     private String headerDescription;
+
+    @JsonIgnore
+    public void replaceImages(){
+        imageURL50 = AppConstants.getTechDocImageReplacedLink(imageURL50);
+        imageURL100 = AppConstants.getTechDocImageReplacedLink(imageURL100);
+        imageURL200 = AppConstants.getTechDocImageReplacedLink(imageURL200);
+        imageURL400 = AppConstants.getTechDocImageReplacedLink(imageURL400);
+        imageURL800 = AppConstants.getTechDocImageReplacedLink(imageURL800);
+    }
 
     public String getImageURL50() {
         return imageURL50;

@@ -50,7 +50,7 @@ public class ProductCatalogApiV3 {
         if (r.getStatus() == 200) {
             List<CatalogModel> models = r.readEntity(new GenericType<List<CatalogModel>>() {});
 
-            models.forEach(cg -> {cg.setImg(AppConstants.getImageReplacedLink(cg.getImg()));});
+            models.forEach(cg -> {cg.setImg(AppConstants.getCatalogImageReplacedLink(cg.getImg()));});
             return Response.ok().entity(models).build();
         }
         return Response.status(400).build();
@@ -152,7 +152,7 @@ public class ProductCatalogApiV3 {
                 return Response.status(404).build();
 
             List<CatalogGroup> catalogGroups = r.readEntity(new GenericType<List<CatalogGroup>>() {});
-            catalogGroups.forEach(cg -> {cg.setImg(AppConstants.getImageReplacedLink(cg.getImg()));});
+            catalogGroups.forEach(cg -> {cg.setImg(AppConstants.getCatalogImageReplacedLink(cg.getImg()));});
 
             if(groupId == null && criteria == null)
                 async.saveVinSearch(null, catalogId, header, true);
@@ -178,7 +178,7 @@ public class ProductCatalogApiV3 {
                 return Response.status(404).build();
             }
             CatalogPart catalogPart = r.readEntity(CatalogPart.class);
-            catalogPart.setImg(AppConstants.getImageReplacedLink(catalogPart.getImg()));
+            catalogPart.setImg(AppConstants.getCatalogImageReplacedLink(catalogPart.getImg()));
          //   initProductHolders(catalogPart);
             return Response.status(200).entity(catalogPart).build();
         } catch (Exception ex) {
