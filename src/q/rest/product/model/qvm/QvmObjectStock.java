@@ -1,7 +1,10 @@
 package q.rest.product.model.qvm;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.Date;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class QvmObjectStock {
     private QvmBranch branch;
     private Integer quantity;

@@ -8,11 +8,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/article/ArticleImage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/tecdoc/article/ArticleImage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/MorniPublic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/MorniPublic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductCatalogApiV3.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/TechDocApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/TechDocApi.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmObjectStock.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/QvmObjectStock.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -311,7 +307,7 @@
       <workItem from="1604921905328" duration="11419000" />
       <workItem from="1605049784722" duration="754000" />
       <workItem from="1605091859759" duration="1112000" />
-      <workItem from="1605093957514" duration="1053000" />
+      <workItem from="1605093957514" duration="1842000" />
     </task>
     <servers />
   </component>
