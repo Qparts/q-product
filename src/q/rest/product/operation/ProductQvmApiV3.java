@@ -588,7 +588,10 @@ public class ProductQvmApiV3 {
     public Response pullStock(PullStockRequest psr) {
         validateDataPull(psr.getCompanyId());
         String header = "Bearer " + psr.getSecret();
+        System.out.println("calling: " + psr.getAllStockEndPoint() + "count");
+        System.out.println("heaedr: " + header);
         Response r = async.getSecuredRequest(psr.getAllStockEndPoint() + "count", header);
+        System.out.println(r.getStatus());
         if (r.getStatus() == 200) {
             Map<String, Integer> countResult = r.readEntity(Map.class);
             int count = countResult.get("count");
@@ -606,7 +609,7 @@ public class ProductQvmApiV3 {
             async.callPullData(links, header, psr, dph);
             return Response.status(200).entity(links).build();
         }
-        return Response.status(404).build();
+        return Response.status(404).entity("error code in calling count : " + r.getStatus()).build();
     }
 
 
