@@ -52,8 +52,8 @@ public class Helper {
         return new Date(original.getTime() + (1000L * 60 * 60 * 24 * days));
     }
 
-    public static List<String> getPullDataLinks(int count, String base){
-        final int N = 500;
+    public static List<String> getPullDataLinks(int count, String base, int chunk){
+        final int N = chunk > 0 ? chunk : 500;
         List<Integer> ints = new ArrayList<>();
         int temp = 0;
         while(count > 0){

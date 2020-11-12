@@ -36,9 +36,11 @@ public class AppConstants {
     public static final String POST_SAVE_REPLACEMENTS_KEYWORD = SUBSCRIBER_SERVICE + "replacement-search-keyword";
     public static final String POST_COMPANIES_REDUCED = SUBSCRIBER_SERVICE + "companies/reduced";
 
-    //VENDOR SERVICE
-    public static final String PUT_UPDATE_SEARCH_AVAILABILITY_WITH_BRANCHES =  "search-availability/update-branches";
+    //SUBSCRIBER_SERVICE
 
+    public static  String getPullChunkSize(int companyId) {
+        return  SUBSCRIBER_SERVICE + "pull-chunk-size/company/" + companyId;
+    }
 
 
     public static String getCatalogImageReplacedLink(String string){

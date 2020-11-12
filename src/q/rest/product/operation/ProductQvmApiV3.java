@@ -7,6 +7,7 @@ import q.rest.product.dao.DAO;
 import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.filter.annotation.UserJwt;
 import q.rest.product.filter.annotation.UserSubscriberJwt;
+import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.helper.KeyConstant;
 import q.rest.product.model.contract.*;
@@ -585,13 +586,10 @@ public class ProductQvmApiV3 {
     @UserJwt
     @POST
     @Path("pull-stock")
-    public Response pullStock(PullStockRequest psr) {
+    public Response pullStock(@HeaderParam(HttpHeaders.AUTHORIZATION) String qvmHeader, PullStockRequest psr) {
         validateDataPull(psr.getCompanyId());
         String header = "Bearer " + psr.getSecret();
-        System.out.println("calling: " + psr.getAllStockEndPoint() + "count");
-        System.out.println("heaedr: " + header);
         Response r = async.getSecuredRequest(psr.getAllStockEndPoint() + "count", header);
-        System.out.println(r.getStatus());
         if (r.getStatus() == 200) {
             Map<String, Integer> countResult = r.readEntity(Map.class);
             int count = countResult.get("count");
@@ -605,11 +603,26 @@ public class ProductQvmApiV3 {
             dph.setStatus('U');
             dao.persist(dph);
             //get links for pull
-            List<String> links = Helper.getPullDataLinks(count, psr.getAllStockEndPoint());
+            int chunk = getChunkSize(psr.getCompanyId(), qvmHeader);
+            List<String> links = Helper.getPullDataLinks(count, psr.getAllStockEndPoint(), chunk);
             async.callPullData(links, header, psr, dph);
             return Response.status(200).entity(links).build();
         }
         return Response.status(404).entity("error code in calling count : " + r.getStatus()).build();
+    }
+
+    private int getChunkSize(int companyId, String header){
+        try {
+            Response r = async.getSecuredRequest(AppConstants.getPullChunkSize(companyId), header);
+            if(r.getStatus() == 200){
+                Map<String,Integer> map = r.readEntity(Map.class);
+                int chunk = map.get("chunk");
+                return chunk > 0 ? chunk : 500;
+            }
+            return 500;
+        }catch (Exception ex){
+            return 500;
+        }
     }
 
 
