@@ -74,7 +74,9 @@ public class AsyncProductApi {
                 public void run() {
                     String url = links.get(ii);
                     try {
+                        System.out.println("calling url " + url);
                         Response r = getSecuredRequest(url, header);
+                        System.out.println("response: " + r.getStatus());
                         if (r.getStatus() == 200) {
                             List<QvmObject> rs = r.readEntity(new GenericType<List<QvmObject>>() {
                             });
