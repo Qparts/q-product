@@ -3,6 +3,7 @@ package q.rest.product.model.catalog;
 
 import q.rest.product.model.contract.v3.product.PbProduct;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CatalogPartsList {
@@ -13,7 +14,7 @@ public class CatalogPartsList {
     private String description;
     private String positionNumber;
     private String url;
-    private List<PbProduct> products;
+    private List<PbProduct> products = new ArrayList<>();
 
     public List<PbProduct> getProducts() {
         return products;
