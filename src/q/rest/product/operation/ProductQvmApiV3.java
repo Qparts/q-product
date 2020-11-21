@@ -20,6 +20,7 @@ import q.rest.product.model.entity.VinSearch;
 import q.rest.product.model.entity.v3.product.Product;
 import q.rest.product.model.entity.v3.product.Spec;
 import q.rest.product.model.entity.v3.stock.*;
+import q.rest.product.model.search.SearchObject;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
@@ -465,13 +466,12 @@ public class ProductQvmApiV3 {
     @UserSubscriberJwt
     @POST
     @Path("search-company-products-lazy/size")
-    public Response searchCompanyProductSize(@HeaderParam(HttpHeaders.AUTHORIZATION) String header,Map<String, Object> sr){
-        String query = (String) sr.get("query");
-        if(query.length() == 0){
+    public Response searchCompanyProductSize(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, SearchObject searchObject){
+        if(searchObject.getQuery().length() == 0){
             return Response.status(404).build();
         }
-        int size = searchCompanyProductSize(query);
-        async.saveSearch(header, sr, size > 0);
+        int size = searchCompanyProductSize(searchObject);
+        async.saveSearch(header, searchObject, size > 0);
         Map<String,Integer> map = new HashMap<>();
         map.put("search-size", size);
         return Response.status(200).entity(map).build();
@@ -481,40 +481,33 @@ public class ProductQvmApiV3 {
     @SubscriberJwt
     @POST
     @Path("search-company-products-lazy")
-    public Response searchCompanyProductLazy(Map<String, Object> map){
-        String query = (String) map.get("query");
-        int offset = (int) map.get("offset");
-        int max = (int) map.get("max");
-        List<CompanyProduct> so = this.searchCompanyProducts(query, offset, max);
+    public Response searchCompanyProductLazy(SearchObject searchObject){
+        List<CompanyProduct> so = this.searchCompanyProducts(searchObject);
         return Response.status(200).entity(so).build();
     }
 
     @SubscriberJwt
     @POST
     @Path("search-company-products-lazy/filtered")
-    public Response searchCompanyProductLazyFiltered(Map<String, Object> map){
-        String query = (String) map.get("query");
-        int offset = (int) map.get("offset");
-        int max = (int) map.get("max");
-        String filter = (String) map.get("filter");
-        String undecorated = "%" + Helper.undecorate(query) + "%";
-        String filterUndecorated = "%" + Helper.undecorate(filter) + "%";
+    public Response searchCompanyProductLazyFiltered(SearchObject searchObject){
+        String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
+        String filterUndecorated = "%" + Helper.undecorate(searchObject.getFilter()) + "%";
         String sql = "select count(*) from CompanyProduct z where z.id in (select b.id from CompanyProduct b where " +
                 "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
-                " select c.companyProductId from CompanyStock c where c.offerOnly =:value1)" +
-                " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " +
+                " select c.companyProductId from CompanyStock c where c.offerOnly =:value1 " + searchObject.getLocationFiltersSql("c") + ")" +
+                " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d") +
                 " and b.id in (" +
                 " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                 ")))) and z.partNumber like :value3";
         int size = dao.findJPQLParams(Number.class, sql, undecorated, false, true, filterUndecorated).intValue();
         sql = "select z from CompanyProduct z where z.id in (select b.id from CompanyProduct b where " +
                 "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
-                " select c.companyProductId from CompanyStock c where c.offerOnly =:value1)" +
-                " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " +
+                " select c.companyProductId from CompanyStock c where c.offerOnly =:value1 " + searchObject.getLocationFiltersSql("c") + ")" +
+                " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d") +
                 " and b.id in (" +
                 " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                 ")))) and z.partNumber like :value3";
-        List<CompanyProduct> so =  dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql, offset, max, undecorated, false, true, filterUndecorated);
+        List<CompanyProduct> so =  dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql, searchObject.getOffset(), searchObject.getMax(), undecorated, false, true, filterUndecorated);
         Map<String,Object> mp = new HashMap<>();
         mp.put("products", so);
         mp.put("count", size);
@@ -531,19 +524,21 @@ public class ProductQvmApiV3 {
         if(query.length() == 0){
             return Response.status(404).build();
         }
-        List<CompanyProduct> companyProducts = searchCompanyProducts(query);
+        SearchObject so = new SearchObject();
+        so.setQuery(query);
+        List<CompanyProduct> companyProducts = searchCompanyProducts(so);
         async.saveSearch(header, sr, !companyProducts.isEmpty());
         return Response.ok().entity(companyProducts).build();
     }
 
     //for lazy (size only)
-    private int searchCompanyProductSize(String query){
+    private int searchCompanyProductSize(SearchObject searchObject){
         try {
-            String undecorated = "%" + Helper.undecorate(query) + "%";
+            String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
             String sql = "select count(*) from CompanyProduct b where " +
                     "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
-                    " select c.companyProductId from CompanyStock c where c.offerOnly =:value1)" +
-                    " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " +
+                    " select c.companyProductId from CompanyStock c where c.offerOnly =:value1" + searchObject.getLocationFiltersSql("c") +  " )"+
+                    " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d") +
                     " and b.id in (" +
                     " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                     ")))";
@@ -554,13 +549,13 @@ public class ProductQvmApiV3 {
     }
 
     //for eager
-    private List<CompanyProduct> searchCompanyProducts(String query) {
+    private List<CompanyProduct> searchCompanyProducts(SearchObject searchObject) {
         try {
-            String undecorated = "%" + Helper.undecorate(query) + "%";
+            String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
             String sql = "select b from CompanyProduct b where " +
                     "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
-                    " select c.companyProductId from CompanyStock c where c.offerOnly =:value1)" +
-                    " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " +
+                    " select c.companyProductId from CompanyStock c where c.offerOnly =:value1 " + searchObject.getLocationFiltersSql("c") + ")" +
+                    " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d") +
                     " and b.id in (" +
                     " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                     ")))";

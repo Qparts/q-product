@@ -13,6 +13,7 @@ import q.rest.product.model.entity.v3.stock.CompanyProduct;
 import q.rest.product.model.entity.v3.stock.CompanyStock;
 import q.rest.product.model.entity.v3.stock.DataPullHistory;
 import q.rest.product.model.qvm.QvmObject;
+import q.rest.product.model.search.SearchObject;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
@@ -39,6 +40,18 @@ public class AsyncProductApi {
     @Asynchronous
     public void saveSearch(String header, Map<String, Object> map, boolean found) {
         if (map.get("companyId") != null) {
+            map.put("found", found);
+            this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
+        }
+    }
+
+    @Asynchronous
+    public void saveSearch(String header, SearchObject searchObject, boolean found) {
+        if (searchObject.getCompanyId() > 0) {
+            Map<String,Object> map = new HashMap<>();
+            map.put("query", searchObject.getQuery());
+            map.put("companyId", searchObject.getCompanyId());
+            map.put("subscriberId", searchObject.getSubscriberId());
             map.put("found", found);
             this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
         }
