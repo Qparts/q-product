@@ -7,10 +7,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/search/SearchLocationFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/search/SearchObject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -317,7 +314,7 @@
       <workItem from="1605520055464" duration="387000" />
       <workItem from="1605534682213" duration="4000" />
       <workItem from="1605561940140" duration="444000" />
-      <workItem from="1605913218841" duration="6276000" />
+      <workItem from="1605913218841" duration="6311000" />
     </task>
     <servers />
   </component>

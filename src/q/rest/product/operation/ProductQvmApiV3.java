@@ -507,6 +507,8 @@ public class ProductQvmApiV3 {
                 " and b.id in (" +
                 " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                 ")))) and z.partNumber like :value3";
+
+        System.out.println(sql);
         List<CompanyProduct> so =  dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql, searchObject.getOffset(), searchObject.getMax(), undecorated, false, true, filterUndecorated);
         Map<String,Object> mp = new HashMap<>();
         mp.put("products", so);
