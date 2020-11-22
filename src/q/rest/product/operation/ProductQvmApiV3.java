@@ -508,7 +508,6 @@ public class ProductQvmApiV3 {
                 " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                 ")))) and z.partNumber like :value3";
 
-        System.out.println(sql);
         List<CompanyProduct> so =  dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql, searchObject.getOffset(), searchObject.getMax(), undecorated, false, true, filterUndecorated);
         Map<String,Object> mp = new HashMap<>();
         mp.put("products", so);
@@ -626,13 +625,12 @@ public class ProductQvmApiV3 {
     @UserSubscriberJwt
     @POST
     @Path("search-parts")
-    public Response searchParts(Map<String, String> map) {
+    public Response searchParts(SearchObject searchObject) {
         try {
-            String query = map.get("query");
-            if(query == null || query.length() == 0){
+            if(searchObject.getQuery() == null || searchObject.getQuery().length() == 0){
                 return Response.status(404).build();
             }
-            String partNumber = "%" + Helper.undecorate(query) + "%";
+            String partNumber = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
             String jpql = "select b from Product b where b.productNumber like :value0 and b.status =:value1";
             List<Product> products = dao.getJPQLParams(Product.class, jpql, partNumber, 'A');
             List<Spec> specs = dao.get(Spec.class);
