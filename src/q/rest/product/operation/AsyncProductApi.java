@@ -59,6 +59,23 @@ public class AsyncProductApi {
 
 
 
+
+    @Asynchronous
+    public void saveSearch2(String header, SearchObject searchObject, boolean found) {
+        if (searchObject.isNewSearch()) {
+            int companyId = Helper.getCompanyFromJWT(header);
+            int subscriberId = Helper.getSubscriberFromJWT(header);
+            Map<String,Object> map = new HashMap<>();
+            map.put("query", searchObject.getQuery());
+            map.put("companyId", companyId);
+            map.put("subscriberId", subscriberId);
+            map.put("found", found);
+            this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
+        }
+    }
+
+
+
     @Asynchronous
     public void saveReplacementSearch(String header, String query , boolean found) {
         //get company from header

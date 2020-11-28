@@ -1,6 +1,8 @@
 package q.rest.product.helper;
 
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import q.rest.product.model.entity.v3.product.Category;
 
 import java.net.URLEncoder;
@@ -162,6 +164,20 @@ public class Helper {
     public String getDateFormat(Date date, String pattern){
         SimpleDateFormat sdf = new SimpleDateFormat(pattern);
         return sdf.format(date);
+    }
+
+
+    public static int getSubscriberFromJWT(String header) {
+        String token = header.substring("Bearer".length()).trim();
+        Claims claims = Jwts.parserBuilder().setSigningKey(KeyConstant.PUBLIC_KEY).build().parseClaimsJws(token).getBody();
+        return Integer.parseInt(claims.get("sub").toString());
+    }
+
+
+    public static int getCompanyFromJWT(String header) {
+        String token = header.substring("Bearer".length()).trim();
+        Claims claims = Jwts.parserBuilder().setSigningKey(KeyConstant.PUBLIC_KEY).build().parseClaimsJws(token).getBody();
+        return Integer.parseInt(claims.get("comp").toString());
     }
 
 

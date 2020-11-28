@@ -1,5 +1,7 @@
 package q.rest.product.model.search;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,10 @@ public class SearchObject {
     private List<SearchLocationFilter> locationFilters = new ArrayList<>();
 
 
+    @JsonIgnore
+    public boolean isNewSearch(){
+        return (max == 0 && offset == 0 && (filter == null || filter.equals("")) && locationFilters.isEmpty());
+    }
 
     public String getLocationFiltersSql(String alias){
         String regional = getFiltersSql('R', alias, "and");
