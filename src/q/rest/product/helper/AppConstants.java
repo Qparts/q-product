@@ -5,6 +5,7 @@ public class AppConstants {
     public static final String INTERNAL_APP_SECRET = "INTERNAL_APP";
     //SERVICES
     private static final String SUBSCRIBER_SERVICE =  SysProps.getValue("subscriberService");
+    private static final String SUBSCRIBER_SERVICE_V2 = SUBSCRIBER_SERVICE.replace("/v1/", "/v2/");
     private static final String APP_BASE = SysProps.getValue("qvmWebAppBase");
     private static final String LOCATION_SERVICE = SysProps.getValue("locationService").replace("/v2/", "/v3/");
 
@@ -33,6 +34,7 @@ public class AppConstants {
 
     //Subscriber Service
     public static final String POST_SAVE_SEARCH_KEYWORD = SUBSCRIBER_SERVICE + "search-keyword";
+    public static final String POST_SAVE_SEARCH_KEYWORD2 = SUBSCRIBER_SERVICE_V2 + "search-keyword";
     public static final String POST_SAVE_REPLACEMENTS_KEYWORD = SUBSCRIBER_SERVICE + "replacement-search-keyword";
     public static final String POST_COMPANIES_REDUCED = SUBSCRIBER_SERVICE + "companies/reduced";
 

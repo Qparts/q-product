@@ -62,6 +62,7 @@ public class AsyncProductApi {
 
     @Asynchronous
     public void saveSearch2(String header, SearchObject searchObject, boolean found) {
+        System.out.println("is new search " + searchObject.isNewSearch());
         if (searchObject.isNewSearch()) {
             int companyId = Helper.getCompanyFromJWT(header);
             int subscriberId = Helper.getSubscriberFromJWT(header);
@@ -70,7 +71,8 @@ public class AsyncProductApi {
             map.put("companyId", companyId);
             map.put("subscriberId", subscriberId);
             map.put("found", found);
-            this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
+            Response r = this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
+            System.out.println("status of saving  is " + r.getStatus());
         }
     }
 
