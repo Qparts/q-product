@@ -8,7 +8,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/AppConstants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/helper/SysProps.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/helper/SysProps.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -317,7 +317,7 @@
       <workItem from="1605561940140" duration="444000" />
       <workItem from="1605913218841" duration="6996000" />
       <workItem from="1606077630604" duration="1154000" />
-      <workItem from="1606174077841" duration="7089000" />
+      <workItem from="1606174077841" duration="7800000" />
     </task>
     <servers />
   </component>
