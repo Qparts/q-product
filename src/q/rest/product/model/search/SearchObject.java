@@ -7,13 +7,13 @@ import java.util.List;
 
 public class SearchObject {
     private String query;
+    private int specialOfferId;
     private int subscriberId;
     private int companyId;
     private int max;
     private int offset;
     private String filter;
     private List<SearchLocationFilter> locationFilters = new ArrayList<>();
-
 
     @JsonIgnore
     public boolean isNewSearch(){
@@ -102,5 +102,13 @@ public class SearchObject {
 
     public void setFilter(String filter) {
         this.filter = filter;
+    }
+
+    public int getSpecialOfferId() {
+        return specialOfferId;
+    }
+
+    public void setSpecialOfferId(int specialOfferId) {
+        this.specialOfferId = specialOfferId;
     }
 }

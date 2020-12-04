@@ -4,21 +4,20 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.annotation.SubscriberJwt;
+import q.rest.product.filter.annotation.UserSubscriberJwt;
 import q.rest.product.helper.Helper;
 import q.rest.product.helper.KeyConstant;
 import q.rest.product.model.contract.v3.product.PbProduct;
 import q.rest.product.model.entity.v3.product.Product;
 import q.rest.product.model.entity.v3.product.Spec;
 import q.rest.product.model.entity.v3.stock.CompanyOfferUploadRequest;
+import q.rest.product.model.entity.v3.stock.CompanyProduct;
 import q.rest.product.model.entity.v4.pblic.PbCompanyProduct;
 import q.rest.product.model.entity.v4.pblic.PbSpecialOffer;
 import q.rest.product.model.search.SearchObject;
 
 import javax.ejb.EJB;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.util.*;
@@ -42,6 +41,44 @@ public class ProductApiV4 {
         return Response.status(200).entity(list).build();
     }
 
+
+
+    @UserSubscriberJwt
+    @POST
+    @Path("special-offer-products")
+    public Response getSpecialOfferProducts(SearchObject searchObject){
+        PbSpecialOffer so = dao.find(PbSpecialOffer.class, searchObject.getSpecialOfferId());
+        List<PbCompanyProduct> productsList;
+        int searchSize;
+        if(searchObject.getFilter() == null || searchObject.getFilter().trim().equals("")){
+            String sql2 = "select b from PbCompanyProduct b " +
+                    " where b.id in (" +
+                    " select c.companyProductId from PbCompanyStockOffer c " +
+                    " where c.offerRequestId = :value0)" +
+                    " order by b.partNumber";
+            productsList = dao.getJPQLParamsOffsetMax(PbCompanyProduct.class, sql2, searchObject.getOffset(), searchObject.getMax(), so.getId());
+            searchSize = so.getNumberOfItems();
+        } else {
+            String search = "%" + Helper.undecorate(searchObject.getFilter()) + "%";
+            String sql = "select count(*) from PbCompanyProduct b " +
+                    " where b.id in (" +
+                    " select c.companyProductId from PbCompanyStockOffer c " +
+                    " where c.offerRequestId = :value0)" +
+                    " and b.partNumber like :value1";
+            searchSize = dao.findJPQLParams(Number.class, sql, so.getId(), search).intValue();
+            String sql2 = "select b from PbCompanyProduct b " +
+                    " where b.id in (" +
+                    " select c.companyProductId from PbCompanyStockOffer c " +
+                    " where c.offerRequestId = :value0)" +
+                    " and b.partNumber like :value1" +
+                    " order by b.partNumber";
+            productsList = dao.getJPQLParamsOffsetMax(PbCompanyProduct.class, sql2, searchObject.getOffset(), searchObject.getMax(), so.getId(), search);
+        }
+        Map<String,Object> map = new HashMap<>();
+        map.put("products", productsList);
+        map.put("searchSize", searchSize);
+        return Response.status(200).entity(map).build();
+    }
 
     @SubscriberJwt
     @POST

@@ -7,8 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/entity/v4/pblic/PbSpecialOffer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/search/SearchObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/search/SearchObject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV4.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV4.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -319,7 +319,7 @@
       <workItem from="1606077630604" duration="1154000" />
       <workItem from="1606174077841" duration="8561000" />
       <workItem from="1606843977784" duration="1684000" />
-      <workItem from="1607089570345" duration="805000" />
+      <workItem from="1607089570345" duration="3444000" />
     </task>
     <servers />
   </component>
@@ -347,11 +347,11 @@
       <screen x="0" y="23" width="1680" height="943" />
     </state>
     <state x="304" y="156" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1920.23.1920.1057/0.23.1680.943@0.23.1680.943" timestamp="1605913307728" />
-    <state x="0" y="23" width="740" height="972" key="#com.intellij.ide.util.MemberChooser" timestamp="1607089853431">
+    <state x="0" y="23" width="740" height="972" key="#com.intellij.ide.util.MemberChooser" timestamp="1607091781751">
       <screen x="0" y="23" width="1680" height="943" />
     </state>
     <state x="-925" y="23" width="925" height="1057" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.1057/0.23.1680.943@-1920.23.1920.1057" timestamp="1602603582848" />
-    <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.1057/0.23.1680.943@0.23.1680.943" timestamp="1607089853431" />
+    <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.1057/0.23.1680.943@0.23.1680.943" timestamp="1607091781751" />
     <state x="-1920" y="23" width="740" height="972" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.973/0.23.1680.1027@-1920.23.1920.973" timestamp="1603272414962" />
     <state x="533" y="112" key="#com.intellij.ide.util.MemberChooser/0.23.1440.793@0.23.1440.793" timestamp="1598829328344" />
     <state width="1126" height="296" key="GridCell.Tab.0.bottom" timestamp="1606916847557">
