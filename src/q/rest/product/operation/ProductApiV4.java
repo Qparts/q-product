@@ -9,19 +9,19 @@ import q.rest.product.helper.KeyConstant;
 import q.rest.product.model.contract.v3.product.PbProduct;
 import q.rest.product.model.entity.v3.product.Product;
 import q.rest.product.model.entity.v3.product.Spec;
+import q.rest.product.model.entity.v3.stock.CompanyOfferUploadRequest;
 import q.rest.product.model.entity.v4.pblic.PbCompanyProduct;
+import q.rest.product.model.entity.v4.pblic.PbSpecialOffer;
 import q.rest.product.model.search.SearchObject;
 
 import javax.ejb.EJB;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Path("/api/v4/main/")
 public class ProductApiV4 {
@@ -32,6 +32,15 @@ public class ProductApiV4 {
 
     @EJB
     private AsyncProductApi async;
+
+    @SubscriberJwt
+    @GET
+    @Path("special-offers/live")
+    public Response getLiveCompanySpecialOfferUpload() {
+        String sql = "select b from PbSpecialOffer b where :value0 between b.startDate and b.endDate and b.status = :value1 order by b.startDate";
+        List<PbSpecialOffer> list = dao.getJPQLParams(PbSpecialOffer.class, sql, new Date(), 'C');
+        return Response.status(200).entity(list).build();
+    }
 
 
     @SubscriberJwt
