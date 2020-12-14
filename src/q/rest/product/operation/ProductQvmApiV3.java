@@ -478,6 +478,8 @@ public class ProductQvmApiV3 {
     }
 
 
+
+    //this is the new one
     @SubscriberJwt
     @POST
     @Path("search-company-products-lazy")
@@ -507,7 +509,6 @@ public class ProductQvmApiV3 {
                 " and b.id in (" +
                 " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                 ")))) and z.partNumber like :value3";
-
         List<CompanyProduct> so =  dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql, searchObject.getOffset(), searchObject.getMax(), undecorated, false, true, filterUndecorated);
         Map<String,Object> mp = new HashMap<>();
         mp.put("products", so);
@@ -560,7 +561,7 @@ public class ProductQvmApiV3 {
                     " and b.id in (" +
                     " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                     ")))";
-            return dao.getJPQLParams(CompanyProduct.class, sql, undecorated, false, true);
+            return dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql, searchObject.getOffset(), searchObject.getMax(), undecorated, false, true);
         } catch (Exception ex) {
             return new ArrayList<>();
         }
@@ -576,8 +577,6 @@ public class ProductQvmApiV3 {
         List<CompanyProduct> products = dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql, 0, 10, companyId, false);
         return Response.ok().entity(products).build();
     }
-
-
 
     @UserJwt
     @POST
