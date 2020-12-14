@@ -127,7 +127,7 @@ public class ProductApiV4 {
                     " and b.id in (" +
                     " select e.companyProductId from PbCompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                     ")))";
-            return dao.getJPQLParams(PbCompanyProduct.class, sql, undecorated, false, true);
+            return dao.getJPQLParamsOffsetMax(PbCompanyProduct.class, sql, searchObject.getOffset(), searchObject.getMax(), undecorated, false, true);
         } catch (Exception ex) {
             return new ArrayList<>();
         }
