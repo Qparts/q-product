@@ -470,8 +470,11 @@ public class ProductQvmApiV3 {
         if(searchObject.getQuery().length() == 0){
             return Response.status(404).build();
         }
+        System.out.println("in product will search size now");
         int size = searchCompanyProductSize(searchObject);
+        System.out.println("size in product found: " +  size);
         async.saveSearch(header, searchObject, size > 0);
+        System.out.println("will call back now");
         Map<String,Integer> map = new HashMap<>();
         map.put("search-size", size);
         return Response.status(200).entity(map).build();
@@ -537,6 +540,7 @@ public class ProductQvmApiV3 {
     private int searchCompanyProductSize(SearchObject searchObject){
         try {
             String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
+            System.out.println("undecorated " + undecorated);
             String sql = "select count(*) from CompanyProduct b where " +
                     "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
                     " select c.companyProductId from CompanyStock c where c.offerOnly =:value1" + searchObject.getLocationFiltersSql("c") +  " )"+
@@ -544,6 +548,7 @@ public class ProductQvmApiV3 {
                     " and b.id in (" +
                     " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                     ")))";
+            System.out.println("sql : " + sql);
             return dao.findJPQLParams(Number.class, sql, undecorated, false, true).intValue();
         } catch (Exception ex) {
             return 0;
