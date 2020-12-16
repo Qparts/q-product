@@ -646,7 +646,7 @@ public class ProductQvmApiV3 {
             }
             String partNumber = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
             String jpql = "select b from Product b where b.productNumber like :value0 and b.status =:value1";
-            List<Product> products = dao.getJPQLParams(Product.class, jpql, partNumber, 'A');
+            List<Product> products = dao.getJPQLParamsOffsetMax(Product.class, jpql, 0, 10, partNumber, 'A');
             List<Spec> specs = dao.get(Spec.class);
             List<PbProduct> pbProducts = new ArrayList<>();
             for (var product : products) {
