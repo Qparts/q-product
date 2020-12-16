@@ -31,6 +31,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.math.BigInteger;
 import java.util.*;
 
 @Path("/api/v3/qvm/")
@@ -467,20 +468,15 @@ public class ProductQvmApiV3 {
     @POST
     @Path("search-company-products-lazy/size")
     public Response searchCompanyProductSize(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, SearchObject searchObject){
-        if(searchObject.getQuery().length() == 0){
+        if(Helper.undecorate(searchObject.getQuery()).length() == 0){
             return Response.status(404).build();
         }
-        System.out.println("in product will search size now");
         int size = searchCompanyProductSize(searchObject);
-        System.out.println("size in product found: " +  size);
         async.saveSearch(header, searchObject, size > 0);
-        System.out.println("will call back now");
         Map<String,Integer> map = new HashMap<>();
         map.put("search-size", size);
         return Response.status(200).entity(map).build();
     }
-
-
 
     //this is the new one
     @SubscriberJwt
@@ -491,24 +487,24 @@ public class ProductQvmApiV3 {
         return Response.status(200).entity(so).build();
     }
 
-    @SubscriberJwt
-    @POST
-    @Path("search-company-products-lazy/filtered")
+  //  @SubscriberJwt
+    //@POST
+//    @Path("search-company-products-lazy/filtered")
     public Response searchCompanyProductLazyFiltered(SearchObject searchObject){
         String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
         String filterUndecorated = "%" + Helper.undecorate(searchObject.getFilter()) + "%";
         String sql = "select count(*) from CompanyProduct z where z.id in (select b.id from CompanyProduct b where " +
                 "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
-                " select c.companyProductId from CompanyStock c where c.offerOnly =:value1 " + searchObject.getLocationFiltersSql("c") + ")" +
-                " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d") +
+                " select c.companyProductId from CompanyStock c where c.offerOnly =:value1 " + searchObject.getLocationFiltersSql("c", false) + ")" +
+                " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d", false) +
                 " and b.id in (" +
                 " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                 ")))) and z.partNumber like :value3";
         int size = dao.findJPQLParams(Number.class, sql, undecorated, false, true, filterUndecorated).intValue();
         sql = "select z from CompanyProduct z where z.id in (select b.id from CompanyProduct b where " +
                 "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
-                " select c.companyProductId from CompanyStock c where c.offerOnly =:value1 " + searchObject.getLocationFiltersSql("c") + ")" +
-                " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d") +
+                " select c.companyProductId from CompanyStock c where c.offerOnly =:value1 " + searchObject.getLocationFiltersSql("c", false) + ")" +
+                " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d", false) +
                 " and b.id in (" +
                 " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                 ")))) and z.partNumber like :value3";
@@ -540,34 +536,40 @@ public class ProductQvmApiV3 {
     private int searchCompanyProductSize(SearchObject searchObject){
         try {
             String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
-            System.out.println("undecorated " + undecorated);
-            String sql = "select count(*) from CompanyProduct b where " +
-                    "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
-                    " select c.companyProductId from CompanyStock c where c.offerOnly =:value1" + searchObject.getLocationFiltersSql("c") +  " )"+
-                    " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d") +
-                    " and b.id in (" +
-                    " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
-                    ")))";
-            System.out.println("sql : " + sql);
-            return dao.findJPQLParams(Number.class, sql, undecorated, false, true).intValue();
+            String sql1 = "select count(z.*) from (select p.* from prd_company_product p " +
+                    "   join prd_company_stock c on p.id = c.company_product_id " +
+                    " where c.offer_only = false" +
+                    "  and p.part_number like '"+undecorated+"' and p.id not in (select company_product_id from prd_company_stock_offer where now() between offer_start_date and offer_end_date) " + searchObject.getLocationFiltersSql("c", true) +
+                    " union" +
+                    " select p.* from prd_company_product p " +
+                    "  join prd_company_stock_offer o on p.id = o.company_product_id " +
+                    "  join prd_company_stock s on p.id = s.company_product_id " +
+                    " where now() between o.offer_start_date and o.offer_end_date" +
+                    "  and p.part_number like '"+ undecorated +"' " + searchObject.getLocationFiltersSql("s", true) +
+                    ") z;";
+            return dao.getNativeSingle(Number.class ,sql1).intValue();
         } catch (Exception ex) {
             return 0;
         }
     }
 
-    //for eager
     private List<CompanyProduct> searchCompanyProducts(SearchObject searchObject) {
         try {
             String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
-            String sql = "select b from CompanyProduct b where " +
-                    "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
-                    " select c.companyProductId from CompanyStock c where c.offerOnly =:value1 " + searchObject.getLocationFiltersSql("c") + ")" +
-                    " or b.id in (select d.companyProductId from CompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d") +
-                    " and b.id in (" +
-                    " select e.companyProductId from CompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
-                    ")))";
-            return dao.getJPQLParamsOffsetMax(CompanyProduct.class, sql, searchObject.getOffset(), searchObject.getMax(), undecorated, false, true);
+            String sql1 = "select z.* from (select p.*, 0 as on_offer from prd_company_product p " +
+                    "   join prd_company_stock c on p.id = c.company_product_id " +
+                    " where c.offer_only = false" +
+                    "  and p.part_number like '"+undecorated+"' and p.id not in (select company_product_id from prd_company_stock_offer where now() between offer_start_date and offer_end_date) " + searchObject.getLocationFiltersSql("c", true) +
+                    " union" +
+                    " select p.*, 1 as on_offer from prd_company_product p " +
+                    "  join prd_company_stock_offer o on p.id = o.company_product_id " +
+                    " join prd_company_stock s on p.id = s.company_product_id " +
+                    " where now() between o.offer_start_date and o.offer_end_date" +
+                    "  and p.part_number like '"+ undecorated +"' " +searchObject.getLocationFiltersSql("s", true) +
+                    " ) z order by on_offer desc ";
+            return dao.getNativeOffsetMax(CompanyProduct.class, sql1, searchObject.getOffset(), searchObject.getMax());
         } catch (Exception ex) {
+            ex.printStackTrace();
             return new ArrayList<>();
         }
     }
@@ -631,7 +633,7 @@ public class ProductQvmApiV3 {
     @Path("search-parts")
     public Response searchParts(SearchObject searchObject) {
         try {
-            if(searchObject.getQuery() == null || searchObject.getQuery().length() == 0){
+            if(searchObject.getQuery() == null || Helper.undecorate(searchObject.getQuery()).length() == 0){
                 return Response.status(404).build();
             }
             String partNumber = "%" + Helper.undecorate(searchObject.getQuery()) + "%";

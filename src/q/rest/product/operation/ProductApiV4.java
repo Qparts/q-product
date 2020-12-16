@@ -122,8 +122,8 @@ public class ProductApiV4 {
             String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
             String sql = "select b from PbCompanyProduct b where " +
                     "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
-                    " select c.companyProductId from PbCompanyStock c where c.offerOnly =:value1 " + searchObject.getLocationFiltersSql("c") + ")" +
-                    " or b.id in (select d.companyProductId from PbCompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d") +
+                    " select c.companyProductId from PbCompanyStock c where c.offerOnly =:value1 " + searchObject.getLocationFiltersSql("c", false) + ")" +
+                    " or b.id in (select d.companyProductId from PbCompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d", false) +
                     " and b.id in (" +
                     " select e.companyProductId from PbCompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                     ")))";
@@ -139,8 +139,8 @@ public class ProductApiV4 {
             String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
             String sql = "select count(*) from PbCompanyProduct b where " +
                     "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
-                    " select c.companyProductId from PbCompanyStock c where c.offerOnly =:value1" + searchObject.getLocationFiltersSql("c") +  " )"+
-                    " or b.id in (select d.companyProductId from PbCompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d") +
+                    " select c.companyProductId from PbCompanyStock c where c.offerOnly =:value1" + searchObject.getLocationFiltersSql("c", false) +  " )"+
+                    " or b.id in (select d.companyProductId from PbCompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d", false) +
                     " and b.id in (" +
                     " select e.companyProductId from PbCompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
                     ")))";

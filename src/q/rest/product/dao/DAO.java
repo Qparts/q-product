@@ -31,6 +31,12 @@ public class DAO {
         return (List<T>) q.getResultList();
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getJPQLParams(Class<T> klass, String jpql){
+        Query q = em.createQuery(jpql);
+        return (List<T>) q.getResultList();
+    }
+
 
     @SuppressWarnings("unchecked")
     public <T> List<T> getJPQLParamsMax(Class<T> klass, String jpql, int max, Object ... values){
@@ -47,10 +53,9 @@ public class DAO {
         return (List<T>) q.getResultList();
     }
 
-
     @SuppressWarnings("unchecked")
     public <T> List<T> getNativeOffsetMax(Class<T> klass, String jpql, int offset, int max){
-        Query q = em.createNativeQuery(jpql);
+        Query q = em.createNativeQuery(jpql, klass);
         q.setFirstResult(offset).setMaxResults(max);
         return (List<T>) q.getResultList();
     }
@@ -141,6 +146,12 @@ public class DAO {
 
     public List getNative(String sql) {
         return em.createNativeQuery(sql).getResultList();
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public List<Object> getNativeOffsetMax(String jpql, int offset, int max){
+        return em.createNativeQuery(jpql).setFirstResult(offset).setMaxResults(max).getResultList();
     }
 
     public void updateNative(String sql) {

@@ -9,6 +9,7 @@ import q.rest.product.model.contract.v3.UploadHolder;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -215,5 +216,35 @@ public class CompanyProduct {
 
     public void setCreated(Date created) {
         this.created = created;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CompanyProduct that = (CompanyProduct) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "CompanyProduct{" +
+                "id=" + id +
+                ", companyId=" + companyId +
+                ", partNumber='" + partNumber + '\'' +
+                ", alternativeNumber='" + alternativeNumber + '\'' +
+                ", productId=" + productId +
+                ", brandName='" + brandName + '\'' +
+                ", retailPrice=" + retailPrice +
+                ", wholesalesPrice=" + wholesalesPrice +
+                ", created=" + created +
+                ", stock=" + stock +
+                ", offers=" + offers +
+                '}';
     }
 }

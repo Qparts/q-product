@@ -20,18 +20,20 @@ public class SearchObject {
         return (max == 0 && offset == 0 && (filter == null || filter.equals("")) && locationFilters.isEmpty());
     }
 
-    public String getLocationFiltersSql(String alias){
-        String regional = getFiltersSql('R', alias, "and");
-        String country = getFiltersSql('C', alias, regional.length() > 0 ? "or" : "and");
-        String city = getFiltersSql('T', alias, regional.length() + country.length() > 0 ? "or" : "and");
+    @JsonIgnore
+    public String getLocationFiltersSql(String alias, boolean isNative){
+        String regional = getFiltersSql('R', alias, "and", isNative);
+        String country = getFiltersSql('C', alias, regional.length() > 0 ? "or" : "and", isNative);
+        String city = getFiltersSql('T', alias, regional.length() + country.length() > 0 ? "or" : "and", isNative);
         return regional + country + city;
     }
 
-    private String getFiltersSql(char type, String alias, String qualifier){
+    @JsonIgnore
+    private String getFiltersSql(char type, String alias, String qualifier, boolean isNative){
         String variable = "";
-        if(type == 'R') variable = "regionId";
-        if(type == 'C') variable = "countryId";
-        if(type == 'T') variable = "cityId";
+        if(type == 'R') variable = isNative ? "region_id" : "regionId";
+        if(type == 'C') variable = isNative ? "country_id" : "countryId";
+        if(type == 'T') variable = isNative ? "city_id" : "cityId";
         if(locationFilters.size() > 0) {
             int n = 0;
             StringBuilder sql = new StringBuilder(" " + qualifier + " " + alias + "." + variable + " in (0");
