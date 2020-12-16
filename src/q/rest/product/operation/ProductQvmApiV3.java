@@ -471,7 +471,9 @@ public class ProductQvmApiV3 {
         if(Helper.undecorate(searchObject.getQuery()).length() == 0){
             return Response.status(404).build();
         }
+        System.out.println("searching size  ");
         int size = searchCompanyProductSize(searchObject);
+        System.out.println("ok : " + size);
         async.saveSearch(header, searchObject, size > 0);
         Map<String,Integer> map = new HashMap<>();
         map.put("search-size", size);
@@ -483,7 +485,9 @@ public class ProductQvmApiV3 {
     @POST
     @Path("search-company-products-lazy")
     public Response searchCompanyProductLazy(SearchObject searchObject){
+        System.out.println("calling actual now");
         List<CompanyProduct> so = this.searchCompanyProducts(searchObject);
+        System.out.println("ok done " + so.size());
         return Response.status(200).entity(so).build();
     }
 
@@ -556,6 +560,9 @@ public class ProductQvmApiV3 {
     private List<CompanyProduct> searchCompanyProducts(SearchObject searchObject) {
         try {
             String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
+            System.out.println("undecorate " + undecorated);
+            System.out.println("offset " + searchObject.getOffset());
+            System.out.println(" max " + searchObject.getMax());
             String sql1 = "select z.* from (select p.*, 0 as on_offer from prd_company_product p " +
                     "   join prd_company_stock c on p.id = c.company_product_id " +
                     " where c.offer_only = false" +
@@ -567,6 +574,7 @@ public class ProductQvmApiV3 {
                     " where now() between o.offer_start_date and o.offer_end_date" +
                     "  and p.part_number like '"+ undecorated +"' " +searchObject.getLocationFiltersSql("s", true) +
                     " ) z order by on_offer desc ";
+            System.out.println("sql is " + sql1);
             return dao.getNativeOffsetMax(CompanyProduct.class, sql1, searchObject.getOffset(), searchObject.getMax());
         } catch (Exception ex) {
             ex.printStackTrace();
