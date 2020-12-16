@@ -641,7 +641,7 @@ public class ProductQvmApiV3 {
     @Path("search-parts")
     public Response searchParts(SearchObject searchObject) {
         try {
-            if(searchObject.getQuery() == null || Helper.undecorate(searchObject.getQuery()).length() == 0){
+            if(searchObject.getQuery() == null || Helper.undecorate(searchObject.getQuery()).length() < 3){
                 return Response.status(404).build();
             }
             String partNumber = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
