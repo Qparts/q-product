@@ -4,9 +4,12 @@ package q.rest.product.helper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import q.rest.product.model.entity.v3.product.Category;
+import q.rest.product.model.qstock.StockLive;
+import q.rest.product.model.qstock.StockPurchaseItem;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -21,6 +24,24 @@ public class Helper {
     public static String properTag(String tag){
         return tag.toLowerCase().trim().replaceAll(" ", "_");
     }
+
+
+    public static double round(double number){
+        return Math.round( number * 100.0) / 100.0;
+    }
+
+
+
+    public static double calculateAveragePrice(List<StockLive> lives, StockPurchaseItem item){
+        int totalQuantity = item.getQuantity();
+        double totalCost = item.getUnitPrice() * item.getQuantity();
+        for (var live : lives) {
+            totalQuantity += live.getQuantity();
+            totalCost += live.getAveragedCost() * live.getQuantity();
+        }
+        return totalCost / totalQuantity;
+    }
+
 
     public List<Date> getAllDatesBetween(Date from, Date to){
         from = new Date(from.getTime() - (1000*60*60*24));
@@ -178,6 +199,26 @@ public class Helper {
         String token = header.substring("Bearer".length()).trim();
         Claims claims = Jwts.parserBuilder().setSigningKey(KeyConstant.PUBLIC_KEY).build().parseClaimsJws(token).getBody();
         return Integer.parseInt(claims.get("comp").toString());
+    }
+
+
+    public static int convertToInteger(String query){
+        try{
+            return Integer.parseInt(query);
+        }
+        catch(Exception ex){
+            return -1;
+        }
+    }
+
+
+    public static long convertToLong(String query){
+        try{
+            return Long.parseLong(query);
+        }
+        catch(Exception ex){
+            return -1;
+        }
     }
 
 

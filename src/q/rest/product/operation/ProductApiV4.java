@@ -1,28 +1,33 @@
 package q.rest.product.operation;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.filter.annotation.UserSubscriberJwt;
+import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
-import q.rest.product.helper.KeyConstant;
 import q.rest.product.model.contract.v3.product.PbProduct;
 import q.rest.product.model.entity.v3.product.Product;
 import q.rest.product.model.entity.v3.product.Spec;
-import q.rest.product.model.entity.v3.stock.CompanyOfferUploadRequest;
-import q.rest.product.model.entity.v3.stock.CompanyProduct;
 import q.rest.product.model.entity.v4.pblic.PbCompanyProduct;
 import q.rest.product.model.entity.v4.pblic.PbSpecialOffer;
 import q.rest.product.model.search.SearchObject;
+import q.rest.product.model.tecdoc.article.ArticleImage;
+import q.rest.product.model.tecdoc.article.ArticleResponse;
 
 import javax.ejb.EJB;
+
 import javax.ws.rs.*;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
 
 @Path("/api/v4/main/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class ProductApiV4 {
 
     @EJB
@@ -148,5 +153,48 @@ public class ProductApiV4 {
         } catch (Exception ex) {
             return 0;
         }
+    }
+
+    @POST
+    @Path("search-replacement-product")
+    @SubscriberJwt
+    public Response searchReplacement(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String,String> queryMap){
+        String query = queryMap.get("query");
+        Map<String, Object> map = new HashMap<>();
+        map.put("articleCountry", "SA");
+        map.put("lang", "en");
+        map.put("provider", "22423");
+        map.put("searchType", 10);
+        map.put("searchQuery", query);
+        map.put("perPage", 100);
+        map.put("page", 1);
+        map.put("includeAll", true);
+
+        Map<String, Object> requestMap = new HashMap<>();
+        requestMap.put("getArticles", map);
+        Response r = this.postSecuredRequest(requestMap);
+        if(r.getStatus() == 200){
+            ArticleResponse ar = r.readEntity(ArticleResponse.class);
+            boolean found = !ar.getArticles().isEmpty();
+            async.saveReplacementSearch(header, query, found);
+            ar.getArticles().forEach(art -> art.getImages().forEach(ArticleImage::replaceImages));
+
+
+//            for(var art : ar.getArticles()){
+  //              for(var img : art.getImages()){
+    //                img.replaceImages();
+      //          }
+        //    }
+            return Response.ok().entity(ar).build();
+        }
+        return Response.status(404).build();
+    }
+
+
+    public <T> Response postSecuredRequest(T t) {
+        Invocation.Builder b = ClientBuilder.newClient().target(AppConstants.TECH_DOC_API_LINK).request();
+        b.header("X-Api-Key", AppConstants.TECH_DOC_API_KEY);
+        Response r = b.post(Entity.entity(t, "application/json"));
+        return r;
     }
 }
