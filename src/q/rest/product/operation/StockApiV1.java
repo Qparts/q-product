@@ -2,6 +2,7 @@ package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.annotation.SubscriberJwt;
+import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.entity.Stock;
 import q.rest.product.model.qstock.*;
@@ -9,6 +10,10 @@ import q.rest.product.model.qstock.*;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -116,6 +121,115 @@ public class StockApiV1 {
 
     @SubscriberJwt
     @POST
+    @Path("search-sales")
+    public Response searchSales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
+        String nameLike = "%" + map.get("query").toLowerCase() + "%";
+        int id = Helper.convertToInteger(map.get("query"));
+        String sql = "select b from StockSales b where b.companyId = :value0 and (" +
+                " b.id = :value1" +
+                " or b.customerId = :value1" +
+                " or lower(b.reference) like :value2)";
+        List<StockSales> sales = dao.getJPQLParams(StockSales.class, sql, Helper.getCompanyFromJWT(header), id, nameLike);
+        attachCustomerObject(sales, header);
+        return Response.status(200).entity(sales).build();
+    }
+
+    @SubscriberJwt
+    @GET
+    @Path("sales/{id}")
+    public Response getSales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id){
+        StockSales sales = dao.findTwoConditions(StockSales.class, "id", "companyId", id, Helper.getCompanyFromJWT(header) );
+        this.attachCustomerObject(sales, header);
+        return Response.status(200).entity(sales).build();
+    }
+
+    private void attachCustomerObject(List<StockSales> sales, String header){
+        StringBuilder ids = new StringBuilder("0");
+        for(var s : sales) {
+            ids.append(",").append(s.getCustomerId());
+        }
+        Response r = this.getSecuredRequest(AppConstants.getCustomers(ids.toString()), header);
+        if(r.getStatus() == 200){
+            List<Map> list = r.readEntity(new GenericType<List<Map>>(){});
+            for(var s : sales ){
+                s.attachCustomer(list);
+            }
+        }
+    }
+
+
+    private void attachCustomerObject(StockSales sales, String header){
+        Response r = this.getSecuredRequest(AppConstants.getCustomer(sales.getCustomerId()), header);
+        if(r.getStatus() == 200){
+            Map<String,Object> map = r.readEntity(new GenericType<Map>(){});
+            sales.attachCustomer(map);
+        }
+    }
+
+
+    @SubscriberJwt
+    @GET
+    @Path("purchase/{id}")
+    public Response getPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id){
+        StockPurchase purchase = dao.findTwoConditions(StockPurchase.class, "id", "companyId", id, Helper.getCompanyFromJWT(header));
+        return Response.status(200).entity(purchase).build();
+    }
+
+
+    @SubscriberJwt
+    @POST
+    @Path("search-purchase")
+    public Response searchPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
+        String nameLike = "%" + map.get("query").toLowerCase() + "%";
+        int id = Helper.convertToInteger(map.get("query"));
+        String sql = "select b from StockPurchase b where b.companyId = :value0 and (" +
+                " b.id = :value1" +
+                " or b.supplierId = :value1" +
+                " or lower(b.reference) like :value2)";
+        List<StockPurchase> purchases = dao.getJPQLParams(StockPurchase.class, sql, Helper.getCompanyFromJWT(header), id, nameLike);
+        return Response.status(200).entity(purchases).build();
+    }
+
+
+    @SubscriberJwt
+    @POST
+    @Path("search-quotation")
+    public Response searchQuotation(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
+        String nameLike = "%" + map.get("query").toLowerCase() + "%";
+        int id = Helper.convertToInteger(map.get("query"));
+        String sql = "select b from StockQuotation b where b.companyId = :value0 and (" +
+                " b.id = :value1" +
+                " or b.customerId = :value1" +
+                " or lower(b.reference) like :value2)";
+        List<StockQuotation> quotations = dao.getJPQLParams(StockQuotation.class, sql, Helper.getCompanyFromJWT(header), id, nameLike);
+        return Response.status(200).entity(quotations).build();
+    }
+
+    @SubscriberJwt
+    @POST
+    @Path("sales-return")
+    public Response createSalesReturn(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, StockReturnSales salesReturn){
+        //make sure that the sales belongs to the caller
+        StockSales sales = dao.find(StockSales.class, salesReturn.getSalesId());
+        if (sales.getCompanyId() != Helper.getCompanyFromJWT(header)) return Response.status(400).entity("Invalid sales order").build();
+
+        salesReturn.setCreated(new Date());
+        salesReturn.setPaymentMethod(salesReturn.getTransactionType() == 'C' ? salesReturn.getPaymentMethod() : null);
+        if(!verifyQuantities(salesReturn)) return Response.status(400).build();
+        dao.persist(salesReturn);
+        if(salesReturn.getTransactionType() == 'T'){
+            StockSalesCredit credit = new StockSalesCredit();
+            credit.setAmount(salesReturn.getTotalAmount(sales.getTaxRate()) * -1);
+            credit.setCreditDate(new Date());
+            credit.setSalesOrderId(salesReturn.getId());
+            dao.persist(credit);
+        }
+        updateStock(salesReturn);
+        return Response.status(200).build();
+    }
+
+    @SubscriberJwt
+    @POST
     @Path("sales")
     public Response createSales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, StockSales sales){
         sales.setCompanyId(Helper.getCompanyFromJWT(header));
@@ -157,13 +271,23 @@ public class StockApiV1 {
         return Response.status(200).build();
     }
 
+    private void updateStock(StockReturnSales salesReturn) {
+        for (var item : salesReturn.getItems()) {
+            List<StockLive> lives = dao.getCondition(StockLive.class, "stockProductId", item.getSalesItem().getStockProduct().getId());
+            if (lives.isEmpty())
+                createNewStockLive(salesReturn.getBranchId(), item.getSalesItem().getStockProduct().getId(), item.getSalesItem().getUnitCost(), item.getQuantity());
+            else
+                updateExistingStockLive(salesReturn.getBranchId(), lives, item.getSalesItem().getStockProduct().getId(), item.getQuantity(), item.getSalesItem().getUnitCost());
+        }
+    }
+
     private void updateStock(StockPurchase po) {
         for (var item : po.getItems()) {
             List<StockLive> lives = dao.getCondition(StockLive.class, "stockProductId", item.getStockProduct().getId());
             if (lives.isEmpty())
-                createNewStockLive(po.getBranchId(), item, item.getUnitPrice());
+                createNewStockLive(po.getBranchId(), item.getStockProduct().getId(), item.getUnitPrice(), item.getQuantity());
             else
-                updateExistingStockLive(po.getBranchId(), lives, item);
+                updateExistingStockLive(po.getBranchId(), lives, item.getStockProduct().getId(), item.getQuantity(), item.getUnitPrice());
         }
     }
 
@@ -188,18 +312,36 @@ public class StockApiV1 {
         return true;
     }
 
-    private void updateExistingStockLive(int branchId, List<StockLive> lives, StockPurchaseItem item) {
-        double averageCost = Helper.calculateAveragePrice(lives,item);
+    private boolean verifyQuantities(StockReturnSales salesReturn){
+        // TODO: 20/01/2021  We have to check if the return is valid, check against quantities in sales, and in other sales returns
+
+
+
+        return true;
+    }
+
+
+    private void updateExistingStockLive(int branchId, List<StockLive> lives, long stockProductId,  int quantity, double unitCost) {
+        double averageCost = Helper.calculateAveragePrice(lives, unitCost, quantity);
         updateAveragePrice(lives, averageCost);
-        List<StockLive> branchLive = dao.getTwoConditions(StockLive.class, "stockProductId", "branchId", item.getStockProduct().getId(), branchId);
+        List<StockLive> branchLive = dao.getTwoConditions(StockLive.class, "stockProductId", "branchId", stockProductId, branchId);
         if (branchLive.isEmpty()) {
-            createNewStockLive(branchId, item, averageCost);
+            createNewStockLive(branchId, stockProductId, averageCost, quantity);
         } else {
-            branchLive.get(0).setQuantity(item.getQuantity() + branchLive.get(0).getQuantity());
+            branchLive.get(0).setQuantity(quantity + branchLive.get(0).getQuantity());
             dao.update(branchLive.get(0));
         }
     }
 
+    private void createNewStockLive(int branchId, long stockProductId, double averageCost, int quantity){
+        StockLive sl = new StockLive();
+        sl.setBranchId(branchId);
+        sl.setQuantity(quantity);
+        sl.setLastUpdated(new Date());
+        sl.setStockProductId(stockProductId);
+        sl.setAveragedCost(Helper.round(averageCost));
+        dao.persist(sl);
+    }
 
     private void updateAveragePrice(List<StockLive> lives, double averageCost) {
         for (var live : lives) {
@@ -209,14 +351,17 @@ public class StockApiV1 {
         }
     }
 
-    private void createNewStockLive(int branchId, StockPurchaseItem item, double averageCost) {
-        StockLive sl = new StockLive();
-        sl.setBranchId(branchId);
-        sl.setQuantity(item.getQuantity());
-        sl.setLastUpdated(new Date());
-        sl.setStockProductId(item.getStockProduct().getId());
-        sl.setAveragedCost(Helper.round(averageCost));
-        dao.persist(sl);
+
+    public <T> Response postSecuredRequest(String link, T t, String header) {
+        Invocation.Builder b = ClientBuilder.newClient().target(link).request();
+        b.header(HttpHeaders.AUTHORIZATION, header);
+        return b.post(Entity.entity(t, "application/json"));
+    }
+
+
+    public <T> Response getSecuredRequest(String link, String header) {
+        Invocation.Builder b = ClientBuilder.newClient().target(link).request();
+        return b.header(HttpHeaders.AUTHORIZATION, header).get();
     }
 
 }

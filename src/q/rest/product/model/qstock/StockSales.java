@@ -1,13 +1,17 @@
 package q.rest.product.model.qstock;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-@Table(name="prd_stk_sales_order")
+@Table(name = "prd_stk_sales_order")
 @Entity
 public class StockSales implements Serializable {
     @Id
@@ -17,6 +21,8 @@ public class StockSales implements Serializable {
     @JsonIgnore
     private int companyId;
     private int customerId;
+    @Transient
+    private Object customer;
     private Date created;
     private double deliveryCharge;
     private char transactionType;//C = cash, T = credit
@@ -26,23 +32,65 @@ public class StockSales implements Serializable {
     private int branchId;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "sales_order_id")
-    private List<StockSalesItem> items;
-
-    public int getId() {
-        return id;
-    }
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private Set<StockSalesItem> items;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name="sales_id")
+    @OrderBy("created asc")
+    private Set<StockReturnSales> salesReturns;
 
     @JsonIgnore
     public double getTotalAmount() {
         double total = deliveryCharge;
-        for (var item : items ) {
+        for (var item : items) {
             total += (item.getQuantity() * item.getUnitPrice()) + (item.getQuantity() * item.getUnitPrice() * taxRate);
         }
         return total;
     }
 
+    @JsonIgnore
+    public void attachCustomer(List<Map> customers) {
+        try {
+            for (var map : customers) {
+                int id = (int) map.get("id");
+                if (id == this.customerId) {
+                    this.customer = map;
+                    break;
+                }
+            }
+        } catch (Exception ignore) {
+        }
+    }
+
+    @JsonIgnore
+    public void attachCustomer(Map<String, Object> cst) {
+        this.customer = cst;
+    }
+
+
+    public Set<StockReturnSales> getSalesReturns() {
+        return salesReturns;
+    }
+
+    public void setSalesReturns(Set<StockReturnSales> salesReturns) {
+        this.salesReturns = salesReturns;
+    }
+
+    public Object getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Object customer) {
+        this.customer = customer;
+    }
+
     public void setId(int id) {
         this.id = id;
+    }
+
+
+    public int getId() {
+        return id;
     }
 
     public int getCompanyId() {
@@ -117,11 +165,11 @@ public class StockSales implements Serializable {
         this.branchId = branchId;
     }
 
-    public List<StockSalesItem> getItems() {
+    public Set<StockSalesItem> getItems() {
         return items;
     }
 
-    public void setItems(List<StockSalesItem> items) {
+    public void setItems(Set<StockSalesItem> items) {
         this.items = items;
     }
 }

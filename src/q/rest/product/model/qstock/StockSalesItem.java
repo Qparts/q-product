@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name="prd_stk_sales_order_item")
@@ -79,5 +80,24 @@ public class StockSalesItem implements Serializable {
 
     public void setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StockSalesItem that = (StockSalesItem) o;
+        return id == that.id &&
+                salesOrderId == that.salesOrderId &&
+                quantity == that.quantity &&
+                Double.compare(that.unitPrice, unitPrice) == 0 &&
+                Double.compare(that.unitCost, unitCost) == 0 &&
+                Objects.equals(stockProduct, that.stockProduct) &&
+                Objects.equals(live, that.live);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, stockProduct, salesOrderId, quantity, unitPrice, unitCost, live);
     }
 }

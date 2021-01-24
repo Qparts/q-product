@@ -30,11 +30,9 @@ public class Helper {
         return Math.round( number * 100.0) / 100.0;
     }
 
-
-
-    public static double calculateAveragePrice(List<StockLive> lives, StockPurchaseItem item){
-        int totalQuantity = item.getQuantity();
-        double totalCost = item.getUnitPrice() * item.getQuantity();
+    public static double calculateAveragePrice(List<StockLive> lives, double unitCost, int quantity ){
+        int totalQuantity = quantity;
+        double totalCost = unitCost * quantity;
         for (var live : lives) {
             totalQuantity += live.getQuantity();
             totalCost += live.getAveragedCost() * live.getQuantity();

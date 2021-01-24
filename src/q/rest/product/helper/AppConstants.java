@@ -8,6 +8,7 @@ public class AppConstants {
     private static final String SUBSCRIBER_SERVICE_V2 = SUBSCRIBER_SERVICE.replace("/v1/", "/v2/");
     private static final String APP_BASE = SysProps.getValue("qvmWebAppBase");
     private static final String LOCATION_SERVICE = SysProps.getValue("locationService").replace("/v2/", "/v3/");
+    private static final String CUSTOMER_SERVICE = SysProps.getValue("customerService");
 
     //AWS
     private static final String AMAZON_S3_PATH = SysProps.getValue("amazonS3Path");
@@ -38,12 +39,18 @@ public class AppConstants {
     public static final String POST_SAVE_REPLACEMENTS_KEYWORD = SUBSCRIBER_SERVICE + "replacement-search-keyword";
     public static final String POST_COMPANIES_REDUCED = SUBSCRIBER_SERVICE + "companies/reduced";
 
-    //SUBSCRIBER_SERVICE
-
     public static  String getPullChunkSize(int companyId) {
         return  SUBSCRIBER_SERVICE + "pull-chunk-size/company/" + companyId;
     }
 
+    //CUSTOMER SERVICE
+    public static String getCustomers(String ids){
+        return CUSTOMER_SERVICE + "customers/" + ids;
+    }
+
+    public static String getCustomer(int id){
+        return CUSTOMER_SERVICE + "customer/" + id;
+    }
 
     public static String getCatalogImageReplacedLink(String string){
         try {
