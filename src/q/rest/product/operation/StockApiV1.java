@@ -148,7 +148,9 @@ public class StockApiV1 {
         for(var s : sales) {
             ids.append(",").append(s.getCustomerId());
         }
+        System.out.println("calling " + AppConstants.getCustomers(ids.toString()));
         Response r = this.getSecuredRequest(AppConstants.getCustomers(ids.toString()), header);
+        System.out.println("retrieving customer status " + r.getStatus());
         if(r.getStatus() == 200){
             List<Map> list = r.readEntity(new GenericType<List<Map>>(){});
             for(var s : sales ){
