@@ -206,5 +206,18 @@ public class ProductApiV3 {
         return brand == null ? Response.status(404).build() : Response.status(200).entity(brand).build();
     }
 
+    @UserJwt
+    @PUT
+    @Path("merge")
+    public Response merge(Map<String,Integer> map){
+        int mainId = map.get("mainId");
+        int secId = map.get("secondaryId");
+        String sql = "update prd_vin_search set company_id = " + mainId + " where company_id = " + secId;
+        // update quotations submitted
+        // update PO submitted
+        dao.updateNative(sql);
+        return Response.status(200).build();
+    }
+
 
 }
