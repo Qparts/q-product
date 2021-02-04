@@ -18,6 +18,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -157,6 +158,22 @@ public class StockApiV1 {
         }
     }
 
+    private void attachSupplierObject(List<StockPurchase> purchases, String header){
+        System.out.println("attaching supplier object");
+        StringBuilder ids = new StringBuilder("0");
+        for(var s : purchases) {
+            ids.append(",").append(s.getSupplierId());
+        }
+        Response r = this.getSecuredRequest(AppConstants.getSuppliers(ids.toString()), header);
+
+        if(r.getStatus() == 200){
+            List<Map> list = r.readEntity(new GenericType<List<Map>>(){});
+            for(var s : purchases ){
+                s.attachSupplier(list);
+            }
+        }
+    }
+
 
     private void attachCustomerObject(StockSales sales, String header){
         Response r = this.getSecuredRequest(AppConstants.getCustomer(sales.getCustomerId()), header);
@@ -166,12 +183,21 @@ public class StockApiV1 {
         }
     }
 
+    private void attachSupplierObject(StockPurchase purchase, String header){
+        Response r = this.getSecuredRequest(AppConstants.getSupplier(purchase.getSupplierId()), header);
+        if(r.getStatus() == 200){
+            Map<String,Object> map = r.readEntity(new GenericType<Map>(){});
+            purchase.attachSupplier(map);
+        }
+    }
+
 
     @SubscriberJwt
     @GET
     @Path("purchase/{id}")
     public Response getPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id){
         StockPurchase purchase = dao.findTwoConditions(StockPurchase.class, "id", "companyId", id, Helper.getCompanyFromJWT(header));
+        this.attachSupplierObject(purchase, header);
         return Response.status(200).entity(purchase).build();
     }
 
@@ -187,6 +213,7 @@ public class StockApiV1 {
                 " or b.supplierId = :value1" +
                 " or lower(b.reference) like :value2)";
         List<StockPurchase> purchases = dao.getJPQLParams(StockPurchase.class, sql, Helper.getCompanyFromJWT(header), id, nameLike);
+        attachSupplierObject(purchases, header);
         return Response.status(200).entity(purchases).build();
     }
 
@@ -225,6 +252,8 @@ public class StockApiV1 {
             dao.persist(credit);
         }
         updateStock(salesReturn);
+        Map<String, Integer> map = new HashMap<String,Integer>();
+        map.put("id", salesReturn.getId());
         return Response.status(200).build();
     }
 
@@ -250,6 +279,8 @@ public class StockApiV1 {
             dao.persist(credit);
         }
         updateStock(sales);
+        Map<String,Integer> map = new HashMap<String,Integer>();
+        map.put("id", sales.getId());
         return Response.status(200).build();
     }
 
@@ -268,6 +299,8 @@ public class StockApiV1 {
             credit.setQuotationOrderId(quotation.getId());
             dao.persist(quotation);
         }
+        Map<String,Integer> map = new HashMap<String,Integer>();
+        map.put("id", quotation.getId());
         return Response.status(200).build();
     }
 

@@ -48,8 +48,16 @@ public class AppConstants {
         return CUSTOMER_SERVICE + "customers/" + ids;
     }
 
+    public static String getSuppliers(String ids){
+        return CUSTOMER_SERVICE + "suppliers/" + ids;
+    }
+
     public static String getCustomer(int id){
         return CUSTOMER_SERVICE + "customer/" + id;
+    }
+
+    public static String getSupplier(int id){
+        return CUSTOMER_SERVICE + "supplier/" + id;
     }
 
     public static String getCatalogImageReplacedLink(String string){

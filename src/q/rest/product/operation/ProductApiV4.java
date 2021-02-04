@@ -33,7 +33,6 @@ public class ProductApiV4 {
     @EJB
     private DAO dao;
 
-
     @EJB
     private AsyncProductApi async;
 

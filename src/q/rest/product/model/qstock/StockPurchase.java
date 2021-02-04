@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Table(name="prd_stk_purchase_order")
 @Entity
@@ -17,6 +18,8 @@ public class StockPurchase implements Serializable {
     @JsonIgnore
     private int companyId;
     private int supplierId;
+    @Transient
+    private Object supplier;
     private Date created;
     private double deliveryCost;
     private char transactionType;//C = cash, T = credit
@@ -37,6 +40,28 @@ public class StockPurchase implements Serializable {
         }
         return total;
     }
+
+
+    @JsonIgnore
+    public void attachSupplier(List<Map> suppliers) {
+        try {
+            for (var map : suppliers) {
+                int id = (int) map.get("id");
+                if (id == this.supplierId) {
+                    this.supplier = map;
+                    break;
+                }
+            }
+        } catch (Exception ignore) {
+        }
+    }
+
+
+    @JsonIgnore
+    public void attachSupplier(Map<String, Object> supplier) {
+        this.supplier = supplier;
+    }
+
 
     public int getBranchId() {
         return branchId;
@@ -126,4 +151,11 @@ public class StockPurchase implements Serializable {
         this.items = items;
     }
 
+    public Object getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Object supplier) {
+        this.supplier = supplier;
+    }
 }

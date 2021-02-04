@@ -213,8 +213,6 @@ public class ProductApiV3 {
         int mainId = map.get("mainId");
         int secId = map.get("secondaryId");
         String sql = "update prd_vin_search set company_id = " + mainId + " where company_id = " + secId;
-        // update quotations submitted
-        // update PO submitted
         dao.updateNative(sql);
         return Response.status(200).build();
     }
