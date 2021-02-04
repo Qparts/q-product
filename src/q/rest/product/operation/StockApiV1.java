@@ -254,7 +254,7 @@ public class StockApiV1 {
         updateStock(salesReturn);
         Map<String, Integer> map = new HashMap<String,Integer>();
         map.put("id", salesReturn.getId());
-        return Response.status(200).build();
+        return Response.status(200).entity(map).build();
     }
 
     @SubscriberJwt
@@ -281,7 +281,7 @@ public class StockApiV1 {
         updateStock(sales);
         Map<String,Integer> map = new HashMap<String,Integer>();
         map.put("id", sales.getId());
-        return Response.status(200).build();
+        return Response.status(200).entity(map).build();
     }
 
     @SubscriberJwt
@@ -301,7 +301,7 @@ public class StockApiV1 {
         }
         Map<String,Integer> map = new HashMap<String,Integer>();
         map.put("id", quotation.getId());
-        return Response.status(200).build();
+        return Response.status(200).entity(map).build();
     }
 
     private void updateStock(StockReturnSales salesReturn) {
