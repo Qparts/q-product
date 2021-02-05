@@ -144,6 +144,21 @@ public class StockApiV1 {
         return Response.status(200).entity(sales).build();
     }
 
+
+    @SubscriberJwt
+    @GET
+    @Path("sales-return/{id}")
+    public Response getSalesReturn(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id){
+        String sql = "select b from StockReturnSalesStandAlone b where b.id = :value0  and b.salesId in (select c.id from StockSales c where c.companyId = :value1)";
+        StockReturnSalesStandAlone salesReturn = dao.findJPQLParams(StockReturnSalesStandAlone.class, sql , id, Helper.getCompanyFromJWT(header));
+        StockSales sales = dao.find(StockSales.class, salesReturn.getSalesId());
+        this.attachCustomerObject(sales, header);
+        salesReturn.setCustomer(sales.getCustomer());
+        salesReturn.setTaxRate(sales.getTaxRate());
+        salesReturn.setCustomerId(sales.getCustomerId());
+        return Response.status(200).entity(salesReturn).build();
+    }
+
     private void attachCustomerObject(List<StockSales> sales, String header){
         StringBuilder ids = new StringBuilder("0");
         for(var s : sales) {
@@ -234,6 +249,29 @@ public class StockApiV1 {
 
     @SubscriberJwt
     @POST
+    @Path("purchase-return")
+    public Response createPurchaseReturn(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, StockReturnPurchase purchaseReturn){
+        StockPurchase purchase = dao.find(StockPurchase.class, purchaseReturn.getPurchaseId());
+        if (purchase.getCompanyId() != Helper.getCompanyFromJWT(header)) return Response.status(400).entity("Invalid purchase order").build();
+
+        purchaseReturn.setCreated(new Date());
+        purchaseReturn.setPaymentMethod(purchaseReturn.getTransactionType() == 'C' ? purchaseReturn.getPaymentMethod() : null);
+        if(!verifyQuantities(purchaseReturn)) return Response.status(400).build();
+        dao.persist(purchaseReturn);
+        if(purchaseReturn.getTransactionType() == 'T'){
+            StockPurchaseCredit credit = new StockPurchaseCredit();
+            credit.setAmount(purchaseReturn.getTotalAmount(purchase.getTaxRate()) * -1);
+            credit.setCreditDate(new Date());
+            credit.setPurchaseOrderId(purchaseReturn.getId());
+            dao.persist(credit);
+        }
+        updateStock(purchaseReturn);
+        return Response.status(200).build();
+
+    }
+
+    @SubscriberJwt
+    @POST
     @Path("sales-return")
     public Response createSalesReturn(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, StockReturnSales salesReturn){
         //make sure that the sales belongs to the caller
@@ -314,6 +352,18 @@ public class StockApiV1 {
         }
     }
 
+    private void updateStock(StockReturnPurchase purchaseReturn) {
+        for (var item : purchaseReturn.getItems()) {
+            List<StockLive> lives = dao.getTwoConditions(StockLive.class, "stockProductId", "branchId", item.getPurchaseItem().getStockProduct().getId(), purchaseReturn.getId());
+            if(!lives.isEmpty()){
+                StockLive live = lives.get(0);
+                live.setQuantity(live.getQuantity() - item.getQuantity());
+                live.setLastUpdated(new Date());
+                dao.update(live);
+            }
+        }
+    }
+
     private void updateStock(StockPurchase po) {
         for (var item : po.getItems()) {
             List<StockLive> lives = dao.getCondition(StockLive.class, "stockProductId", item.getStockProduct().getId());
@@ -350,6 +400,12 @@ public class StockApiV1 {
 
 
 
+        return true;
+    }
+
+
+    private boolean verifyQuantities(StockReturnPurchase purchaseReturn){
+        // TODO: 04/02/2021 We have to cheeck if the returnn quantity is valid, check against quantities in purchase, live stock, and other purchase returns
         return true;
     }
 
