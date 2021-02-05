@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Table(name="prd_stk_quotation_order")
 @Entity
@@ -17,6 +18,8 @@ public class StockQuotation implements Serializable {
     @JsonIgnore
     private int companyId;
     private int customerId;
+    @Transient
+    private Object customer;
     private Date created;
     private double deliveryCharge;
     private char transactionType;//C = cash, T = credit
@@ -40,6 +43,12 @@ public class StockQuotation implements Serializable {
             total += (item.getQuantity() * item.getUnitPrice()) + (item.getQuantity() * item.getUnitPrice() * taxRate);
         }
         return total;
+    }
+
+
+    @JsonIgnore
+    public void attachCustomer(Map<String, Object> cst) {
+        this.customer = cst;
     }
 
     public void setId(int id) {
@@ -132,5 +141,13 @@ public class StockQuotation implements Serializable {
 
     public void setQuotationPrice(double quotationPrice) {
         this.quotationPrice = quotationPrice;
+    }
+
+    public Object getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Object customer) {
+        this.customer = customer;
     }
 }

@@ -147,6 +147,16 @@ public class StockApiV1 {
 
     @SubscriberJwt
     @GET
+    @Path("quotation/{id}")
+    public Response getQuotation(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id){
+        StockQuotation quotation = dao.findTwoConditions(StockQuotation.class, "id" , "companyId", id, Helper.getCompanyFromJWT(header));
+        this.attachCustomerObject(quotation, header);
+        return Response.status(200).entity(quotation).build();
+    }
+
+
+    @SubscriberJwt
+    @GET
     @Path("sales-return/{id}")
     public Response getSalesReturn(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id){
         String sql = "select b from StockReturnSalesStandAlone b where b.id = :value0  and b.salesId in (select c.id from StockSales c where c.companyId = :value1)";
@@ -198,6 +208,14 @@ public class StockApiV1 {
         }
     }
 
+    private void attachCustomerObject(StockQuotation quotation, String header){
+        Response r = this.getSecuredRequest(AppConstants.getCustomer(quotation.getCustomerId()), header);
+        if(r.getStatus() == 200){
+            Map<String,Object> map = r.readEntity(new GenericType<Map>(){});
+            quotation.attachCustomer(map);
+        }
+    }
+
     private void attachSupplierObject(StockPurchase purchase, String header){
         Response r = this.getSecuredRequest(AppConstants.getSupplier(purchase.getSupplierId()), header);
         if(r.getStatus() == 200){
@@ -246,6 +264,12 @@ public class StockApiV1 {
         List<StockQuotation> quotations = dao.getJPQLParams(StockQuotation.class, sql, Helper.getCompanyFromJWT(header), id, nameLike);
         return Response.status(200).entity(quotations).build();
     }
+
+
+
+
+
+
 
     @SubscriberJwt
     @POST

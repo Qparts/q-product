@@ -7,10 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/qstock/StockReturnPurchase.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/qstock/StockReturnPurchaseItem.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/qstock/StockReturnSalesStandAlone.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qstock/StockQuotation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qstock/StockQuotation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/StockApiV1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/StockApiV1.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -364,7 +362,7 @@
       <workItem from="1612072364033" duration="660000" />
       <workItem from="1612075980152" duration="3777000" />
       <workItem from="1612307837476" duration="382000" />
-      <workItem from="1612441965660" duration="8002000" />
+      <workItem from="1612441965660" duration="8249000" />
     </task>
     <servers />
   </component>
@@ -402,7 +400,7 @@
     <state x="305" y="155" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1920.23.1920.1057/0.23.1680.939@0.23.1680.939" timestamp="1609198862022" />
     <state x="304" y="156" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1920.23.1920.1057/0.23.1680.943@0.23.1680.943" timestamp="1605913307728" />
     <state x="261" y="134" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1440.789@0.23.1440.789" timestamp="1608665858123" />
-    <state x="0" y="23" width="635" height="793" key="#com.intellij.ide.util.MemberChooser" timestamp="1612529127831">
+    <state x="0" y="23" width="635" height="793" key="#com.intellij.ide.util.MemberChooser" timestamp="1612529790963">
       <screen x="0" y="23" width="1440" height="789" />
     </state>
     <state x="-1920" y="23" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.1057/0.23.1680.939@-1920.23.1920.1057" timestamp="1612468739259" />
@@ -410,7 +408,7 @@
     <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.1057/0.23.1680.941@0.23.1680.941" timestamp="1609155742209" />
     <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.1057/0.23.1680.943@0.23.1680.943" timestamp="1607091781751" />
     <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.969/0.23.1680.1027@0.23.1680.1027" timestamp="1609156593606" />
-    <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/0.23.1440.789@0.23.1440.789" timestamp="1612529127831" />
+    <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/0.23.1440.789@0.23.1440.789" timestamp="1612529790963" />
     <state x="0" y="23" width="635" height="793" key="#com.intellij.ide.util.MemberChooser/0.23.1440.793@0.23.1440.793" timestamp="1608052360547" />
     <state width="958" height="174" key="GridCell.Tab.0.bottom" timestamp="1612529210967">
       <screen x="0" y="23" width="1440" height="789" />
