@@ -11,12 +11,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Helper {
@@ -40,6 +38,27 @@ public class Helper {
         return totalCost / totalQuantity;
     }
 
+    public List<Date> getAllDatesBetween(Date from, Date to, boolean excludeFriday){
+        from = new Date(from.getTime());
+        to = new Date(to.getTime() + (1000*60*60*24));
+        LocalDate fromLocal = convertToLocalDate(from);
+        LocalDate toLocal = convertToLocalDate(to);
+        List<LocalDate> localDates;
+        if(excludeFriday){
+            Set<DayOfWeek> fridays = EnumSet.of(DayOfWeek.FRIDAY);
+            localDates = fromLocal.datesUntil(toLocal).filter(d -> !fridays.contains(d.getDayOfWeek()))
+                    .collect(Collectors.toList());
+        }
+        else{
+            localDates = fromLocal.datesUntil(toLocal).collect(Collectors.toList());
+        }
+        List<Date> dates = new ArrayList<>();
+        for(LocalDate ld : localDates){
+            dates.add(convertToDate(ld));
+        }
+        return dates;
+    }
+
 
     public List<Date> getAllDatesBetween(Date from, Date to){
         from = new Date(from.getTime() - (1000*60*60*24));
@@ -50,6 +69,22 @@ public class Helper {
         List<LocalDate> localDates = fromLocal.datesUntil(toLocal)
                 .collect(Collectors.toList());
 
+        List<Date> dates = new ArrayList<>();
+        for(LocalDate ld : localDates){
+            dates.add(convertToDate(ld));
+        }
+        return dates;
+    }
+
+
+    public List<Date> getAllDatesBetween2(Date from, Date to){
+        //from = new Date(from.getTime() - (1000*60*60*24));//start is inclusive in fromLocal
+        to = new Date(to.getTime() + (1000*60*60*24));//because end is exclusive in toLocal
+        LocalDate fromLocal = convertToLocalDate(from);
+        LocalDate toLocal = convertToLocalDate(to);
+
+        List<LocalDate> localDates = fromLocal.datesUntil(toLocal)
+                .collect(Collectors.toList());
         List<Date> dates = new ArrayList<>();
         for(LocalDate ld : localDates){
             dates.add(convertToDate(ld));

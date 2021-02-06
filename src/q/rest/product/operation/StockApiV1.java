@@ -17,10 +17,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Path("/api/v4/stock/")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -167,6 +164,29 @@ public class StockApiV1 {
         salesReturn.setTaxRate(sales.getTaxRate());
         salesReturn.setCustomerId(sales.getCustomerId());
         return Response.status(200).entity(salesReturn).build();
+    }
+
+    @SubscriberJwt
+    @GET
+    @Path("daily-sales/from/{from}/to/{to}")
+    public Response getDailySales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong){
+        Helper h = new Helper();
+        int companyId = Helper.getCompanyFromJWT(header);
+        List<Date> dates = h.getAllDatesBetween2(new Date(fromLong), new Date(toLong));
+        List<Map> dailySales = new ArrayList<>();
+        for (Date date : dates) {
+            String sql = "select sum(i.unit_price * i.quantity + i.unit_price * i.quantity * s.tax_rate + s.delivery_charge) as total from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id " +
+                    " where s.company_id = " +companyId +
+                    " and cast(s.created as date ) = '" + h.getDateFormat(date, "yyyy-MM-dd") + "'" +
+                    " group by cast(s.created as date)";
+            Object o = dao.getNativeSingle(sql);
+            double total = o == null ? 0 : ((Number)o).doubleValue();
+            Map<String, Object> map = new HashMap<>();
+            map.put("total", total);
+            map.put("date", date);
+            dailySales.add(map);
+        }
+        return Response.status(200).entity(dailySales).build();
     }
 
     private void attachCustomerObject(List<StockSales> sales, String header){
