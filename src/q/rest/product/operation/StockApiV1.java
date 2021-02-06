@@ -214,6 +214,19 @@ public class StockApiV1 {
         return Response.status(200).entity(monthlySales).build();
     }
 
+    @SubscriberJwt
+    @GET
+    @Path("stock-value")
+    public Response getStockValue(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
+        int companyId =  Helper.getCompanyFromJWT(header);
+        String sql = "select sum(sl.quantity * sl.averaged_cost) from prd_stk_live_stock sl join prd_stk_product p on sl.stock_product_id = p.id where p.company_id = " + companyId;
+        Object o = dao.getNativeSingle(sql);
+        double total = o == null ? 0 : ((Number)o).doubleValue();
+        Map<String, Object> map = new HashMap<>();
+        map.put("stockValue", total);
+        return Response.status(200).entity(map).build();
+    }
+
     private void attachCustomerObject(List<StockSales> sales, String header){
         StringBuilder ids = new StringBuilder("0");
         for(var s : sales) {
