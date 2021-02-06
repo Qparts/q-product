@@ -11,9 +11,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -90,6 +89,42 @@ public class Helper {
             dates.add(convertToDate(ld));
         }
         return dates;
+    }
+
+    public List<YearMonth> getAllMonthsBetween(Date from, Date to){
+        String pattern = "MMM-YYYY";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH);
+        YearMonth startDate = YearMonth.parse(getDateFormat(from, pattern), formatter);
+        YearMonth endDate = YearMonth.parse(getDateFormat(to, pattern), formatter);
+        List<YearMonth> yearMonths = new ArrayList<>();
+        while (startDate.isBefore(endDate)){
+            System.out.println(startDate.format(formatter));
+            yearMonths.add(startDate);
+            startDate = startDate.plusMonths(1);
+        }
+        return yearMonths;
+    }
+
+    public List<YearMonth> getAllMonthsBetween(String from, String to){
+        String pattern = "MMM-YYYY";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH);
+        YearMonth startDate = YearMonth.parse(from, formatter);
+        YearMonth endDate = YearMonth.parse(to, formatter);
+        List<YearMonth> yearMonths = new ArrayList<>();
+        while (startDate.isBefore(endDate)){
+            yearMonths.add(startDate);
+            startDate = startDate.plusMonths(1);
+        }
+        return yearMonths;
+    }
+
+    public static List<YearMonth> getAllPreviousMonths(int year, int month, int length){
+        List<YearMonth> yearMonths = new ArrayList<>();
+        for(int i =length -1 ; i >= 0 ; i --){
+            YearMonth ym = YearMonth.of(year, month).minusMonths(i);
+            yearMonths.add(ym);
+        }
+        return yearMonths;
     }
 
 

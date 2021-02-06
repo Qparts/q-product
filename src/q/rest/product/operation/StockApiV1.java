@@ -17,6 +17,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.YearMonth;
 import java.util.*;
 
 @Path("/api/v4/stock/")
@@ -187,6 +188,30 @@ public class StockApiV1 {
             dailySales.add(map);
         }
         return Response.status(200).entity(dailySales).build();
+    }
+
+    @SubscriberJwt
+    @GET
+    @Path("monthly-sales/year/{year}/month/{month}/length/{length}")
+    public Response getPreviousMonthlySales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month, @PathParam(value = "length") int length){
+        List<YearMonth> yms = Helper.getAllPreviousMonths(year, month, length);
+        List<Map> monthlySales = new ArrayList<>();
+        int companyId = Helper.getCompanyFromJWT(header);
+        for (YearMonth ym : yms) {
+            String sql = " select sum(i.unit_price * i.quantity + i.unit_price * i.quantity * s.tax_rate + s.delivery_charge) as total from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id " +
+                    " where s.company_id = " + companyId +
+                    " and to_char(s.created, 'YYYY-MM') = '" + ym + "'";
+            Object o = dao.getNativeSingle(sql);
+            double total = o == null ? 0 : ((Number)o).doubleValue();
+            Map<String, Object> map = new HashMap<>();
+            map.put("total", total);
+            map.put("yearMonth", ym.toString());
+            map.put("year", ym.getYear());
+            map.put("month", ym.getMonth());
+            map.put("monthNumber", ym.getMonthValue());
+            monthlySales.add(map);
+        }
+        return Response.status(200).entity(monthlySales).build();
     }
 
     private void attachCustomerObject(List<StockSales> sales, String header){
