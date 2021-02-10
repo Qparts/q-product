@@ -13,10 +13,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.time.YearMonth;
 import java.util.*;
 
@@ -169,21 +166,78 @@ public class StockApiV1 {
 
     @SubscriberJwt
     @GET
+    @Path("branches-sales/{date}")
+    public Response getAllBranchSales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "date") long dateLong){
+        Helper h = new Helper();
+        String date = "'" + h.getDateFormat(new Date(dateLong), "YYYY-MM-dd") + "'";
+        int companyId = Helper.getCompanyFromJWT(header);
+        String sql = "select sal.branch_id as branch_id, ret.branch_id as branch_id_2, total_sales, total_returned from " +
+                "    (select s.branch_id, " +
+                "       sum((i.unit_price * i.quantity + s.delivery_charge) + (i.unit_price * i.quantity + s.delivery_charge) * s.tax_rate) as total_sales " +
+                " from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id " +
+                " where s.company_id = " + companyId +
+                "  and cast(s.created as date ) = " + date +
+                " group by s.branch_id) sal" +
+                "        full join" +
+                " (select s.branch_id, sum ((si.unit_price * sri.quantity + r.delivery_charge) +  (si.unit_price * sri.quantity + r.delivery_charge) * s.tax_rate) as total_returned" +
+                " from prd_stk_sales_return_item sri" +
+                "    join prd_stk_sales_return r on sri.sales_return_id = r.id" +
+                "    join prd_stk_sales_order s on r.sales_id = s.id" +
+                "    join prd_stk_sales_order_item si on sri.sales_item_id = si.id" +
+                " where s.company_id = " + companyId +
+                " and cast(r.created as date ) = " + date +
+                " group by s.branch_id) ret" +
+                " on ret.branch_id = sal.branch_id";
+        List<Object> result = dao.getNative(sql);
+        List<Map> list = new ArrayList<>();
+        for(Object obj : result){
+            Object[] row = (Object[]) obj;
+            Map<String, Object> map = new HashMap<String, Object>();
+            Object branchId = row[0] != null ? row[0] : row[1];
+            double totalSales = row[2] != null ? ((Number) row[2]).doubleValue() : 0;
+            double totalReturned = row[3] != null ? ((Number) row[3]).doubleValue() : 0;
+            map.put("branchId", branchId);
+            map.put("sales", totalSales);
+            map.put("returned", totalReturned);
+            list.add(map);
+        }
+        return Response.status(200).entity(list).build();
+    }
+
+    @SubscriberJwt
+    @GET
     @Path("daily-sales/from/{from}/to/{to}")
-    public Response getDailySales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong){
+    public Response getDailySales(@Context UriInfo info, @HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong){
+        String branchId = info.getQueryParameters().getFirst("branch");
+        String branchSql = "";
+        if(branchId != null){
+            branchSql = " and s.branch_id = " + branchId + " ";
+        }
         Helper h = new Helper();
         int companyId = Helper.getCompanyFromJWT(header);
         List<Date> dates = h.getAllDatesBetween2(new Date(fromLong), new Date(toLong));
         List<Map> dailySales = new ArrayList<>();
         for (Date date : dates) {
-            String sql = "select sum(i.unit_price * i.quantity + i.unit_price * i.quantity * s.tax_rate + s.delivery_charge) as total from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id " +
-                    " where s.company_id = " +companyId +
+            String sql = "select sum((i.unit_price * i.quantity + s.delivery_charge) + (i.unit_price * i.quantity + s.delivery_charge) * s.tax_rate) as total from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id " +
+                    " where s.company_id = " +companyId + branchSql + 
                     " and cast(s.created as date ) = '" + h.getDateFormat(date, "yyyy-MM-dd") + "'" +
                     " group by cast(s.created as date)";
             Object o = dao.getNativeSingle(sql);
-            double total = o == null ? 0 : ((Number)o).doubleValue();
+            double totalSales = o == null ? 0 : ((Number)o).doubleValue();
+            String sqlReturn = "select sum ((si.unit_price * sri.quantity + r.delivery_charge) +  (si.unit_price * sri.quantity + r.delivery_charge) * s.tax_rate) as total_returned\n" +
+                    " from prd_stk_sales_return_item sri" +
+                    "    join prd_stk_sales_return r on sri.sales_return_id = r.id" +
+                    "    join prd_stk_sales_order s on r.sales_id = s.id" +
+                    "    join prd_stk_sales_order_item si on sri.sales_item_id = si.id" +
+                    " where s.company_id = " + companyId + branchSql +
+                    " and cast(r.created as date ) = '" + h.getDateFormat(date, "yyyy-MM-dd") + "'" +
+                    " group by cast(r.created as date)";
+            Object o2 = dao.getNativeSingle(sqlReturn);
+            double totalReturned = o == null ? 0 : ((Number)o2).doubleValue();
             Map<String, Object> map = new HashMap<>();
-            map.put("total", total);
+            map.put("total", totalSales - totalReturned);//to be removed
+            map.put("sales", totalSales);
+            map.put("returned", totalReturned);
             map.put("date", date);
             dailySales.add(map);
         }
@@ -242,7 +296,6 @@ public class StockApiV1 {
     }
 
     private void attachSupplierObject(List<StockPurchase> purchases, String header){
-        System.out.println("attaching supplier object");
         StringBuilder ids = new StringBuilder("0");
         for(var s : purchases) {
             ids.append(",").append(s.getSupplierId());
