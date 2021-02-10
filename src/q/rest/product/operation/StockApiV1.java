@@ -12,6 +12,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.*;
+import java.time.Year;
 import java.time.YearMonth;
 import java.util.*;
 
@@ -185,6 +186,99 @@ public class StockApiV1 {
         map.put("sales", sales);
         map.put("returns", returns);
         return Response.status(200).entity(map).build();
+    }
+
+    @SubscriberJwt
+    @GET
+    @Path("sales-summary/ytd")
+    public Response getSalesSummaryYtd(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
+        Helper h = new Helper();
+        int companyId =  Helper.getCompanyFromJWT(header);
+        int year = Year.now().getValue();
+        String yearStart = "'" + h.getDateFormat(Helper.getFromDate(1 , year), "YYYY-MM-dd") + "' ";
+        String sql = " select sal.branch_id as branch_id, ret.branch_id as branch_id_2, total_sales, total_returned from" +
+                "    (" +
+                " select s.branch_id," +
+                "       sum((i.unit_price * i.quantity + s.delivery_charge) + (i.unit_price * i.quantity + s.delivery_charge) * s.tax_rate) as total_sales" +
+                " from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id" +
+                " where s.company_id = " + companyId +
+                "  and cast(s.created as date ) >= " + yearStart +
+                " group by s.branch_id) sal " +
+                " full join" +
+                " (select s.branch_id, sum ((si.unit_price * sri.quantity + r.delivery_charge) +  (si.unit_price * sri.quantity + r.delivery_charge) * s.tax_rate) as total_returned " +
+                " from prd_stk_sales_return_item sri " +
+                "    join prd_stk_sales_return r on sri.sales_return_id = r.id" +
+                "    join prd_stk_sales_order s on r.sales_id = s.id" +
+                "    join prd_stk_sales_order_item si on sri.sales_item_id = si.id" +
+                " where s.company_id = " + companyId +
+                " and cast(r.created as date ) >= " + yearStart +
+                " group by s.branch_id) ret" +
+                " on ret.branch_id = sal.branch_id";
+        List<Object> result = dao.getNative(sql);
+        List<Map> list = new ArrayList<>();
+        for(Object obj : result){
+            Object[] row = (Object[]) obj;
+            Map<String, Object> map = new HashMap<String, Object>();
+            Object branchId = row[0] != null ? row[0] : row[1];
+            double totalSales = row[2] != null ? ((Number) row[2]).doubleValue() : 0;
+            double totalReturned = row[3] != null ? ((Number) row[3]).doubleValue() : 0;
+            map.put("branchId", branchId);
+            map.put("sales", totalSales);
+            map.put("returned", totalReturned);
+            list.add(map);
+        }
+
+        return Response.status(200).entity(list).build();
+    }
+
+
+    @SubscriberJwt
+    @GET
+    @Path("sales-summary/mtd")
+    public Response getSalesSummaryMtd(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
+        Helper h = new Helper();
+        int companyId =  Helper.getCompanyFromJWT(header);
+        int year = Year.now().getValue();
+        int month = YearMonth.now().getMonthValue();
+        Date fromMonth = Helper.getFromDate(month, year);
+        Date toMax = Helper.getToDate(month, year);
+
+        String monthStart = " '" + h.getDateFormat(fromMonth , "YYYY-MM-dd") + "' ";
+        String monthEnd = " '" + h.getDateFormat(toMax , "YYYY-MM-dd") + "' ";
+
+        String sql = " select sal.branch_id as branch_id, ret.branch_id as branch_id_2, total_sales, total_returned from" +
+                "    (" +
+                " select s.branch_id," +
+                "       sum((i.unit_price * i.quantity + s.delivery_charge) + (i.unit_price * i.quantity + s.delivery_charge) * s.tax_rate) as total_sales" +
+                " from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id" +
+                " where s.company_id = " + companyId +
+                "  and cast(s.created as date ) between " + monthStart + " and " + monthEnd +
+                " group by s.branch_id) sal " +
+                " full join" +
+                " (select s.branch_id, sum ((si.unit_price * sri.quantity + r.delivery_charge) +  (si.unit_price * sri.quantity + r.delivery_charge) * s.tax_rate) as total_returned " +
+                " from prd_stk_sales_return_item sri " +
+                "    join prd_stk_sales_return r on sri.sales_return_id = r.id" +
+                "    join prd_stk_sales_order s on r.sales_id = s.id" +
+                "    join prd_stk_sales_order_item si on sri.sales_item_id = si.id" +
+                " where s.company_id = " + companyId +
+                " and cast(r.created as date )  between " + monthStart + " and " + monthEnd +
+                " group by s.branch_id) ret" +
+                " on ret.branch_id = sal.branch_id";
+        List<Object> result = dao.getNative(sql);
+        List<Map> list = new ArrayList<>();
+        for(Object obj : result){
+            Object[] row = (Object[]) obj;
+            Map<String, Object> map = new HashMap<String, Object>();
+            Object branchId = row[0] != null ? row[0] : row[1];
+            double totalSales = row[2] != null ? ((Number) row[2]).doubleValue() : 0;
+            double totalReturned = row[3] != null ? ((Number) row[3]).doubleValue() : 0;
+            map.put("branchId", branchId);
+            map.put("sales", totalSales);
+            map.put("returned", totalReturned);
+            list.add(map);
+        }
+
+        return Response.status(200).entity(list).build();
     }
 
     @SubscriberJwt
