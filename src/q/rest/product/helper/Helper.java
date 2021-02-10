@@ -289,5 +289,17 @@ public class Helper {
         }
     }
 
+    public static Date getToDate(int month, int year) {
+        YearMonth ym = YearMonth.of(year,month);
+        LocalDate to = ym.atEndOfMonth();
+        return convertToDate(to);
+    }
+
+    public static Date getFromDate(int month, int year) {
+        YearMonth ym = YearMonth.of(year, month);
+        LocalDate from = ym.atDay(1);
+        return convertToDate(from);
+    }
+
 
 }

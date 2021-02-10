@@ -4,10 +4,8 @@ import q.rest.product.dao.DAO;
 import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
-import q.rest.product.model.entity.Stock;
 import q.rest.product.model.qstock.*;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
@@ -154,7 +152,7 @@ public class StockApiV1 {
     @GET
     @Path("sales-return/{id}")
     public Response getSalesReturn(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id){
-        String sql = "select b from StockReturnSalesStandAlone b where b.id = :value0  and b.salesId in (select c.id from StockSales c where c.companyId = :value1)";
+        String sql = "select b from StockReturnSalesStandAlone b where b.id = :value0 and b.salesId in (select c.id from StockSales c where c.companyId = :value1)";
         StockReturnSalesStandAlone salesReturn = dao.findJPQLParams(StockReturnSalesStandAlone.class, sql , id, Helper.getCompanyFromJWT(header));
         StockSales sales = dao.find(StockSales.class, salesReturn.getSalesId());
         this.attachCustomerObject(sales, header);
@@ -162,6 +160,31 @@ public class StockApiV1 {
         salesReturn.setTaxRate(sales.getTaxRate());
         salesReturn.setCustomerId(sales.getCustomerId());
         return Response.status(200).entity(salesReturn).build();
+    }
+
+    @SubscriberJwt
+    @GET
+    @Path("sales-report/{year}/{month}")
+    public Response getDailySales(@Context UriInfo info, @HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month) {
+        Date to = Helper.getToDate(month, year);//month = 1 - 12
+        Date from = Helper.getFromDate(month, year);
+        int companyId = Helper.getCompanyFromJWT(header);
+        String sql = "select b from StockSales b where b.companyId = :value0 and b.created between :value1 and :value2";
+        List<StockSales> sales = dao.getJPQLParams(StockSales.class, sql, companyId, from, to );
+        attachCustomerObject(sales, header);
+        sql = "select b from StockReturnSalesStandAlone b where b.salesId in (select c.id from StockSales c where c.companyId = :value0) and b.created between :value1 and :value2";
+        List<StockReturnSalesStandAlone> returns = dao.getJPQLParams(StockReturnSalesStandAlone.class, sql, companyId, from , to);
+        for(var rer : returns){
+            StockSales s = dao.find(StockSales.class, rer.getSalesId());
+            this.attachCustomerObject(s, header);
+            rer.setCustomerId(s.getCustomerId());
+            rer.setCustomer(s.getCustomer());
+            rer.setTaxRate(s.getTaxRate());
+        }
+        Map<String,Object> map = new HashMap<>();
+        map.put("sales", sales);
+        map.put("returns", returns);
+        return Response.status(200).entity(map).build();
     }
 
     @SubscriberJwt
