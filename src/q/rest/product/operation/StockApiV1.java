@@ -461,10 +461,15 @@ public class StockApiV1 {
     @GET
     @Path("daily-sales/from/{from}/to/{to}")
     public Response getDailySales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong){
+        System.out.println("received ");
         Helper h = new Helper();
+        System.out.println("2");
         int companyId = Helper.getCompanyFromJWT(header);
+        System.out.println("3");
         List<Date> dates = h.getAllDatesBetween2(new Date(fromLong), new Date(toLong));
+        System.out.println("4");
         List<Map> dailySales = new ArrayList<>();
+        System.out.println("5");
         for (Date date : dates) {
             String sql = "select sum((i.unit_price * i.quantity + s.delivery_charge) + (i.unit_price * i.quantity + s.delivery_charge) * s.tax_rate) as total from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id " +
                     " where s.company_id = " +companyId +
@@ -477,7 +482,7 @@ public class StockApiV1 {
                     "    join prd_stk_sales_return r on sri.sales_return_id = r.id" +
                     "    join prd_stk_sales_order s on r.sales_id = s.id" +
                     "    join prd_stk_sales_order_item si on sri.sales_item_id = si.id" +
-                    " where s.company_id = " + companyId + 
+                    " where s.company_id = " + companyId +
                     " and cast(r.created as date ) = '" + h.getDateFormat(date, "yyyy-MM-dd") + "'" +
                     " group by cast(r.created as date)";
             Object o2 = dao.getNativeSingle(sqlReturn);
