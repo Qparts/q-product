@@ -461,24 +461,18 @@ public class StockApiV1 {
     @GET
     @Path("daily-sales/from/{from}/to/{to}")
     public Response getDailySales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong){
-        System.out.println("received ");
         Helper h = new Helper();
-        System.out.println("2");
         int companyId = Helper.getCompanyFromJWT(header);
-        System.out.println("3");
         List<Date> dates = h.getAllDatesBetween2(new Date(fromLong), new Date(toLong));
-        System.out.println("4");
         List<Map> dailySales = new ArrayList<>();
-        System.out.println("5");
         for (Date date : dates) {
             String sql = "select sum((i.unit_price * i.quantity + s.delivery_charge) + (i.unit_price * i.quantity + s.delivery_charge) * s.tax_rate) as total from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id " +
                     " where s.company_id = " +companyId +
                     " and cast(s.created as date ) = '" + h.getDateFormat(date, "yyyy-MM-dd") + "'" +
                     " group by cast(s.created as date)";
-            System.out.println(sql);
-            Object o = dao.getNativeSingle(sql);
-            double totalSales = o == null ? 0 : ((Number)o).doubleValue();
-            String sqlReturn = "select sum ((si.unit_price * sri.quantity + r.delivery_charge) +  (si.unit_price * sri.quantity + r.delivery_charge) * s.tax_rate) as total_returned\n" +
+            Object object = dao.getNativeSingle(sql);
+            double totalSales = object == null ? 0 : ((Number)object).doubleValue();
+            String sqlReturn = "select sum ((si.unit_price * sri.quantity + r.delivery_charge) +  (si.unit_price * sri.quantity + r.delivery_charge) * s.tax_rate) as total_returned " +
                     " from prd_stk_sales_return_item sri" +
                     "    join prd_stk_sales_return r on sri.sales_return_id = r.id" +
                     "    join prd_stk_sales_order s on r.sales_id = s.id" +
@@ -486,22 +480,14 @@ public class StockApiV1 {
                     " where s.company_id = " + companyId +
                     " and cast(r.created as date ) = '" + h.getDateFormat(date, "yyyy-MM-dd") + "'" +
                     " group by cast(r.created as date)";
-            System.out.println(sqlReturn);
             Object o2 = dao.getNativeSingle(sqlReturn);
-            System.out.println("6");
-            double totalReturned = o == null ? 0 : ((Number)o2).doubleValue();
-            System.out.println("7");
+            double totalReturned = o2 == null ? 0 : ((Number)o2).doubleValue();
             Map<String, Object> map = new HashMap<>();
             map.put("total", totalSales - totalReturned);//to be removed
-            System.out.println("8");
             map.put("sales", totalSales);
-            System.out.println("9");
             map.put("returned", totalReturned);
-            System.out.println("10");
             map.put("date", date);
-            System.out.println("11");
             dailySales.add(map);
-            System.out.println("12");
         }
         return Response.status(200).entity(dailySales).build();
     }
