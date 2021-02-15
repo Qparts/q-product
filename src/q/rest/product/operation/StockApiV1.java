@@ -475,6 +475,7 @@ public class StockApiV1 {
                     " where s.company_id = " +companyId +
                     " and cast(s.created as date ) = '" + h.getDateFormat(date, "yyyy-MM-dd") + "'" +
                     " group by cast(s.created as date)";
+            System.out.println(sql);
             Object o = dao.getNativeSingle(sql);
             double totalSales = o == null ? 0 : ((Number)o).doubleValue();
             String sqlReturn = "select sum ((si.unit_price * sri.quantity + r.delivery_charge) +  (si.unit_price * sri.quantity + r.delivery_charge) * s.tax_rate) as total_returned\n" +
@@ -485,14 +486,22 @@ public class StockApiV1 {
                     " where s.company_id = " + companyId +
                     " and cast(r.created as date ) = '" + h.getDateFormat(date, "yyyy-MM-dd") + "'" +
                     " group by cast(r.created as date)";
+            System.out.println(sqlReturn);
             Object o2 = dao.getNativeSingle(sqlReturn);
+            System.out.println("6");
             double totalReturned = o == null ? 0 : ((Number)o2).doubleValue();
+            System.out.println("7");
             Map<String, Object> map = new HashMap<>();
             map.put("total", totalSales - totalReturned);//to be removed
+            System.out.println("8");
             map.put("sales", totalSales);
+            System.out.println("9");
             map.put("returned", totalReturned);
+            System.out.println("10");
             map.put("date", date);
+            System.out.println("11");
             dailySales.add(map);
+            System.out.println("12");
         }
         return Response.status(200).entity(dailySales).build();
     }
