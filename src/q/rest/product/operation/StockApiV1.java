@@ -5,6 +5,7 @@ import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.qstock.*;
+import q.rest.product.model.qstock.views.StockSalesSummary;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -26,6 +27,10 @@ public class StockApiV1 {
 
     @EJB
     private AsyncProductApi async;
+
+
+    private Helper helper = new Helper();
+
 
     @SubscriberJwt
     @POST
@@ -166,36 +171,56 @@ public class StockApiV1 {
     @SubscriberJwt
     @GET
     @Path("sales-report/{year}/{month}")
-    public Response getDailySales(@Context UriInfo info, @HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month) {
-        Date to = Helper.getToDate(month, year);//month = 1 - 12
+    public Response getDailySales2(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month){
         Date from = Helper.getFromDate(month, year);
-        int companyId = Helper.getCompanyFromJWT(header);
-        String sql = "select b from StockSales b where b.companyId = :value0 and b.created between :value1 and :value2";
-        List<StockSales> sales = dao.getJPQLParams(StockSales.class, sql, companyId, from, to );
-        attachCustomerObject(sales, header);
-        sql = "select b from StockReturnSalesStandAlone b where b.salesId in (select c.id from StockSales c where c.companyId = :value0) and b.created between :value1 and :value2";
-        List<StockReturnSalesStandAlone> returns = dao.getJPQLParams(StockReturnSalesStandAlone.class, sql, companyId, from , to);
-        for(var rer : returns){
-            StockSales s = dao.find(StockSales.class, rer.getSalesId());
-            this.attachCustomerObject(s, header);
-            rer.setCustomerId(s.getCustomerId());
-            rer.setCustomer(s.getCustomer());
-            rer.setTaxRate(s.getTaxRate());
+        Date to = Helper.getToDate(month, year);//month = 1 - 12
+        int companyId =  Helper.getCompanyFromJWT(header);
+        List<Date> dates = helper.getAllDatesBetween2(from, to);
+        List<StockSalesSummary> summaries = new ArrayList<>();
+        for(Date date : dates){
+            String sql = "select b from StockSalesSummary b where b.companyId = :value0 and b.created = :value1";
+            StockSalesSummary summary = dao.findJPQLParams(StockSalesSummary.class, sql, companyId, date);
+            if(summary == null)
+                summary = new StockSalesSummary(date, companyId);
+            summaries.add(summary);
         }
-        Map<String,Object> map = new HashMap<>();
-        map.put("sales", sales);
-        map.put("returns", returns);
+        Map<String , Object> map = new HashMap<>();
+        map.put("daysSummary", summaries);
         return Response.status(200).entity(map).build();
     }
+
+//    @SubscriberJwt
+//    @GET
+//    @Path("sales-report/{year}/{month}")
+//    public Response getDailySales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month) {
+//        Date to = Helper.getToDate(month, year);//month = 1 - 12
+//        Date from = Helper.getFromDate(month, year);
+//        int companyId = Helper.getCompanyFromJWT(header);
+//        String sql = "select b from StockSales b where b.companyId = :value0 and b.created between :value1 and :value2";
+//        List<StockSales> sales = dao.getJPQLParams(StockSales.class, sql, companyId, from, to );
+//        attachCustomerObject(sales, header);
+//        sql = "select b from StockReturnSalesStandAlone b where b.salesId in (select c.id from StockSales c where c.companyId = :value0) and b.created between :value1 and :value2";
+//        List<StockReturnSalesStandAlone> returns = dao.getJPQLParams(StockReturnSalesStandAlone.class, sql, companyId, from , to);
+//        for(var rer : returns){
+//            StockSales s = dao.find(StockSales.class, rer.getSalesId());
+//            this.attachCustomerObject(s, header);
+//            rer.setCustomerId(s.getCustomerId());
+//            rer.setCustomer(s.getCustomer());
+//            rer.setTaxRate(s.getTaxRate());
+//        }
+//        Map<String,Object> map = new HashMap<>();
+//        map.put("sales", sales);
+//        map.put("returns", returns);
+//        return Response.status(200).entity(map).build();
+//    }
 
     @SubscriberJwt
     @GET
     @Path("sales-summary/ytd")
     public Response getSalesSummaryYtd(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
-        Helper h = new Helper();
         int companyId =  Helper.getCompanyFromJWT(header);
         int year = Year.now().getValue();
-        String yearStart = "'" + h.getDateFormat(Helper.getFromDate(1 , year), "YYYY-MM-dd") + "' ";
+        String yearStart = "'" + helper.getDateFormat(Helper.getFromDate(1 , year), "YYYY-MM-dd") + "' ";
         String sql = " select sal.branch_id as branch_id, ret.branch_id as branch_id_2, total_sales, total_returned from" +
                 "    (" +
                 " select s.branch_id," +
@@ -235,15 +260,14 @@ public class StockApiV1 {
     @GET
     @Path("sales-summary/mtd")
     public Response getSalesSummaryMtd(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
-        Helper h = new Helper();
         int companyId =  Helper.getCompanyFromJWT(header);
         int year = Year.now().getValue();
         int month = YearMonth.now().getMonthValue();
         Date fromMonth = Helper.getFromDate(month, year);
         Date toMax = Helper.getToDate(month, year);
 
-        String monthStart = " '" + h.getDateFormat(fromMonth , "YYYY-MM-dd") + "' ";
-        String monthEnd = " '" + h.getDateFormat(toMax , "YYYY-MM-dd") + "' ";
+        String monthStart = " '" + helper.getDateFormat(fromMonth , "YYYY-MM-dd") + "' ";
+        String monthEnd = " '" + helper.getDateFormat(toMax , "YYYY-MM-dd") + "' ";
 
         String sql = " select sal.branch_id as branch_id, ret.branch_id as branch_id_2, total_sales, total_returned from" +
                 "    (" +
@@ -284,8 +308,7 @@ public class StockApiV1 {
     @GET
     @Path("branches-sales/{date}")
     public Response getAllBranchSales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "date") long dateLong){
-        Helper h = new Helper();
-        String date = "'" + h.getDateFormat(new Date(dateLong), "YYYY-MM-dd") + "'";
+        String date = "'" + helper.getDateFormat(new Date(dateLong), "YYYY-MM-dd") + "'";
         int companyId = Helper.getCompanyFromJWT(header);
         String sql = "select sal.branch_id as branch_id, ret.branch_id as branch_id_2, total_sales, total_returned from " +
                 "    (select s.branch_id, " +
@@ -341,8 +364,7 @@ public class StockApiV1 {
     }
 
     private void applyDaySales(int companyId, List<BranchSales> branchSales){
-        Helper h = new Helper();
-        String date = "'" + h.getDateFormat(new Date(), "YYYY-MM-dd") + "'";
+        String date = "'" + helper.getDateFormat(new Date(), "YYYY-MM-dd") + "'";
         String sql = "select sal.branch_id as branch_id, ret.branch_id as branch_id_2, total_sales, total_returned from " +
                 "    (select s.branch_id, " +
                 "       sum((i.unit_price * i.quantity + s.delivery_charge) + (i.unit_price * i.quantity + s.delivery_charge) * s.tax_rate) as total_sales " +
@@ -377,12 +399,11 @@ public class StockApiV1 {
     }
 
     private void applyMtd(int companyId, List<BranchSales> branchSales){
-        Helper h = new Helper();
         int year = Year.now().getValue();
         int month = YearMonth.now().getMonthValue();
 
-        String monthStart = " '" + h.getDateFormat(Helper.getFromDate(month, year) , "YYYY-MM-dd") + "' ";
-        String monthEnd = " '" + h.getDateFormat(Helper.getToDate(month, year) , "YYYY-MM-dd") + "' ";
+        String monthStart = " '" + helper.getDateFormat(Helper.getFromDate(month, year) , "YYYY-MM-dd") + "' ";
+        String monthEnd = " '" + helper.getDateFormat(Helper.getToDate(month, year) , "YYYY-MM-dd") + "' ";
 
         String sql = " select sal.branch_id as branch_id, ret.branch_id as branch_id_2, total_sales, total_returned from" +
                 "    (" +
@@ -420,9 +441,8 @@ public class StockApiV1 {
 
 
     public void applyYtd(int companyId, List<BranchSales> branchSales){
-        Helper h = new Helper();
         int year = Year.now().getValue();
-        String yearStart = "'" + h.getDateFormat(Helper.getFromDate(1 , year), "YYYY-MM-dd") + "' ";
+        String yearStart = "'" + helper.getDateFormat(Helper.getFromDate(1 , year), "YYYY-MM-dd") + "' ";
         String sql = " select sal.branch_id as branch_id, ret.branch_id as branch_id_2, total_sales, total_returned from" +
                 "    (" +
                 " select s.branch_id," +
@@ -461,14 +481,13 @@ public class StockApiV1 {
     @GET
     @Path("daily-sales/from/{from}/to/{to}")
     public Response getDailySales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong){
-        Helper h = new Helper();
         int companyId = Helper.getCompanyFromJWT(header);
-        List<Date> dates = h.getAllDatesBetween2(new Date(fromLong), new Date(toLong));
+        List<Date> dates = helper.getAllDatesBetween2(new Date(fromLong), new Date(toLong));
         List<Map> dailySales = new ArrayList<>();
         for (Date date : dates) {
             String sql = "select sum((i.unit_price * i.quantity + s.delivery_charge) + (i.unit_price * i.quantity + s.delivery_charge) * s.tax_rate) as total from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id " +
                     " where s.company_id = " +companyId +
-                    " and cast(s.created as date ) = '" + h.getDateFormat(date, "yyyy-MM-dd") + "'" +
+                    " and cast(s.created as date ) = '" + helper.getDateFormat(date, "yyyy-MM-dd") + "'" +
                     " group by cast(s.created as date)";
             Object object = dao.getNativeSingle(sql);
             double totalSales = object == null ? 0 : ((Number)object).doubleValue();
@@ -478,7 +497,7 @@ public class StockApiV1 {
                     "    join prd_stk_sales_order s on r.sales_id = s.id" +
                     "    join prd_stk_sales_order_item si on sri.sales_item_id = si.id" +
                     " where s.company_id = " + companyId +
-                    " and cast(r.created as date ) = '" + h.getDateFormat(date, "yyyy-MM-dd") + "'" +
+                    " and cast(r.created as date ) = '" + helper.getDateFormat(date, "yyyy-MM-dd") + "'" +
                     " group by cast(r.created as date)";
             Object o2 = dao.getNativeSingle(sqlReturn);
             double totalReturned = o2 == null ? 0 : ((Number)o2).doubleValue();
