@@ -1,11 +1,18 @@
 package q.rest.product.dao;
 
+import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.qstock.BranchSales;
+import q.rest.product.model.qstock.StockSales;
 import q.rest.product.model.qstock.views.StockSalesSummary;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 import java.time.Year;
 import java.time.YearMonth;
 import java.util.*;
@@ -30,13 +37,14 @@ public class DaoApi {
         return summaries;
     }
 
-    public List<Map<String,Object>> getTopCustomers(Date from, Date to, int companyId){
+    public List<Map<String,Object>> getTopCustomers(Date from, Date to, int companyId, String header){
         String sql = "select customer_id, sum(sales-sales_return) as total from prd_view_sales_by_customer" +
                 " where company_id = " + companyId +
                 " and created between '" + helper.getDateFormat(from , "yyyy-MM-dd") + "' and '" + helper.getDateFormat(to , "yyyy-MM-dd") + "'" +
                 " group by customer_id order by total desc";
         List<Object> rows = dao.getNative(sql);
         List<Map<String,Object>> topCustomers = new ArrayList<>();
+        List<Integer> customerIds = new ArrayList<>();
         for(var rowObj : rows){
             var row = (Object[]) rowObj;
             int customerId = ((Number) row[0]).intValue();
@@ -45,7 +53,19 @@ public class DaoApi {
             tcmap.put("customerId", customerId);
             tcmap.put("sales", total);
             topCustomers.add(tcmap);
+            customerIds.add(customerId);
         }
+        try {
+            List<Map> customers = getCustomerObjects(customerIds, header);
+            for (var customer : customers) {
+                int cid = (int) customer.get("id");
+                for (var top : topCustomers) {
+                    if ((int) top.get("customerId") == cid) {
+                        top.put("customer", customer);
+                    }
+                }
+            }
+        }catch (Exception ignore){}
         return topCustomers;
     }
 
@@ -168,9 +188,9 @@ public class DaoApi {
     }
 
 
-    public void applyYtd(int companyId, List<BranchSales> branchSales){
+    public void applyYtd(int companyId, List<BranchSales> branchSales) {
         int year = Year.now().getValue();
-        String yearStart = "'" + helper.getDateFormat(Helper.getFromDate(1 , year), "YYYY-MM-dd") + "' ";
+        String yearStart = "'" + helper.getDateFormat(Helper.getFromDate(1, year), "YYYY-MM-dd") + "' ";
         String sql = " select sal.branch_id as branch_id, ret.branch_id as branch_id_2, total_sales, total_returned from" +
                 "    (" +
                 " select s.branch_id," +
@@ -190,13 +210,13 @@ public class DaoApi {
                 " group by s.branch_id) ret" +
                 " on ret.branch_id = sal.branch_id";
         List<Object> result = dao.getNative(sql);
-        for(Object obj : result){
+        for (Object obj : result) {
             Object[] row = (Object[]) obj;
             int branchId = ((Number) (row[0] != null ? row[0] : row[1])).intValue();
             double totalSales = row[2] != null ? ((Number) row[2]).doubleValue() : 0;
             double totalReturned = row[3] != null ? ((Number) row[3]).doubleValue() : 0;
-            for(BranchSales bs : branchSales){
-                if(bs.getBranchId() == branchId){
+            for (BranchSales bs : branchSales) {
+                if (bs.getBranchId() == branchId) {
                     bs.setYtdSales(totalSales);
                     bs.setYtdReturns(totalReturned);
                     break;
@@ -204,4 +224,24 @@ public class DaoApi {
             }
         }
     }
+
+
+    private List<Map> getCustomerObjects(List<Integer> customerIds, String header){
+        StringBuilder ids = new StringBuilder("0");
+        for(var id : customerIds) {
+            ids.append(",").append(id);
+        }
+        Response r = this.getSecuredRequest(AppConstants.getCustomers(ids.toString()), header);
+        if(r.getStatus() == 200){
+            List<Map> list = r.readEntity(new GenericType<List<Map>>(){});
+            return list;
+        }
+        return new ArrayList<>();
+    }
+
+    public <T> Response getSecuredRequest(String link, String header) {
+        Invocation.Builder b = ClientBuilder.newClient().target(link).request();
+        return b.header(HttpHeaders.AUTHORIZATION, header).get();
+    }
+
 }

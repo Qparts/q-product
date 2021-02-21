@@ -180,7 +180,7 @@ public class StockApiV1 {
         int companyId =  Helper.getCompanyFromJWT(header);
 
         List<StockSalesSummary> summaries = daoApi.getDailySalesSummary(from, to, companyId);
-        List<Map<String,Object>> topCustomers = daoApi.getTopCustomers(from, to, companyId);
+        List<Map<String,Object>> topCustomers = daoApi.getTopCustomers(from, to, companyId, header);
         List<Map<String,Object>> topBrands = daoApi.getTopBrands(from, to, companyId);
         Map<String , Object> map = new HashMap<>();
         map.put("daysSummary", summaries);
