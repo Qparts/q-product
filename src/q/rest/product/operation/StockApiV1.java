@@ -6,6 +6,7 @@ import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.qstock.*;
+import q.rest.product.model.qstock.views.StockPurchaseSummary;
 import q.rest.product.model.qstock.views.StockSalesSummary;
 
 import javax.ejb.EJB;
@@ -181,7 +182,7 @@ public class StockApiV1 {
 
         List<StockSalesSummary> summaries = daoApi.getDailySalesSummary(from, to, companyId);
         List<Map<String,Object>> topCustomers = daoApi.getTopCustomers(from, to, companyId, header);
-        List<Map<String,Object>> topBrands = daoApi.getTopBrands(from, to, companyId);
+        List<Map<String,Object>> topBrands = daoApi.getTopBrands(from, to, companyId, 'S');
         Map<String , Object> map = new HashMap<>();
         map.put("daysSummary", summaries);
         map.put("topCustomers", topCustomers);
@@ -189,69 +190,30 @@ public class StockApiV1 {
         return Response.status(200).entity(map).build();
     }
 
-//    @SubscriberJwt
-//    @GET
-//    @Path("sales-report/{year}/{month}")
-//    public Response getDailySales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month) {
-//        Date to = Helper.getToDate(month, year);//month = 1 - 12
-//        Date from = Helper.getFromDate(month, year);
-//        int companyId = Helper.getCompanyFromJWT(header);
-//        String sql = "select b from StockSales b where b.companyId = :value0 and b.created between :value1 and :value2";
-//        List<StockSales> sales = dao.getJPQLParams(StockSales.class, sql, companyId, from, to );
-//        attachCustomerObject(sales, header);
-//        sql = "select b from StockReturnSalesStandAlone b where b.salesId in (select c.id from StockSales c where c.companyId = :value0) and b.created between :value1 and :value2";
-//        List<StockReturnSalesStandAlone> returns = dao.getJPQLParams(StockReturnSalesStandAlone.class, sql, companyId, from , to);
-//        for(var rer : returns){
-//            StockSales s = dao.find(StockSales.class, rer.getSalesId());
-//            this.attachCustomerObject(s, header);
-//            rer.setCustomerId(s.getCustomerId());
-//            rer.setCustomer(s.getCustomer());
-//            rer.setTaxRate(s.getTaxRate());
-//        }
-//        Map<String,Object> map = new HashMap<>();
-//        map.put("sales", sales);
-//        map.put("returns", returns);
-//        return Response.status(200).entity(map).build();
-//    }
 
-
+    @SubscriberJwt
+    @GET
+    @Path("purchase-report/{year}/{month}")
+    public Response getDailyPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month){
+        Date from = Helper.getFromDate(month, year);
+        Date to = Helper.getToDate(month, year);//month = 1 - 12
+        int companyId =  Helper.getCompanyFromJWT(header);
+        List<StockPurchaseSummary> summaries = daoApi.getDailyPurchaseSummary(from, to, companyId);
+        List<Map<String,Object>> topSuppliers = daoApi.getTopSuppliers(from, to, companyId, header);
+        List<Map<String,Object>> topBrands = daoApi.getTopBrands(from, to, companyId, 'P');
+        Map<String , Object> map = new HashMap<>();
+        map.put("daysSummary", summaries);
+        map.put("topSuppliers", topSuppliers);
+        map.put("topBrands", topBrands);
+        return Response.status(200).entity(map).build();
+    }
 
     @SubscriberJwt
     @GET
     @Path("branches-sales/{date}")
     public Response getAllBranchSales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "date") long dateLong){
-        String date = "'" + helper.getDateFormat(new Date(dateLong), "YYYY-MM-dd") + "'";
         int companyId = Helper.getCompanyFromJWT(header);
-        String sql = "select sal.branch_id as branch_id, ret.branch_id as branch_id_2, total_sales, total_returned from " +
-                "    (select s.branch_id, " +
-                "       sum((i.unit_price * i.quantity + s.delivery_charge) + (i.unit_price * i.quantity + s.delivery_charge) * s.tax_rate) as total_sales " +
-                " from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id " +
-                " where s.company_id = " + companyId +
-                "  and cast(s.created as date ) = " + date +
-                " group by s.branch_id) sal" +
-                "        full join" +
-                " (select s.branch_id, sum ((si.unit_price * sri.quantity + r.delivery_charge) +  (si.unit_price * sri.quantity + r.delivery_charge) * s.tax_rate) as total_returned" +
-                " from prd_stk_sales_return_item sri" +
-                "    join prd_stk_sales_return r on sri.sales_return_id = r.id" +
-                "    join prd_stk_sales_order s on r.sales_id = s.id" +
-                "    join prd_stk_sales_order_item si on sri.sales_item_id = si.id" +
-                " where s.company_id = " + companyId +
-                " and cast(r.created as date ) = " + date +
-                " group by s.branch_id) ret" +
-                " on ret.branch_id = sal.branch_id";
-        List<Object> result = dao.getNative(sql);
-        List<Map> list = new ArrayList<>();
-        for(Object obj : result){
-            Object[] row = (Object[]) obj;
-            Map<String, Object> map = new HashMap<String, Object>();
-            Object branchId = row[0] != null ? row[0] : row[1];
-            double totalSales = row[2] != null ? ((Number) row[2]).doubleValue() : 0;
-            double totalReturned = row[3] != null ? ((Number) row[3]).doubleValue() : 0;
-            map.put("branchId", branchId);
-            map.put("sales", totalSales);
-            map.put("returned", totalReturned);
-            list.add(map);
-        }
+        List<Map<String,Object>> list = daoApi.getBranchSales(companyId, dateLong);
         return Response.status(200).entity(list).build();
     }
 
@@ -272,32 +234,7 @@ public class StockApiV1 {
     @Path("daily-sales/from/{from}/to/{to}")
     public Response getDailySales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong){
         int companyId = Helper.getCompanyFromJWT(header);
-        List<Date> dates = helper.getAllDatesBetween2(new Date(fromLong), new Date(toLong));
-        List<Map> dailySales = new ArrayList<>();
-        for (Date date : dates) {
-            String sql = "select sum((i.unit_price * i.quantity + s.delivery_charge) + (i.unit_price * i.quantity + s.delivery_charge) * s.tax_rate) as total from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id " +
-                    " where s.company_id = " +companyId +
-                    " and cast(s.created as date ) = '" + helper.getDateFormat(date, "yyyy-MM-dd") + "'" +
-                    " group by cast(s.created as date)";
-            Object object = dao.getNativeSingle(sql);
-            double totalSales = object == null ? 0 : ((Number)object).doubleValue();
-            String sqlReturn = "select sum ((si.unit_price * sri.quantity + r.delivery_charge) +  (si.unit_price * sri.quantity + r.delivery_charge) * s.tax_rate) as total_returned " +
-                    " from prd_stk_sales_return_item sri" +
-                    "    join prd_stk_sales_return r on sri.sales_return_id = r.id" +
-                    "    join prd_stk_sales_order s on r.sales_id = s.id" +
-                    "    join prd_stk_sales_order_item si on sri.sales_item_id = si.id" +
-                    " where s.company_id = " + companyId +
-                    " and cast(r.created as date ) = '" + helper.getDateFormat(date, "yyyy-MM-dd") + "'" +
-                    " group by cast(r.created as date)";
-            Object o2 = dao.getNativeSingle(sqlReturn);
-            double totalReturned = o2 == null ? 0 : ((Number)o2).doubleValue();
-            Map<String, Object> map = new HashMap<>();
-            map.put("total", totalSales - totalReturned);//to be removed
-            map.put("sales", totalSales);
-            map.put("returned", totalReturned);
-            map.put("date", date);
-            dailySales.add(map);
-        }
+        List<Map<String,Object>> dailySales = daoApi.getDailySales(companyId, fromLong, toLong);
         return Response.status(200).entity(dailySales).build();
     }
 
@@ -305,23 +242,8 @@ public class StockApiV1 {
     @GET
     @Path("monthly-sales/year/{year}/month/{month}/length/{length}")
     public Response getPreviousMonthlySales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month, @PathParam(value = "length") int length){
-        List<YearMonth> yms = Helper.getAllPreviousMonths(year, month, length);
-        List<Map> monthlySales = new ArrayList<>();
         int companyId = Helper.getCompanyFromJWT(header);
-        for (YearMonth ym : yms) {
-            String sql = " select sum(i.unit_price * i.quantity + i.unit_price * i.quantity * s.tax_rate + s.delivery_charge) as total from prd_stk_sales_order_item i join prd_stk_sales_order s on i.sales_order_id = s.id " +
-                    " where s.company_id = " + companyId +
-                    " and to_char(s.created, 'YYYY-MM') = '" + ym + "'";
-            Object o = dao.getNativeSingle(sql);
-            double total = o == null ? 0 : ((Number)o).doubleValue();
-            Map<String, Object> map = new HashMap<>();
-            map.put("total", total);
-            map.put("yearMonth", ym.toString());
-            map.put("year", ym.getYear());
-            map.put("month", ym.getMonth());
-            map.put("monthNumber", ym.getMonthValue());
-            monthlySales.add(map);
-        }
+        List<Map<String,Object>> monthlySales =  daoApi.getMonthlySales(companyId, year, month, length);
         return Response.status(200).entity(monthlySales).build();
     }
 
@@ -449,6 +371,11 @@ public class StockApiV1 {
         purchaseReturn.setCreated(new Date());
         purchaseReturn.setPaymentMethod(purchaseReturn.getTransactionType() == 'C' ? purchaseReturn.getPaymentMethod() : null);
         if(!verifyQuantities(purchaseReturn)) return Response.status(400).build();
+        //unit average cost
+        for(var item : purchaseReturn.getItems()){
+            List<StockLive> lives = dao.getCondition(StockLive.class, "stockProductId", item.getPurchaseItem().getStockProduct().getId());
+            item.setUnitAverageCost(lives.get(0).getAveragedCost());
+        }
         dao.persist(purchaseReturn);
         if(purchaseReturn.getTransactionType() == 'T'){
             StockPurchaseCredit credit = new StockPurchaseCredit();

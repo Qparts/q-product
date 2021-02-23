@@ -1,12 +1,15 @@
 package q.rest.product.model.qstock;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Table(name="prd_stk_purchase_order")
 @Entity
@@ -29,8 +32,12 @@ public class StockPurchase implements Serializable {
     private int branchId;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "purchase_order_id")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<StockPurchaseItem> items;
-
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name="purchase_id")
+    @OrderBy("created asc")
+    private Set<StockReturnPurchase> purchaseReturns;
 
     @JsonIgnore
     public double getTotalAmount() {
@@ -56,12 +63,19 @@ public class StockPurchase implements Serializable {
         }
     }
 
-
     @JsonIgnore
     public void attachSupplier(Map<String, Object> supplier) {
         this.supplier = supplier;
     }
 
+
+    public Set<StockReturnPurchase> getPurchaseReturns() {
+        return purchaseReturns;
+    }
+
+    public void setPurchaseReturns(Set<StockReturnPurchase> purchaseReturns) {
+        this.purchaseReturns = purchaseReturns;
+    }
 
     public int getBranchId() {
         return branchId;

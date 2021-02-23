@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-@Table(name = "prd_view_Sales_summary")
+@Table(name = "prd_view_sales_summary")
 @Entity
 @IdClass(StockSalesSummary.StockSalesSummaryPK.class)
 public class StockSalesSummary {
