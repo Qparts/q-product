@@ -1,5 +1,6 @@
 package q.rest.product.operation;
 
+import org.hibernate.annotations.Subselect;
 import q.rest.product.dao.DAO;
 import q.rest.product.dao.DaoApi;
 import q.rest.product.filter.annotation.SubscriberJwt;
@@ -15,8 +16,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.*;
-import java.time.Year;
-import java.time.YearMonth;
 import java.util.*;
 
 @Path("/api/v4/stock/")
@@ -116,6 +115,9 @@ public class StockApiV1 {
             StockPurchaseCredit credit = new StockPurchaseCredit();
             credit.setAmount(po.getTotalAmount());
             credit.setCreditDate(new Date());
+            credit.setSupplierId(po.getSupplierId());
+            credit.setSource('P');
+            credit.setCompanyId(po.getCompanyId());
             credit.setPurchaseOrderId(po.getId());
             dao.persist(credit);
         }
@@ -206,6 +208,24 @@ public class StockApiV1 {
         map.put("topSuppliers", topSuppliers);
         map.put("topBrands", topBrands);
         return Response.status(200).entity(map).build();
+    }
+
+    @SubscriberJwt
+    @GET
+    @Path("sales-credit-balance")
+    public Response getSalesCreditBalance(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
+        int companyId = Helper.getCompanyFromJWT(header);
+        List<Map<String,Object>> creditBalance = daoApi.getSalesCreditBalance(companyId, header);
+        return Response.status(200).entity(creditBalance).build();
+    }
+
+    @SubscriberJwt
+    @GET
+    @Path("purchase-credit-balance")
+    public Response getPurchaseCreditBalance(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
+        int companyId = Helper.getCompanyFromJWT(header);
+        List<Map<String,Object>> creditBalance = daoApi.getPurchaseCreditBalance(companyId, header);
+        return Response.status(200).entity(creditBalance).build();
     }
 
     @SubscriberJwt
@@ -404,7 +424,11 @@ public class StockApiV1 {
         if(salesReturn.getTransactionType() == 'T'){
             StockSalesCredit credit = new StockSalesCredit();
             credit.setAmount(salesReturn.getTotalAmount(sales.getTaxRate()) * -1);
+            credit.setCompanyId(sales.getCompanyId());
+            credit.setCustomerId(sales.getCustomerId());
+            credit.setSource('R');
             credit.setCreditDate(new Date());
+            credit.setSalesOrderId(0);
             credit.setSalesOrderId(salesReturn.getId());
             dao.persist(credit);
         }
@@ -433,6 +457,9 @@ public class StockApiV1 {
             credit.setAmount(sales.getTotalAmount());
             credit.setCreditDate(new Date());
             credit.setSalesOrderId(sales.getId());
+            credit.setCustomerId(sales.getCustomerId());
+            credit.setSource('S');//sales
+            credit.setCompanyId(sales.getCompanyId());
             dao.persist(credit);
         }
         updateStock(sales);

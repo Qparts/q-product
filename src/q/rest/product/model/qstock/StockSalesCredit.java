@@ -1,5 +1,7 @@
 package q.rest.product.model.qstock;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -11,10 +13,47 @@ public class StockSalesCredit implements Serializable {
     @SequenceGenerator(name = "prd_stk_sales_credit_id_seq_gen", sequenceName = "prd_stk_sales_credit_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_stk_sales_credit_id_seq_gen")
     private int id;
+    @JsonIgnore
+    private int companyId;
     private int salesOrderId;
+    private int salesReturnId;
     private double amount;
     @Temporal(TemporalType.TIMESTAMP)
     private Date creditDate;
+    private int customerId;
+    private char source;//S = sales , R = return, Y = payment received
+
+    public int getCustomerId() {
+        return customerId;
+    }
+
+    public int getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(int companyId) {
+        this.companyId = companyId;
+    }
+
+    public int getSalesReturnId() {
+        return salesReturnId;
+    }
+
+    public void setSalesReturnId(int salesReturnId) {
+        this.salesReturnId = salesReturnId;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    public char getSource() {
+        return source;
+    }
+
+    public void setSource(char source) {
+        this.source = source;
+    }
 
     public int getId() {
         return id;

@@ -12,9 +12,45 @@ public class StockPurchaseCredit implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_stk_purchase_credit_id_seq_gen")
     private int id;
     private int purchaseOrderId;
+    private int purchaseReturnId;
     private double amount;
     @Temporal(TemporalType.TIMESTAMP)
     private Date creditDate;
+    private int supplierId;
+    private int companyId;
+    private char source;//P = purchase, R = return , Y = payment out
+
+    public char getSource() {
+        return source;
+    }
+
+    public void setSource(char source) {
+        this.source = source;
+    }
+
+    public int getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(int companyId) {
+        this.companyId = companyId;
+    }
+
+    public int getPurchaseReturnId() {
+        return purchaseReturnId;
+    }
+
+    public void setPurchaseReturnId(int purchaseReturnId) {
+        this.purchaseReturnId = purchaseReturnId;
+    }
+
+    public int getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(int supplierId) {
+        this.supplierId = supplierId;
+    }
 
     public int getId() {
         return id;

@@ -26,6 +26,8 @@ public class DaoApi {
     private DAO dao;
     private Helper helper = new Helper();
 
+
+
     public List<Map<String,Object>> getBranchSales(int companyId, long dateLong){
         String date = "'" + helper.getDateFormat(new Date(dateLong), "YYYY-MM-dd") + "'";
         String sql = "select sal.branch_id as branch_id, ret.branch_id as branch_id_2, total_sales, total_returned from " +
@@ -138,6 +140,66 @@ public class DaoApi {
             summaries.add(summary);
         }
         return summaries;
+    }
+
+    public List<Map<String,Object>> getPurchaseCreditBalance(int companyId, String header){
+        String sql = "select supplier_id, sum(amount) as balance from prd_stk_purchase_credit where company_id = " + companyId +
+        " group by supplier_id order by balance desc";
+        List<Object> result = dao.getNative(sql);
+        List<Map<String,Object>> list = new ArrayList<>();
+        List<Integer> supplierIds = new ArrayList<>();
+        for(Object obj : result) {
+            Object[] row = (Object[]) obj;
+            Map<String, Object> map = new HashMap<String, Object>();
+            int supplierId = ((Number) row[0]).intValue();
+            double balance = ((Number) row[1]).doubleValue();
+            map.put("supplierId", supplierId);
+            map.put("balance", balance);
+            supplierIds.add(supplierId);
+            list.add(map);
+        }
+        try {
+            List<Map<String,Object>> suppliers = getContactObjects(supplierIds, 'C', header);
+            for (var supplier : suppliers) {
+                int cid = (int) supplier.get("id");
+                for (var top : list) {
+                    if ((int) top.get("supplierId") == cid) {
+                        top.put("supplier", supplier);
+                    }
+                }
+            }
+        }catch (Exception ignore){}
+        return list;
+    }
+
+    public List<Map<String,Object>> getSalesCreditBalance(int companyId, String header){
+        String sql = "select customer_id, sum(amount) as balance from prd_stk_sales_credit where company_id = " + companyId +
+                " group by customer_id order by balance desc";
+        List<Object> result = dao.getNative(sql);
+        List<Map<String,Object>> list = new ArrayList<>();
+        List<Integer> customerIds = new ArrayList<>();
+        for(Object obj : result) {
+            Object[] row = (Object[]) obj;
+            Map<String, Object> map = new HashMap<String, Object>();
+            int customerId = ((Number) row[0]).intValue();
+            double balance = ((Number) row[1]).doubleValue();
+            map.put("customerId", customerId);
+            map.put("balance", balance);
+            customerIds.add(customerId);
+            list.add(map);
+        }
+        try {
+            List<Map<String,Object>> customers = getContactObjects(customerIds, 'C', header);
+            for (var customer : customers) {
+                int cid = (int) customer.get("id");
+                for (var top : list) {
+                    if ((int) top.get("customerId") == cid) {
+                        top.put("customer", customer);
+                    }
+                }
+            }
+        }catch (Exception ignore){}
+        return list;
     }
 
     public List<Map<String,Object>> getTopCustomers(Date from, Date to, int companyId, String header){
