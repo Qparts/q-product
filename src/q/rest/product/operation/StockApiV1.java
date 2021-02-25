@@ -406,7 +406,7 @@ public class StockApiV1 {
             sc.setPaymentMethod(paymentMethod.charAt(0));
             sc.setCompanyId(companyId);
             sc.setSource('Y');
-            sc.setAmount(amount);
+            sc.setAmount(amount * -1);
             sc.setReference(reference);
             sc.setCreditDate(new Date());
             dao.persist(sc);
