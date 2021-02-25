@@ -3,6 +3,7 @@ package q.rest.product.dao;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.qstock.BranchSales;
+import q.rest.product.model.qstock.StockProduct;
 import q.rest.product.model.qstock.StockPurchase;
 import q.rest.product.model.qstock.StockSales;
 import q.rest.product.model.qstock.views.StockPurchaseSummary;
@@ -172,6 +173,26 @@ public class DaoApi {
         return list;
     }
 
+
+    public List<Map<String,Object>> getTopProductsMovements(Date from, Date to, int companyId){
+        String sql = "select stock_product_id, items_sold from prd_view_product_movement_high where company_id = " + companyId +
+                " and created between '"+ helper.getDateFormat(from , "yyyy-MM-dd") +"' and '"+ helper.getDateFormat(to , "yyyy-MM-dd") + "'" +
+                "group by stock_product_id, items_sold order by items_sold desc";
+        List<Object> rows = dao.getNative(sql);
+        List<Map<String,Object>> list = new ArrayList<>();
+        for(Object rowObj : rows) {
+            Object[] row = (Object[]) rowObj;
+            Map<String, Object> map = new HashMap<String, Object>();
+            int productId = ((Number) row[0]).intValue();
+            int itemsSold = ((Number) row[1]).intValue();
+            StockProduct product =  dao.find(StockProduct.class, productId);
+            map.put("product", product);
+            map.put("itemsSold", itemsSold);
+            list.add(map);
+        }
+        return list;
+    }
+
     public List<Map<String,Object>> getSalesCreditBalance(int companyId, String header){
         String sql = "select customer_id, sum(amount) as balance from prd_stk_sales_credit where company_id = " + companyId +
                 " group by customer_id order by balance desc";
@@ -201,6 +222,7 @@ public class DaoApi {
         }catch (Exception ignore){}
         return list;
     }
+
 
     public List<Map<String,Object>> getTopCustomers(Date from, Date to, int companyId, String header){
         String sql = "select customer_id, sum(sales + sales_tax - sales_return - sales_return_tax) as total from prd_view_sales_by_customer" +

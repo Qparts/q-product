@@ -22,6 +22,24 @@ public class StockSalesCredit implements Serializable {
     private Date creditDate;
     private int customerId;
     private char source;//S = sales , R = return, Y = payment received
+    private Character paymentMethod;// only in source = Y
+    private String reference;
+
+    public Character getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(Character paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
 
     public int getCustomerId() {
         return customerId;

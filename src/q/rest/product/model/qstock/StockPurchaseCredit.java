@@ -18,7 +18,25 @@ public class StockPurchaseCredit implements Serializable {
     private Date creditDate;
     private int supplierId;
     private int companyId;
-    private char source;//P = purchase, R = return , Y = payment out
+    private char source;//P = purchase, R = return , Y = payment
+    private Character paymentMethod;// only in source = Y -- S = span, C = Cash, T = transfer, O = online, Q = cheque, NULL if transaction is credit
+    private String reference;
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    public Character getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(Character paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
 
     public char getSource() {
         return source;

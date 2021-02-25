@@ -1,6 +1,5 @@
 package q.rest.product.operation;
 
-import org.hibernate.annotations.Subselect;
 import q.rest.product.dao.DAO;
 import q.rest.product.dao.DaoApi;
 import q.rest.product.filter.annotation.SubscriberJwt;
@@ -31,9 +30,7 @@ public class StockApiV1 {
     @EJB
     private DaoApi daoApi;
 
-
     private Helper helper = new Helper();
-
 
     @SubscriberJwt
     @POST
@@ -85,7 +82,6 @@ public class StockApiV1 {
         dao.persist(stockProduct);
         return Response.ok().build();
     }
-
 
     @SubscriberJwt
     @POST
@@ -375,10 +371,48 @@ public class StockApiV1 {
         return Response.status(200).entity(quotations).build();
     }
 
+    @SubscriberJwt
+    @POST
+    @Path("credit-payment/{type}")
+    public Response createCreditPayment(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "type") String typePath, Map<String,Object> map){
+        int companyId = Helper.getCompanyFromJWT(header);
+        String type;
+        if(typePath.equals("purchase")) type = "purchase";
+        else if (typePath.equals("sales")) type = "sales";
+        else return Response.status(404).entity(map).build();
 
+        String reference = (String) map.get("reference");
+        int contactId = (int) (type.equals("purchase") ? map.get("supplierId") : map.get("customerId"));
+        double amount = ((Number) map.get("amount")).doubleValue();
+        String paymentMethod = (String) map.get("paymentMethod");
+        if(type.equals("purchase")) {
+            //check if amount is valid
+            
 
-
-
+            StockPurchaseCredit pc = new StockPurchaseCredit();
+            pc.setSupplierId(contactId);
+            pc.setSource('Y');
+            pc.setPaymentMethod(paymentMethod.charAt(0));
+            pc.setCompanyId(companyId);
+            pc.setAmount(amount * -1    );
+            pc.setReference(reference);
+            pc.setCreditDate(new Date());
+            dao.persist(pc);
+        }
+        else {
+            //check if amount is valid
+            StockSalesCredit sc = new StockSalesCredit();
+            sc.setCustomerId(contactId);
+            sc.setPaymentMethod(paymentMethod.charAt(0));
+            sc.setCompanyId(companyId);
+            sc.setSource('Y');
+            sc.setAmount(amount);
+            sc.setReference(reference);
+            sc.setCreditDate(new Date());
+            dao.persist(sc);
+        }
+        return Response.status(200).build();
+    }
 
 
     @SubscriberJwt
@@ -401,7 +435,11 @@ public class StockApiV1 {
             StockPurchaseCredit credit = new StockPurchaseCredit();
             credit.setAmount(purchaseReturn.getTotalAmount(purchase.getTaxRate()) * -1);
             credit.setCreditDate(new Date());
-            credit.setPurchaseOrderId(purchaseReturn.getId());
+            credit.setCompanyId(purchase.getCompanyId());
+            credit.setSource('R');
+            credit.setSupplierId(purchase.getSupplierId());
+            credit.setPurchaseOrderId(0);
+            credit.setPurchaseReturnId(purchaseReturn.getId());
             dao.persist(credit);
         }
         updateStock(purchaseReturn);
@@ -429,7 +467,7 @@ public class StockApiV1 {
             credit.setSource('R');
             credit.setCreditDate(new Date());
             credit.setSalesOrderId(0);
-            credit.setSalesOrderId(salesReturn.getId());
+            credit.setSalesReturnId(salesReturn.getId());
             dao.persist(credit);
         }
         updateStock(salesReturn);
