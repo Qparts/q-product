@@ -1,47 +1,65 @@
 package q.rest.product.model.qstock;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import q.rest.product.model.entity.v4.pblic.PbCompanyStock;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
-@Table(name="prd_stk_product")
+@Table(name="prd_product")
 public class StockProduct implements Serializable {
     @Id
-    @SequenceGenerator(name = "prd_stk_product_id_seq_gen", sequenceName = "prd_stk_product_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_stk_product_id_seq_gen")
+    @SequenceGenerator(name = "prd_product_id_seq_gen", sequenceName = "prd_product_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_product_id_seq_gen")
     private long id;
-    @JsonIgnore
-    private int companyId;
-    private String name;
     private String productNumber;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "brand_id", insertable = false, updatable = false)
-    private StockBrand brand = new StockBrand();
-    private double salesPrice;
-    private double wholesalesPrice;
-    private double specialPrice;
-    private int shortageFlag;
-    private String notes;
+    @Column(name="product_desc")
+    private String name;
+    @Column(name="product_desc_ar")
+    private String nameAr;
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
+    private int createdBy;
+    private Integer approvedBy;
     @Column(name="brand_id")
     private int brandId;
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "stock_product_id")
-    private Set<StockLive> liveStock = new HashSet<>();
+    private char status;//A = Active, I = inactive, P = pending review
 
-    public Set<StockLive> getLiveStock() {
-        return liveStock;
+//    @OneToMany(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "stock_product_id")
+//    private Set<StockLive> liveStock = new HashSet<>();
+
+
+    public Integer getApprovedBy() {
+        return approvedBy;
     }
 
-    public void setLiveStock(Set<StockLive> liveStock) {
-        this.liveStock = liveStock;
+    public void setApprovedBy(Integer approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
+    public int getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(int createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getNameAr() {
+        return nameAr;
+    }
+
+    public void setNameAr(String nameAr) {
+        this.nameAr = nameAr;
+    }
+
+
+    public char getStatus() {
+        return status;
+    }
+
+    public void setStatus(char status) {
+        this.status = status;
     }
 
     public int getBrandId() {
@@ -60,14 +78,6 @@ public class StockProduct implements Serializable {
         this.id = id;
     }
 
-    public int getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(int companyId) {
-        this.companyId = companyId;
-    }
-
     public String getName() {
         return name;
     }
@@ -83,54 +93,6 @@ public class StockProduct implements Serializable {
 
     public void setProductNumber(String productNumber) {
         this.productNumber = productNumber;
-    }
-
-    public StockBrand getBrand() {
-        return brand;
-    }
-
-    public void setBrand(StockBrand brand) {
-        this.brand = brand;
-    }
-
-    public double getSalesPrice() {
-        return salesPrice;
-    }
-
-    public void setSalesPrice(double salesPrice) {
-        this.salesPrice = salesPrice;
-    }
-
-    public double getWholesalesPrice() {
-        return wholesalesPrice;
-    }
-
-    public void setWholesalesPrice(double wholesalesPrice) {
-        this.wholesalesPrice = wholesalesPrice;
-    }
-
-    public double getSpecialPrice() {
-        return specialPrice;
-    }
-
-    public void setSpecialPrice(double specialPrice) {
-        this.specialPrice = specialPrice;
-    }
-
-    public int getShortageFlag() {
-        return shortageFlag;
-    }
-
-    public void setShortageFlag(int shortageFlag) {
-        this.shortageFlag = shortageFlag;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
     }
 
     public Date getCreated() {

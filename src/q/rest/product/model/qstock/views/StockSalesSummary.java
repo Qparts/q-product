@@ -24,11 +24,12 @@ public class StockSalesSummary {
     private double cashSales;
     private double creditSales;
 
+    private double cashSalesTax;
+    private double creditSalesTax;
+
     private double cashSalesCost;
     private double creditSalesCost;
 
-    private double cashSalesTax;
-    private double creditSalesTax;
 
     private double cashSalesReturn;
     private double creditSalesReturn;

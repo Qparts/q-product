@@ -15,12 +15,14 @@ public class Product implements Serializable {
     @Id
     @SequenceGenerator(name = "prd_product_id_seq_gen", sequenceName = "prd_product_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_product_id_seq_gen")
-    private long id;
-    private String productNumber;
-    private String productDesc;
-    private String productDescAr;
-    private String details;
-    private String detailsAr;
+    private long id;//ok
+    private String productNumber;//ok
+    @Column(name="product_desc")
+    private String productDesc;//ok
+    @Column(name="product_desc_ar")
+    private String productDescAr;//ok
+    private String details;//ok
+    private String detailsAr;//ok
     @JoinColumn(name="brand_id")
     @ManyToOne
     private Brand brand;

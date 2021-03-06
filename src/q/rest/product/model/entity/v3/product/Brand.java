@@ -1,5 +1,6 @@
 package q.rest.product.model.entity.v3.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import q.rest.product.helper.AppConstants;
 
@@ -15,16 +16,24 @@ public class Brand {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_brand_id_seq_gen")
     @Column(name="id")
     private int id;
-    @Column(name="name")
     private String name;
-    @Column(name="name_ar")
     private String nameAr;
-    @Column(name="status")
-    private char status;
-    @Column(name="created")
+    @JsonIgnore
+    private char status;//A = active, I = inactive , P = pending review
+    @JsonIgnore
     private Date created;
-    @Column(name="created_by")
-    private int createdBy;
+    @JsonIgnore
+    private int createdBy;//which company created (0 if created in dashboard)
+    @JsonIgnore
+    private Integer approvedBy;//reviewed by
+
+    public Integer getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(Integer approvedBy) {
+        this.approvedBy = approvedBy;
+    }
 
     public String getImg() {
         return AppConstants.getBrandImage(id);

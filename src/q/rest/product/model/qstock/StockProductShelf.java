@@ -14,17 +14,17 @@ import java.util.Objects;
 @IdClass(StockProductShelf.StockProductShelfPK.class)
 public class StockProductShelf implements Serializable {
     @Id
-    private long stockProductId;
+    private long productId;
     @Id
     private int branchId;
     private String shelf;
 
-    public long getStockProductId() {
-        return stockProductId;
+    public long getProductId() {
+        return productId;
     }
 
-    public void setStockProductId(long stockProductId) {
-        this.stockProductId = stockProductId;
+    public void setProductId(long productId) {
+        this.productId = productId;
     }
 
     public int getBranchId() {
@@ -46,7 +46,7 @@ public class StockProductShelf implements Serializable {
 
     public static class StockProductShelfPK implements Serializable{
         protected int branchId;
-        protected long stockProductId;
+        protected long productId;
 
         public StockProductShelfPK() {}
 
@@ -56,12 +56,12 @@ public class StockProductShelf implements Serializable {
             if (o == null || getClass() != o.getClass()) return false;
             StockProductShelfPK that = (StockProductShelfPK) o;
             return branchId == that.branchId &&
-                    stockProductId == that.stockProductId;
+                    productId == that.productId;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(branchId, stockProductId);
+            return Objects.hash(branchId, productId);
         }
     }
 }
