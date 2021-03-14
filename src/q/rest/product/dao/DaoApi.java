@@ -50,11 +50,6 @@ public class DaoApi {
         return products.isEmpty();
     }
 
-    public StockProduct findStockProduct(String productNumber, int brandId) {
-        String undecorated = Helper.undecorate(productNumber);
-        String sql = "select b from StockProduct b where b.productNumber =:value0 and b.brandId = :value1";
-        return dao.findJPQLParams(StockProduct.class, sql, undecorated, brandId);
-    }
 
     public List<StockProductSetting> getStockProductSetting(long productId, int companyId) {
         String sql = "select b from StockProductSetting b where b.companyId =:value0 and b.productId =:value1";
@@ -110,6 +105,13 @@ public class DaoApi {
                 " and b.productNumber like :value1) " +
                 "or (b.status = 'A' and b.productNumber like :value1)";
         return dao.getJPQLParams(StockProductView.class, sql, companyId, numberLike);
+    }
+
+
+    public StockProductView findStockProduct(String productNumber, int brandId) {
+        String undecorated = Helper.undecorate(productNumber);
+        String sql = "select b from StockProductView b where b.productNumber =:value0 and b.brandId = :value1";
+        return dao.findJPQLParams(StockProductView.class, sql, undecorated, brandId);
     }
 
     public List<Brand> searchBrands(String name) {
