@@ -4,16 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Objects;
 
 @Entity
 @Table(name="prd_stk_live_stock")
 @IdClass(StockLive.StockLivePK.class)
 public class StockLive implements Serializable {
+    @JsonIgnore
     @Id
     @Column(name = "product_id")
     private long productId;
+    @JsonIgnore
     @Id
     @Column(name = "company_id")
     private int companyId;
@@ -69,7 +70,7 @@ public class StockLive implements Serializable {
     public static class StockLivePK implements Serializable{
         protected int companyId;
         protected long productId;
-        protected long branchId;
+        protected int branchId;
 
         public StockLivePK() {}
 

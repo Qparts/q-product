@@ -70,17 +70,17 @@ public class DaoApi {
         return dao.persistAndReturn(product);
     }
 
-
-    public StockProductView createStockProduct2(String productNumber, int brandId, String name, String nameAr, int companyId) {
-        //manual insert
-        String sql = "insert into prd_product (product_number, product_desc, product_desc_ar, brand_id, created_by, created, status) " +
-                "values('"+productNumber+"',  '"+ name+"', '"+nameAr+"', "+brandId+", "+companyId+", '"+ helper.getDateFormat(new Date())+"', 'P' ) returning ID";
-        long id = dao.insertNativeAndReturnLongID(sql);
-        System.out.println(id);
-        var productView = findProduct(id, companyId);
-        System.out.println("product view id " + productView.getProductId());
-        return productView;
-    }
+//
+//    public StockProductView createStockProduct2(String productNumber, int brandId, String name, String nameAr, int companyId) {
+//        //manual insert
+//        String sql = "insert into prd_product (product_number, product_desc, product_desc_ar, brand_id, created_by, created, status) " +
+//                "values('"+productNumber+"',  '"+ name+"', '"+nameAr+"', "+brandId+", "+companyId+", '"+ helper.getDateFormat(new Date())+"', 'P' ) returning ID";
+//        long id = dao.insertNativeAndReturnLongID(sql);
+//        System.out.println(id);
+//        var productView = findProduct(id, companyId);
+//        System.out.println("product view id " + productView.getProductId());
+//        return productView;
+//    }
 
     public StockProductSetting createStockProductSetting(StockCreateProduct create, long productId, int companyId) {
         StockProductSetting scp = new StockProductSetting();
@@ -119,9 +119,25 @@ public class DaoApi {
                 " and b.companyId = :value0 " +
                 " and b.productNumber like :value1) " +
                 "or (b.status = 'A' and b.productNumber like :value1)";
-        return dao.getJPQLParams(StockProductView.class, sql, companyId, numberLike);
+
+        List<StockProductView> views =  dao.getJPQLParams(StockProductView.class, sql, companyId, numberLike);
+        attachLiveStock(views, companyId);
+        return views;
     }
 
+    private void attachLiveStock(StockProductView productView, int companyId){
+        String sql = "select b from StockLive b where b.productId =:value0 and b.companyId = :value1";
+        List<StockLive> lives = dao.getJPQLParams(StockLive.class, sql, productView.getProductId(), companyId);
+        productView.setLiveStock(lives);
+    }
+
+    private void attachLiveStock(List<StockProductView> views, int companyId){
+        for(var productView : views) {
+            String sql = "select b from StockLive b where b.productId =:value0 and b.companyId = :value1";
+            List<StockLive> lives = dao.getJPQLParams(StockLive.class, sql, productView.getProductId(), companyId);
+            productView.setLiveStock(lives);
+        }
+    }
 
     public StockProductView findStockProductView(int companyId, String productNumber, int brandId) {
         String undecorated = Helper.undecorate(productNumber);
@@ -129,8 +145,10 @@ public class DaoApi {
                 " and b.brandId = :value1 " +
                 " and (b.status = :value2 and b.companyId = :value3" +
                 " or b.companyId = :value4)";
-        System.out.println(sql);
-        return dao.findJPQLParams(StockProductView.class, sql, undecorated, brandId, 'A', 0, companyId);
+
+        StockProductView view = dao.findJPQLParams(StockProductView.class, sql, undecorated, brandId, 'A', 0, companyId);
+        attachLiveStock(view, companyId);
+        return view;
     }
 
     public StockProduct findProduct(String productNumber, int brandId) {
@@ -143,7 +161,9 @@ public class DaoApi {
         String sql = "select b from StockProductView b where b.productId =:value0 " +
                 " and (b.status = 'A' and b.companyId = 0" +
                 " or b.companyId = :value1)";
-        return dao.findJPQLParams(StockProductView.class, sql, productId, companyId);
+        StockProductView view =  dao.findJPQLParams(StockProductView.class, sql, productId, companyId);
+        attachLiveStock(view, companyId);
+        return view;
 
     }
 

@@ -2,22 +2,24 @@ package q.rest.product.model.qstock.views;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import q.rest.product.model.qstock.StockLive;
-import q.rest.product.model.qstock.StockProduct;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Table(name = "prd_view_stock_product")
 @Entity
 @IdClass(StockProductView.StockProductViewPK.class)
 public class StockProductView {
     @Id
+    @Column(name="product_id")
     private long productId;
     @Id
     @JsonIgnore
+    @Column(name="company_id")
     private int companyId;
     private String productNumber;
     private String name;
@@ -30,18 +32,14 @@ public class StockProductView {
     private Integer policyId;
     private Integer shortageFlag;
     private String notes;
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumns({
-            @JoinColumn(name = "product_id"),
-            @JoinColumn(name = "company_id")
-    })
-    private Set<StockLive> liveStock = new HashSet<>();
+    @Transient
+    private List<StockLive> liveStock = new ArrayList<>();
 
-    public Set<StockLive> getLiveStock() {
+    public List<StockLive> getLiveStock() {
         return liveStock;
     }
 
-    public void setLiveStock(Set<StockLive> liveStock) {
+    public void setLiveStock(List<StockLive> liveStock) {
         this.liveStock = liveStock;
     }
 
