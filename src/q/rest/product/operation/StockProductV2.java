@@ -332,8 +332,8 @@ public class StockProductV2 {
         Date to = Helper.getToDate(month, year);//month = 1 - 12
         int companyId = Helper.getCompanyFromJWT(header);
 
-        List<StockSalesSummary> summaries = daoApi.getDailySalesSummary(from, to, companyId);
-        List<Map<String, Object>> topCustomers = daoApi.getTopCustomers(from, to, companyId, header);
+        List<StockSalesSummary> summaries = daoApi.getDailySalesSummary(from, to, companyId);//ok
+        List<Map<String, Object>> topCustomers = daoApi.getTopCustomers(from, to, companyId, header);//ok
         List<Map<String, Object>> topBrands = daoApi.getTopBrands(from, to, companyId, 'S');
         Map<String, Object> map = new HashMap<>();
         map.put("daysSummary", summaries);

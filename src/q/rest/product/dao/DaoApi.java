@@ -126,16 +126,16 @@ public class DaoApi {
     }
 
     private void attachLiveStock(StockProductView productView, int companyId){
-        String sql = "select b from StockLive b where b.productId =:value0 and b.companyId = :value1";
-        List<StockLive> lives = dao.getJPQLParams(StockLive.class, sql, productView.getProductId(), companyId);
-        productView.setLiveStock(lives);
+        if(productView != null) {
+            String sql = "select b from StockLive b where b.productId =:value0 and b.companyId = :value1";
+            List<StockLive> lives = dao.getJPQLParams(StockLive.class, sql, productView.getProductId(), companyId);
+            productView.setLiveStock(lives);
+        }
     }
 
     private void attachLiveStock(List<StockProductView> views, int companyId){
         for(var productView : views) {
-            String sql = "select b from StockLive b where b.productId =:value0 and b.companyId = :value1";
-            List<StockLive> lives = dao.getJPQLParams(StockLive.class, sql, productView.getProductId(), companyId);
-            productView.setLiveStock(lives);
+            attachLiveStock(productView, companyId);
         }
     }
 
