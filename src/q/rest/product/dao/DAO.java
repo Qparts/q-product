@@ -2,6 +2,7 @@ package q.rest.product.dao;
 
 import javax.ejb.Stateless;
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -119,6 +120,12 @@ public class DAO {
         em.persist(t);
     }
 
+    public <T> void forcePersist(T t){
+        em.getTransaction().begin();
+        em.persist(t);
+        em.getTransaction().commit();;
+    }
+
     public void delete(Object object) {
         object = em.merge(object);
         em.remove(object);
@@ -127,6 +134,12 @@ public class DAO {
     public void insertNative(String sql) {
         Query q = em.createNativeQuery(sql);
         q.executeUpdate();
+    }
+
+    public long insertNativeAndReturnLongID(String sql) {
+        Query q = em.createNativeQuery(sql);
+        BigInteger biid = (BigInteger) q.getSingleResult();
+        return biid.longValue();
     }
 
     public void update(Object obj) {

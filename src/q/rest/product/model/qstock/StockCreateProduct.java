@@ -5,12 +5,22 @@ import java.util.List;
 
 public class StockCreateProduct {
     private String productNumber;
+    private String alternativeProductNumber;
     private int brandId;
     private int policyId;
     private int shortageFlag;
     private String name;
     private String nameAr;
     private String notes;
+
+    public String getAlternativeProductNumber() {
+        return alternativeProductNumber;
+    }
+
+    public void setAlternativeProductNumber(String alternativeProductNumber) {
+        this.alternativeProductNumber = alternativeProductNumber;
+    }
+
     List<BranchShelvesKV> shelves = new ArrayList<>();
 
     public List<BranchShelvesKV> getShelves() {

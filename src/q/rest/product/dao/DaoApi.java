@@ -3,6 +3,7 @@ package q.rest.product.dao;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.entity.v3.product.Brand;
+import q.rest.product.model.entity.v3.product.Product;
 import q.rest.product.model.qstock.*;
 import q.rest.product.model.qstock.views.StockProductView;
 import q.rest.product.model.qstock.views.StockPurchaseSummary;
@@ -39,16 +40,16 @@ public class DaoApi {
 
 
     public boolean isBrandAvailable(String name, String nameAr) {
-        String sql = "select b from Brand b where (lower(b.name) = lower(:value0) or lower(b.nameAr) = lower(:value0))";
+        String sql = "select b from Brand b where (lower(b.name) = lower(:value0) or lower(b.nameAr) = lower(:value1))";
         List<StockBrand> check = dao.getJPQLParams(StockBrand.class, sql, name, nameAr);
         return check.isEmpty();
     }
-
-    public boolean isStockProductAvailable(String productNumber, int brandId) {
-        String sql = "select b from StockProduct b where b.productNumber =:value0 and b.brandId = :value1";
-        List<StockProduct> products = dao.getJPQLParams(StockProduct.class, sql, productNumber, brandId);
-        return products.isEmpty();
-    }
+//
+//    public boolean isStockProductAvailable(String productNumber, int brandId) {
+//        String sql = "select b from StockProduct b where b.productNumber =:value0 and b.brandId = :value1";
+//        List<StockProduct> products = dao.getJPQLParams(StockProduct.class, sql, productNumber, brandId);
+//        return products.isEmpty();
+//    }
 
 
     public List<StockProductSetting> getStockProductSetting(long productId, int companyId) {
@@ -56,17 +57,29 @@ public class DaoApi {
         return dao.getJPQLParams(StockProductSetting.class, sql, companyId, productId);
     }
 
-    public StockProduct createStockProduct(String productNumber, int brandId, String name, String nameAr, int subscriberId) {
+    public StockProduct createStockProduct(String productNumber, int brandId, String name, String nameAr, int companyId) {
         StockProduct product = new StockProduct();
-        product.setProductNumber(productNumber);
+        product.setProductNumber(Helper.undecorate(productNumber));
         product.setCreated(new Date());
         product.setBrandId(brandId);
         product.setName(name);
         product.setNameAr(nameAr);
         product.setStatus('P');
-        product.setCreatedBy(subscriberId);
-        dao.persist(product);
-        return product;
+        product.setCreatedBy(companyId);
+        //manual insert
+        return dao.persistAndReturn(product);
+    }
+
+
+    public StockProductView createStockProduct2(String productNumber, int brandId, String name, String nameAr, int companyId) {
+        //manual insert
+        String sql = "insert into prd_product (product_number, product_desc, product_desc_ar, brand_id, created_by, created, status) " +
+                "values('"+productNumber+"',  '"+ name+"', '"+nameAr+"', "+brandId+", "+companyId+", '"+ helper.getDateFormat(new Date())+"', 'P' ) returning ID";
+        long id = dao.insertNativeAndReturnLongID(sql);
+        System.out.println(id);
+        var productView = findProduct(id, companyId);
+        System.out.println("product view id " + productView.getProductId());
+        return productView;
     }
 
     public StockProductSetting createStockProductSetting(StockCreateProduct create, long productId, int companyId) {
@@ -83,6 +96,7 @@ public class DaoApi {
             shelf.setBranchId(kv.getBranchId());
             shelf.setShelf(kv.getShelfLocation());
             shelf.setProductId(productId);
+            shelf.setCompanyId(companyId);
             dao.persist(shelf);
         }
         return scp;
@@ -94,8 +108,9 @@ public class DaoApi {
         dao.persist(brand);
     }
 
-    public List<Brand> getBrands() {
-        return dao.getOrderBy(Brand.class, "name");
+    public List<Brand> getBrands(int companyId) {
+        String sql = "select b from Brand b where b.status = 'A' or (b.status = 'P' and b.createdBy = :value0) order by b.name";
+        return dao.getJPQLParams(Brand.class, sql ,companyId);
     }
 
     public List<StockProductView> searchProduct(String query, int companyId){
@@ -108,10 +123,14 @@ public class DaoApi {
     }
 
 
-    public StockProductView findStockProduct(String productNumber, int brandId) {
+    public StockProductView findStockProductView(int companyId, String productNumber, int brandId) {
         String undecorated = Helper.undecorate(productNumber);
-        String sql = "select b from StockProductView b where b.productNumber =:value0 and b.brandId = :value1";
-        return dao.findJPQLParams(StockProductView.class, sql, undecorated, brandId);
+        String sql = "select b from StockProductView b where b.productNumber =:value0 " +
+                " and b.brandId = :value1 " +
+                " and (b.status = :value2 and b.companyId = :value3" +
+                " or b.companyId = :value4)";
+        System.out.println(sql);
+        return dao.findJPQLParams(StockProductView.class, sql, undecorated, brandId, 'A', 0, companyId);
     }
 
     public StockProduct findProduct(String productNumber, int brandId) {
@@ -120,10 +139,21 @@ public class DaoApi {
         return dao.findJPQLParams(StockProduct.class, sql, undecorated, brandId);
     }
 
-    public List<Brand> searchBrands(String name) {
+    public StockProductView findProduct(long productId, int companyId) {
+        String sql = "select b from StockProductView b where b.productId =:value0 " +
+                " and (b.status = 'A' and b.companyId = 0" +
+                " or b.companyId = :value1)";
+        return dao.findJPQLParams(StockProductView.class, sql, productId, companyId);
+
+    }
+
+
+    public List<Brand> searchBrands(int companyId, String name) {
         name = "%" + name.toLowerCase() + "%";
-        String sql = "select b from Brand b where lower(b.name) like :value0 or lower(b.nameAr like :value0";
-        return dao.getJPQLParams(Brand.class, sql, name);
+        String sql = "select b from Brand b where " +
+                " (b.status = 'A' or (b.status = 'P' and b.createdBy =:value0)) and " +
+                " lower(b.name) like :value1 or lower(b.nameAr) like :value1";
+        return dao.getJPQLParams(Brand.class, sql, companyId, name);
     }
     public List<StockSales> searchSales(String query, int companyId){
         String nameLike = "%" + query + "%";

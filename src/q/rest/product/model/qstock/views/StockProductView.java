@@ -163,4 +163,23 @@ public class StockProductView {
             return Objects.hash(companyId, productId);
         }
     }
+
+    @Override
+    public String toString() {
+        return "StockProductView{" +
+                "productId=" + productId +
+                ", companyId=" + companyId +
+                ", productNumber='" + productNumber + '\'' +
+                ", name='" + name + '\'' +
+                ", nameAr='" + nameAr + '\'' +
+                ", brandId=" + brandId +
+                ", brandName='" + brandName + '\'' +
+                ", brandNameAr='" + brandNameAr + '\'' +
+                ", status=" + status +
+                ", policyId=" + policyId +
+                ", shortageFlag=" + shortageFlag +
+                ", notes='" + notes + '\'' +
+                ", liveStock=" + liveStock +
+                '}';
+    }
 }

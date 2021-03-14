@@ -1,5 +1,7 @@
 package q.rest.product.model.qstock;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -12,6 +14,7 @@ public class StockProductSetting implements Serializable {
     @Id
     private long productId;
     @Id
+    @JsonIgnore
     private int companyId;
     private int policyId;
     private int shortageFlag;

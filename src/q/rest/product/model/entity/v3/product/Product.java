@@ -23,7 +23,7 @@ public class Product implements Serializable {
     private String productDescAr;//ok
     private String details;//ok
     private String detailsAr;//ok
-    @JoinColumn(name="brand_id")
+    @JoinColumn(name="brand_id", insertable = false, updatable = false)
     @ManyToOne
     private Brand brand;
     private Date created;

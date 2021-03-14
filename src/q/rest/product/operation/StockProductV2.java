@@ -37,21 +37,30 @@ public class StockProductV2 {
         return Response.status(200).entity(products).build();
     }
 
+
+    @SubscriberJwt
+    @GET
+    @Path("product/{id}")
+    public Response findProductById(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") long id){
+        int companyId = Helper.getCompanyFromJWT(header);
+        var product = daoApi.findProduct(id, companyId);
+        return Response.status(200).entity(product).build();
+    }
+
     @SubscriberJwt
     @POST
     @Path("find-product")
     public Response findProduct(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, Object> map) {
-        String partNumber = (String) map.get("partNumber");
+        String partNumber = (String) map.get("productNumber");
         int brandId = (int) map.get("brandId");
         int companyId = Helper.getCompanyFromJWT(header);
 
-        StockProductView product = daoApi.findStockProduct(partNumber, brandId);
+        StockProductView product = daoApi.findStockProductView(companyId, partNumber, brandId);
         if(product == null) {
             return Response.status(200).build();
         }
 
-        List<StockProductSetting> check = daoApi.getStockProductSetting(product.getProductId(), companyId);
-        if(!check.isEmpty())
+        if(product.getPolicyId() != null)
             return Response.status(409).build();
 
         return Response.status(200).entity(product).build();
@@ -61,10 +70,12 @@ public class StockProductV2 {
     @POST
     @Path("brand")
     public Response createBrand(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Brand brand) {
+        int companyId = Helper.getCompanyFromJWT(header);
         brand.setName(brand.getName().trim());
         brand.setNameAr(brand.getNameAr().trim());
+        brand.setCreatedBy(companyId);
         if (!daoApi.isBrandAvailable(brand.getName(), brand.getNameAr()))
-            return Response.status(401).build();
+            return Response.status(409).build();
         daoApi.createBrand(brand);
         return Response.status(201).build();
     }
@@ -73,7 +84,8 @@ public class StockProductV2 {
     @GET
     @Path("brands")
     public Response getAllBrand(@HeaderParam(HttpHeaders.AUTHORIZATION) String header) {
-        List<Brand> brands = daoApi.getBrands();
+        int companyId = Helper.getCompanyFromJWT(header);
+        List<Brand> brands = daoApi.getBrands(companyId);
         return Response.status(200).entity(brands).build();
     }
 
@@ -82,28 +94,33 @@ public class StockProductV2 {
     @POST
     @Path("search-brand")
     public Response searchBrand(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
+        int companyId = Helper.getCompanyFromJWT(header);
         String name = map.get("query");
-        List<Brand> brands = daoApi.searchBrands(name);
+        List<Brand> brands = daoApi.searchBrands(companyId, name);
         return Response.status(200).entity(brands).build();
     }
 
+
+    //TEEST
+    //500
     @SubscriberJwt
     @POST
     @Path("product")
     public Response createProduct(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, StockCreateProduct scp) {
         int companyId = Helper.getCompanyFromJWT(header);
-        int subscriberId = Helper.getSubscriberFromJWT(header);
-
-        StockProduct product = daoApi.findProduct(scp.getProductNumber(), scp.getBrandId());
-        if (product == null) {
-            product = daoApi.createStockProduct(scp.getProductNumber(), scp.getBrandId(), scp.getName(), scp.getNameAr(), subscriberId);
+        var productView = daoApi.findStockProductView(companyId, scp.getProductNumber(), scp.getBrandId());
+        long productId = 0;
+        if (productView == null) {
+            StockProduct stockProduct = daoApi.createStockProduct(scp.getProductNumber(), scp.getBrandId(), scp.getName(), scp.getNameAr(), companyId);
+            productId = stockProduct.getId();
         }
-
-        List<StockProductSetting> check = daoApi.getStockProductSetting(product.getId(), companyId);
-        if (!check.isEmpty())
-            return Response.status(409).entity("product already added").build();
-
-        StockProductSetting companyProduct = daoApi.createStockProductSetting(scp, product.getId(), companyId);
+        else {
+            productId = productView.getProductId();
+            var check = daoApi.getStockProductSetting(productId, companyId);
+            if (!check.isEmpty())
+                return Response.status(409).entity("product already added").build();
+        }
+        StockProductSetting companyProduct = daoApi.createStockProductSetting(scp, productId, companyId);
         return Response.status(200).entity(companyProduct).build();
     }
 
@@ -117,6 +134,7 @@ public class StockProductV2 {
         if (sp == null) return Response.status(404).entity("product not found").build();
         return Response.status(200).entity(sp).build();
     }
+
 
     @SubscriberJwt
     @POST
