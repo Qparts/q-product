@@ -101,8 +101,6 @@ public class StockProductV2 {
     }
 
 
-    //TEEST
-    //500
     @SubscriberJwt
     @POST
     @Path("product")
@@ -168,6 +166,8 @@ public class StockProductV2 {
         po.setId(purchaseID);
         if (po.getTransactionType() == 'T') daoApi.createPurchaseCredit(po);
         updateStock(po);
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        map.put("id", purchaseID);
         return Response.status(200).build();
     }
 
@@ -507,8 +507,7 @@ public class StockProductV2 {
         map.put("id", salesReturn.getId());
         return Response.status(200).entity(map).build();
     }
-
-
+    
     @SubscriberJwt
     @POST
     @Path("quotation")
