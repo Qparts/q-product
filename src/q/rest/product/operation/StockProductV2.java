@@ -45,13 +45,15 @@ public class StockProductV2 {
         int brandId = (int) map.get("brandId");
         int companyId = Helper.getCompanyFromJWT(header);
 
-        StockProduct product = daoApi.findStockProduct(partNumber, brandId);
+        StockProductView product = daoApi.findStockProduct(partNumber, brandId);
         if(product == null) {
             return Response.status(200).build();
         }
-        List<StockProductSetting> check = daoApi.getStockProductSetting(product.getId(), companyId);
+
+        List<StockProductSetting> check = daoApi.getStockProductSetting(product.getProductId(), companyId);
         if(!check.isEmpty())
             return Response.status(409).build();
+
         return Response.status(200).entity(product).build();
     }
 
@@ -92,7 +94,7 @@ public class StockProductV2 {
         int companyId = Helper.getCompanyFromJWT(header);
         int subscriberId = Helper.getSubscriberFromJWT(header);
 
-        StockProduct product = daoApi.findStockProduct(scp.getProductNumber(), scp.getBrandId());
+        StockProduct product = daoApi.findProduct(scp.getProductNumber(), scp.getBrandId());
         if (product == null) {
             product = daoApi.createStockProduct(scp.getProductNumber(), scp.getBrandId(), scp.getName(), scp.getNameAr(), subscriberId);
         }
@@ -105,12 +107,13 @@ public class StockProductV2 {
         return Response.status(200).entity(companyProduct).build();
     }
 
+    //not needed?
     @SubscriberJwt
     @GET
     @Path("product/number/{number}/brand/{brand}")
     public Response findCompanyProduct(@PathParam(value = "number") String number, @PathParam(value = "brand") int brandId) {
         String productNumber = Helper.undecorate(number);
-        StockProduct sp = daoApi.findStockProduct(productNumber, brandId);
+        StockProduct sp = daoApi.findProduct(productNumber, brandId);
         if (sp == null) return Response.status(404).entity("product not found").build();
         return Response.status(200).entity(sp).build();
     }

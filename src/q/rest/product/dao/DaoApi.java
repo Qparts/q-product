@@ -114,6 +114,12 @@ public class DaoApi {
         return dao.findJPQLParams(StockProductView.class, sql, undecorated, brandId);
     }
 
+    public StockProduct findProduct(String productNumber, int brandId) {
+        String undecorated = Helper.undecorate(productNumber);
+        String sql = "select b from StockProduct b where b.productNumber =:value0 and b.brandId = :value1";
+        return dao.findJPQLParams(StockProduct.class, sql, undecorated, brandId);
+    }
+
     public List<Brand> searchBrands(String name) {
         name = "%" + name.toLowerCase() + "%";
         String sql = "select b from Brand b where lower(b.name) like :value0 or lower(b.nameAr like :value0";
