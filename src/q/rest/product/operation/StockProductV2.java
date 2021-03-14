@@ -168,7 +168,7 @@ public class StockProductV2 {
         updateStock(po);
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("id", purchaseID);
-        return Response.status(200).build();
+        return Response.status(200).entity(map).build();
     }
 
     @SubscriberJwt
@@ -507,7 +507,7 @@ public class StockProductV2 {
         map.put("id", salesReturn.getId());
         return Response.status(200).entity(map).build();
     }
-    
+
     @SubscriberJwt
     @POST
     @Path("quotation")
