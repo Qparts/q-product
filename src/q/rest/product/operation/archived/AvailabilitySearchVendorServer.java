@@ -1,4 +1,4 @@
-package q.rest.product.operation.socket;
+package q.rest.product.operation.archived;
 
 import q.rest.product.dao.DAO;
 import q.rest.product.helper.AppConstants;
@@ -17,18 +17,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-@ServerEndpoint("/ws/search/user/{userId}/token/{token}")
+@ServerEndpoint("/ws/search/vendor-user/{vendorUserId}/token/{token}")
 @Stateless
-public class AvailabilitySearchUserServer {
+public class AvailabilitySearchVendorServer {
 
+    /*
     @Inject
     private DAO dao;
 
     private Session session;
-    private long userId;
+    private long vendorUserId;
     private String token;
 
-    private static Set<AvailabilitySearchUserServer> endpoints = new CopyOnWriteArraySet<>();
+    private static Set<AvailabilitySearchVendorServer> endpoints = new CopyOnWriteArraySet<>();
 
     @OnMessage
     public String onMessage(String message) {
@@ -41,9 +42,9 @@ public class AvailabilitySearchUserServer {
     }
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("userId") Long userId, @PathParam("token") String token) throws IOException {
+    public void onOpen(Session session, @PathParam("vendorUserId") Long vendorUserId, @PathParam("token") String token) throws IOException {
         this.session = session;
-        this.userId = userId;
+        this.vendorUserId = vendorUserId;
         this.token = token;
         if(this.tokenMatched()) {
             endpoints.add(this);
@@ -53,11 +54,11 @@ public class AvailabilitySearchUserServer {
         }
     }
 
-    public static void sendToUser(Object message, long userId) {
+    public static void sendToVendorUser(Object message, int vendorUserId) {
         endpoints.forEach(endpoint -> {
             synchronized (endpoint) {
                 if (endpoint.session.isOpen()) {
-                    if(endpoint.userId == userId) {
+                    if(endpoint.vendorUserId == vendorUserId) {
                         endpoint.session.getAsyncRemote().sendText(message.toString());
                     }
                 }
@@ -67,9 +68,9 @@ public class AvailabilitySearchUserServer {
 
 
     private boolean tokenMatched(){
-        String link = AppConstants.USER_MATCH_TOKEN_WS;
+        String link = AppConstants.VENDOR_MATCH_TOKEN_WS;
         Map<String,Object> map = new HashMap<>();
-        map.put("userId", userId);
+        map.put("username", vendorUserId);
         map.put("token", token);
         Response r = this.postSecuredRequest(link, map);
         if(r.getStatus() != 200){
@@ -83,4 +84,5 @@ public class AvailabilitySearchUserServer {
         Response r = ClientBuilder.newClient().target(link).request().post(Entity.entity(t, "application/json"));// not secured
         return r;
     }
+     */
 }

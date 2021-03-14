@@ -31,7 +31,6 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.math.BigInteger;
 import java.util.*;
 
 @Path("/api/v3/qvm/")
@@ -44,7 +43,6 @@ public class ProductQvmApiV3 {
 
     @EJB
     private AsyncProductApi async;
-
 
     @UserJwt
     @GET

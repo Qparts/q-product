@@ -5,46 +5,38 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name="prd_stk_live_stock")
+@IdClass(StockLive.StockLivePK.class)
 public class StockLive implements Serializable {
     @Id
-    @SequenceGenerator(name = "prd_stk_product_id_seq_gen", sequenceName = "prd_stk_product_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_stk_product_id_seq_gen")
-    private long id;
-    @JsonIgnore
-    @Column(name = "stock_product_id")
-    private long stockProductId;
+    @Column(name = "product_id")
+    private long productId;
+    @Id
+    @Column(name = "company_id")
+    private int companyId;
+    @Id
+    @Column(name = "branch_id")
     private int branchId;
     private int quantity;
-    private double averagedCost;
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonIgnore
-    private Date lastUpdated;
+    private double averageCost;
 
-    public Date getLastUpdated() {
-        return lastUpdated;
+    public long getProductId() {
+        return productId;
     }
 
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
+    public void setProductId(long productId) {
+        this.productId = productId;
     }
 
-    public long getId() {
-        return id;
+    public int getCompanyId() {
+        return companyId;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public long getStockProductId() {
-        return stockProductId;
-    }
-
-    public void setStockProductId(long stockProductId) {
-        this.stockProductId = stockProductId;
+    public void setCompanyId(int companyId) {
+        this.companyId = companyId;
     }
 
     public int getBranchId() {
@@ -64,11 +56,36 @@ public class StockLive implements Serializable {
     }
 
 
-    public double getAveragedCost() {
-        return averagedCost;
+    public double getAverageCost() {
+        return averageCost;
     }
 
-    public void setAveragedCost(double averagedCost) {
-        this.averagedCost = averagedCost;
+    public void setAverageCost(double averagedCost) {
+        this.averageCost = averagedCost;
+    }
+
+
+
+    public static class StockLivePK implements Serializable{
+        protected int companyId;
+        protected long productId;
+        protected long branchId;
+
+        public StockLivePK() {}
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            StockLivePK that = (StockLivePK) o;
+            return companyId == that.companyId &&
+                    productId == that.productId &&
+                    branchId == that.branchId;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(companyId, productId, branchId);
+        }
     }
 }

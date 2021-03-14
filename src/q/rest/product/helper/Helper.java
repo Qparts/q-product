@@ -5,11 +5,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import q.rest.product.model.entity.v3.product.Category;
 import q.rest.product.model.qstock.StockLive;
-import q.rest.product.model.qstock.StockPurchaseItem;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -32,7 +30,7 @@ public class Helper {
         double totalCost = unitCost * quantity;
         for (var live : lives) {
             totalQuantity += live.getQuantity();
-            totalCost += live.getAveragedCost() * live.getQuantity();
+            totalCost += live.getAverageCost() * live.getQuantity();
         }
         return totalCost / totalQuantity;
     }

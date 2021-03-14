@@ -20,7 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
 
-@Path("/api/v4.1/stock/")
+@Path("/api/v4/stock/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class StockProductV2 {
@@ -33,7 +33,6 @@ public class StockProductV2 {
     @POST
     @Path("search-product")
     public Response searchProduct(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
-        System.out.println("received");
         List<StockProductView> products = daoApi.searchProduct(map.get("query"), Helper.getCompanyFromJWT(header));
         return Response.status(200).entity(products).build();
     }
@@ -86,10 +85,9 @@ public class StockProductV2 {
         return Response.status(200).entity(brands).build();
     }
 
-
     @SubscriberJwt
     @POST
-    @Path("company-product")
+    @Path("product")
     public Response createProduct(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, StockCreateProduct scp) {
         int companyId = Helper.getCompanyFromJWT(header);
         int subscriberId = Helper.getSubscriberFromJWT(header);
@@ -127,6 +125,16 @@ public class StockProductV2 {
         return Response.status(200).build();
     }
 
+    @SubscriberJwt
+    @GET
+    @Path("price-policies")
+    public Response getPolicies(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
+        int companyId = Helper.getCompanyFromJWT(header);
+        List<StockPricePolicy> policies = daoApi.getPolicies(companyId);
+        return Response.status(200).entity(policies).build();
+
+    }
+
 
     @SubscriberJwt
     @POST
@@ -150,8 +158,8 @@ public class StockProductV2 {
         sales.setCreated(new Date());
         sales.setPaymentMethod(sales.getTransactionType() == 'C' ? sales.getPaymentMethod() : null);
         for (StockSalesItem item : sales.getItems()) {
-            StockLive live = daoApi.findBranchStockLive(item.getStockProduct().getId(), sales.getBranchId());
-            item.setUnitCost(live.getAveragedCost());
+            StockLive live = daoApi.findBranchStockLive(sales.getCompanyId(), item.getStockProduct().getId(), sales.getBranchId());
+            item.setUnitCost(live.getAverageCost());
             item.setLive(live);
         }
         if (!verifyQuantities(sales)) return Response.status(400).build();
@@ -168,11 +176,11 @@ public class StockProductV2 {
 
     private void updateStock(StockPurchase po) {
         for (var item : po.getItems()) {
-            List<StockLive> lives = daoApi.getProductLiveStock(item.getStockProduct().getId());
+            List<StockLive> lives = daoApi.getProductLiveStock(po.getCompanyId(), item.getStockProduct().getId());
             if (lives.isEmpty())
-                daoApi.createNewStockLive(po.getBranchId(), item.getStockProduct().getId(), item.getUnitPrice(), item.getQuantity());
+                daoApi.createNewStockLive(po.getCompanyId(), po.getBranchId(), item.getStockProduct().getId(), item.getUnitPrice(), item.getQuantity());
             else
-                daoApi.updateExistingStockLive(po.getBranchId(), lives, item.getStockProduct().getId(), item.getQuantity(), item.getUnitPrice());
+                daoApi.updateExistingStockLive(po.getCompanyId(), po.getBranchId(), lives, item.getStockProduct().getId(), item.getQuantity(), item.getUnitPrice());
         }
     }
 
@@ -181,7 +189,6 @@ public class StockProductV2 {
         for (var item : sales.getItems()) {
             StockLive live = item.getLive();
             live.setQuantity(live.getQuantity() - item.getQuantity());
-            live.setLastUpdated(new Date());
             if (item.getQuantity() == 0)
                 daoApi.deleteLive(live);
             else
@@ -440,8 +447,8 @@ public class StockProductV2 {
         if (!verifyQuantities(purchaseReturn)) return Response.status(400).build();
         //unit average cost
         for (var item : purchaseReturn.getItems()) {
-            List<StockLive> lives = daoApi.getStockLive(item.getPurchaseItem().getStockProduct().getId());
-            item.setUnitAverageCost(lives.get(0).getAveragedCost());
+            List<StockLive> lives = daoApi.getStockLive(companyId, item.getPurchaseItem().getStockProduct().getId());
+            item.setUnitAverageCost(lives.get(0).getAverageCost());
         }
         int purchaseReturnId = daoApi.createPurchaseReturn(purchaseReturn);
         purchaseReturn.setPurchaseId(purchaseReturnId);
@@ -449,7 +456,7 @@ public class StockProductV2 {
         if (purchaseReturn.getTransactionType() == 'T') {
             daoApi.createPurchaseReturnCredit(purchaseReturn, purchase);
         }
-        updateStock(purchaseReturn);
+        updateStock(companyId, purchaseReturn);
         return Response.status(200).build();
 
     }
@@ -474,7 +481,7 @@ public class StockProductV2 {
         if (salesReturn.getTransactionType() == 'T') {
             daoApi.createSalesReturnCredit(salesReturn, sales);
         }
-        updateStock(salesReturn);
+        updateStock(companyId, salesReturn);
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("id", salesReturn.getId());
         return Response.status(200).entity(map).build();
@@ -490,39 +497,32 @@ public class StockProductV2 {
         quotation.setPaymentMethod(quotation.getTransactionType() == 'C' ? quotation.getPaymentMethod() : null);
         int quotationId = daoApi.createQuotation(quotation);
         quotation.setId(quotationId);
-
-//        if(quotation.getQuotationPrice() > 0 && quotation.getTransactionType() == 'T') {
-////            StockQuotationCredit credit = new StockQuotationCredit();
-////            credit.setAmount(quotation.getQuotationPrice() + quotation.getQuotationPrice() * quotation.getTaxRate());
-////            credit.setCreditDate(new Date());
-////            credit.setQuotationOrderId(quotation.getId());
-////            dao.persist(quotation);
-//        }
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("id", quotation.getId());
         return Response.status(200).entity(map).build();
     }
 
 
-    private void updateStock(StockReturnSales salesReturn) {
+    private void updateStock(int companyId, StockReturnSales salesReturn) {
         for (var item : salesReturn.getItems()) {
-            List<StockLive> lives = daoApi.getStockLive(item.getSalesItem().getStockProduct().getId());
+            List<StockLive> lives = daoApi.getStockLive(companyId, item.getSalesItem().getStockProduct().getId());
             if (lives.isEmpty())
-                daoApi.createNewStockLive(salesReturn.getBranchId(), item.getSalesItem().getStockProduct().getId(), item.getSalesItem().getUnitCost(), item.getQuantity());
+                daoApi.createNewStockLive(companyId, salesReturn.getBranchId(), item.getSalesItem().getStockProduct().getId(), item.getSalesItem().getUnitCost(), item.getQuantity());
             else
-                daoApi.updateExistingStockLive(salesReturn.getBranchId(), lives, item.getSalesItem().getStockProduct().getId(), item.getQuantity(), item.getSalesItem().getUnitCost());
+                daoApi.updateExistingStockLive(companyId, salesReturn.getBranchId(), lives, item.getSalesItem().getStockProduct().getId(), item.getQuantity(), item.getSalesItem().getUnitCost());
         }
     }
 
 
-    private void updateStock(StockReturnPurchase purchaseReturn) {
+    private void updateStock(int companyId, StockReturnPurchase purchaseReturn) {
         for (var item : purchaseReturn.getItems()) {
-            List<StockLive> lives = daoApi.getBranchStockLive(item.getPurchaseItem().getStockProduct().getId(), purchaseReturn.getBranchId());
-            if (!lives.isEmpty()) {
-                StockLive live = lives.get(0);
+            StockLive live = daoApi.findBranchStockLive(companyId, item.getPurchaseItem().getStockProduct().getId(), purchaseReturn.getBranchId());
+            if (live != null) {
                 live.setQuantity(live.getQuantity() - item.getQuantity());
-                live.setLastUpdated(new Date());
-                daoApi.updateLive(live);
+                if(live.getQuantity() == 0)
+                    daoApi.deleteLive(live);
+                else
+                    daoApi.updateLive(live);
             }
         }
     }

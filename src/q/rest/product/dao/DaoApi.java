@@ -15,6 +15,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import java.security.Policy;
 import java.time.Year;
 import java.time.YearMonth;
 import java.util.*;
@@ -32,8 +33,8 @@ public class DaoApi {
     }
 
 
-    public List<StockLive> getProductLiveStock(long productId) {
-        return dao.getCondition(StockLive.class, "stockProductId", productId);
+    public List<StockLive> getProductLiveStock(int companyId, long productId) {
+        return dao.getTwoConditions(StockLive.class, "productId", "companyId", productId, companyId);
     }
 
 
@@ -104,13 +105,10 @@ public class DaoApi {
 
     public List<StockProductView> searchProduct(String query, int companyId){
         String numberLike = "%" + query + "%";
-        System.out.println(numberLike);
-
         String sql = "select b from StockProductView b where (b.status = 'P' " +
                 " and b.companyId = :value0 " +
                 " and b.productNumber like :value1) " +
                 "or (b.status = 'A' and b.productNumber like :value1)";
-
         return dao.getJPQLParams(StockProductView.class, sql, companyId, numberLike);
     }
 
@@ -158,6 +156,10 @@ public class DaoApi {
         dao.persist(policy);
     }
 
+    public List<StockPricePolicy> getPolicies(int companyId){
+        return dao.getCondition(StockPricePolicy.class, "companyId", companyId);
+    }
+
     public int createPurchase(StockPurchase purchase) {
         dao.persist(purchase);
         return purchase.getId();
@@ -185,18 +187,16 @@ public class DaoApi {
         return salesReturn.getId();
     }
 
-    public StockLive findBranchStockLive(long productId, int branchId) {
-        return dao.findTwoConditions(StockLive.class, "stockProductId", "branchId", productId, branchId);
+    public StockLive findBranchStockLive(int companyId, long productId, int branchId) {
+        String sql = "select b from StockLive b where b.companyId =:value0" +
+                " and b.productId =:value1 " +
+                " and b.branchId =:value2";
+        return dao.findJPQLParams(StockLive.class, sql, companyId, productId, branchId);
     }
 
 
-    public List<StockLive> getBranchStockLive(long productId, int branchId) {
-        return dao.getTwoConditions(StockLive.class, "stockProductId", "branchId", productId, branchId);
-    }
-
-
-    public List<StockLive> getStockLive(long productId) {
-        return dao.getCondition(StockLive.class, "stockProductId", productId);
+    public List<StockLive> getStockLive(int companyId, long productId) {
+        return dao.getTwoConditions(StockLive.class, "companyId","productId", companyId, productId);
     }
 
     public void createPurchaseCredit(StockPurchase purchase) {
@@ -256,34 +256,34 @@ public class DaoApi {
     }
 
 
-    public void createNewStockLive(int branchId, long stockProductId, double averageCost, int quantity) {
+    public void createNewStockLive(int companyId, int branchId, long productId, double averageCost, int quantity) {
         StockLive sl = new StockLive();
         sl.setBranchId(branchId);
         sl.setQuantity(quantity);
-        sl.setLastUpdated(new Date());
-        sl.setStockProductId(stockProductId);
-        sl.setAveragedCost(Helper.round(averageCost));
+        sl.setCompanyId(companyId);
+        sl.setProductId(productId);
+        sl.setAverageCost(Helper.round(averageCost));
         dao.persist(sl);
     }
 
 
-    public void updateExistingStockLive(int branchId, List<StockLive> lives, long stockProductId, int quantity, double unitCost) {
+    public void updateExistingStockLive(int companyId, int branchId, List<StockLive> lives, long productId, int quantity, double unitCost) {
         double averageCost = Helper.calculateAveragePrice(lives, unitCost, quantity);
         updateAveragePrice(lives, averageCost);
-        List<StockLive> branchLive = dao.getTwoConditions(StockLive.class, "stockProductId", "branchId", stockProductId, branchId);
-        if (branchLive.isEmpty()) {
-            createNewStockLive(branchId, stockProductId, averageCost, quantity);
+        String sql = "select b from StockLive b where b.productId =:value0 and b.branchId =:value1 and b.companyId =:value2";
+        StockLive branchLive = dao.findJPQLParams(StockLive.class, sql, productId, branchId, companyId);
+        if (branchLive == null) {
+            createNewStockLive(companyId, branchId, productId, averageCost, quantity);
         } else {
-            branchLive.get(0).setQuantity(quantity + branchLive.get(0).getQuantity());
-            dao.update(branchLive.get(0));
+            branchLive.setQuantity(quantity + branchLive.getQuantity());
+            dao.update(branchLive);
         }
     }
 
 
     private void updateAveragePrice(List<StockLive> lives, double averageCost) {
         for (var live : lives) {
-            live.setAveragedCost(Helper.round(averageCost));
-            live.setLastUpdated(new Date());
+            live.setAverageCost(Helper.round(averageCost));
             dao.update(live);
         }
     }
@@ -657,7 +657,7 @@ public class DaoApi {
     }
 
     public double getStockValue(int companyId){
-        String sql = "select sum(sl.quantity * sl.averaged_cost) from prd_stk_live_stock sl join prd_stk_product p on sl.stock_product_id = p.id where p.company_id = " + companyId;
+        String sql = "select sum(sl.quantity * sl.average_cost) from prd_stk_live_stock sl join prd_stk_product p on sl.product_id = p.id where p.company_id = " + companyId;
         Object o = dao.getNativeSingle(sql);
         return o == null ? 0 : ((Number)o).doubleValue();
     }

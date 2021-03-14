@@ -1,17 +1,21 @@
 package q.rest.product.model.qstock.views;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import q.rest.product.model.qstock.StockLive;
+import q.rest.product.model.qstock.StockProduct;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Table(name = "prd_view_stock_product")
 @Entity
 @IdClass(StockProductView.StockProductViewPK.class)
 public class StockProductView {
     @Id
-    private int productId;
+    private long productId;
     @Id
     @JsonIgnore
     private int companyId;
@@ -26,12 +30,26 @@ public class StockProductView {
     private Integer policyId;
     private Integer shortageFlag;
     private String notes;
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumns({
+            @JoinColumn(name = "product_id"),
+            @JoinColumn(name = "company_id")
+    })
+    private Set<StockLive> liveStock = new HashSet<>();
 
-    public int getProductId() {
+    public Set<StockLive> getLiveStock() {
+        return liveStock;
+    }
+
+    public void setLiveStock(Set<StockLive> liveStock) {
+        this.liveStock = liveStock;
+    }
+
+    public long getProductId() {
         return productId;
     }
 
-    public void setProductId(int productId) {
+    public void setProductId(long productId) {
         this.productId = productId;
     }
 
