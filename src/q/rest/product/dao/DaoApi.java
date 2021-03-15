@@ -110,31 +110,31 @@ public class DaoApi {
 
     public List<Brand> getBrands(int companyId) {
         String sql = "select b from Brand b where b.status = 'A' or (b.status = 'P' and b.createdBy = :value0) order by b.name";
-        return dao.getJPQLParams(Brand.class, sql ,companyId);
+        return dao.getJPQLParams(Brand.class, sql, companyId);
     }
 
-    public List<StockProductView> searchProduct(String query, int companyId){
+    public List<StockProductView> searchProduct(String query, int companyId) {
         String numberLike = "%" + query + "%";
         String sql = "select b from StockProductView b where (b.status = 'P' " +
                 " and b.companyId = :value0 " +
                 " and b.productNumber like :value1) " +
                 "or (b.status = 'A' and b.productNumber like :value1)";
 
-        List<StockProductView> views =  dao.getJPQLParams(StockProductView.class, sql, companyId, numberLike);
+        List<StockProductView> views = dao.getJPQLParams(StockProductView.class, sql, companyId, numberLike);
         attachLiveStock(views, companyId);
         return views;
     }
 
-    private void attachLiveStock(StockProductView productView, int companyId){
-        if(productView != null) {
+    private void attachLiveStock(StockProductView productView, int companyId) {
+        if (productView != null) {
             String sql = "select b from StockLive b where b.productId =:value0 and b.companyId = :value1";
             List<StockLive> lives = dao.getJPQLParams(StockLive.class, sql, productView.getProductId(), companyId);
             productView.setLiveStock(lives);
         }
     }
 
-    private void attachLiveStock(List<StockProductView> views, int companyId){
-        for(var productView : views) {
+    private void attachLiveStock(List<StockProductView> views, int companyId) {
+        for (var productView : views) {
             attachLiveStock(productView, companyId);
         }
     }
@@ -161,7 +161,7 @@ public class DaoApi {
         String sql = "select b from StockProductView b where b.productId =:value0 " +
                 " and (b.status = 'A' and b.companyId = 0" +
                 " or b.companyId = :value1)";
-        StockProductView view =  dao.findJPQLParams(StockProductView.class, sql, productId, companyId);
+        StockProductView view = dao.findJPQLParams(StockProductView.class, sql, productId, companyId);
         attachLiveStock(view, companyId);
         return view;
 
@@ -175,36 +175,26 @@ public class DaoApi {
                 " lower(b.name) like :value1 or lower(b.nameAr) like :value1";
         return dao.getJPQLParams(Brand.class, sql, companyId, name);
     }
-    public List<StockSales> searchSales(String query, int companyId){
-        String nameLike = "%" + query + "%";
-        int id = Helper.convertToInteger(query);
-        String sql = "select b from StockSales b where b.companyId = :value0 and (" +
-                " b.id = :value1" +
-                " or b.customerId = :value1" +
-                " or lower(b.reference) like :value2)";
-        return dao.getJPQLParams(StockSales.class, sql, companyId, id, nameLike);
-    }
 
-    public List<StockPurchase> searchPurchase(String query, int companyId){
+
+    public List<StockPurchaseView> searchPurchase(String query, int companyId) {
         String nameLike = "%" + query + "%";
         int id = Helper.convertToInteger(query);
-        String sql = "select b from StockPurchase b where b.companyId = :value0 and (" +
+        String sql = "select b from StockPurchaseView b where b.companyId = :value0 and (" +
                 " b.id = :value1" +
                 " or b.supplierId = :value1" +
                 " or lower(b.reference) like :value2)";
-        return dao.getJPQLParams(StockPurchase.class, sql, companyId, id, nameLike);
+        var purchases = dao.getJPQLParams(StockPurchaseView.class, sql, companyId, id, nameLike);
+        for (var pur : purchases) {
+            for (var item : pur.getItems()) {
+                var view = this.findProduct(item.getStockProductId(), companyId);
+                item.setStockProduct(view);
+            }
+        }
+        return purchases;
     }
 
 
-    public List<StockQuotation> searchQuotation(String query, int companyId){
-        String nameLike = "%" + query + "%";
-        int id = Helper.convertToInteger(query);
-        String sql = "select b from StockQuotation b where b.companyId = :value0 and (" +
-                " b.id = :value1" +
-                " or b.customerId = :value1" +
-                " or lower(b.reference) like :value2)";
-        return dao.getJPQLParams(StockQuotation.class, sql, companyId, id, nameLike);
-    }
 
     public void createNewPolicy(StockPricePolicy policy) {
         if (policy.isDefaultPolicy()) {
@@ -214,7 +204,7 @@ public class DaoApi {
         dao.persist(policy);
     }
 
-    public List<StockPricePolicy> getPolicies(int companyId){
+    public List<StockPricePolicy> getPolicies(int companyId) {
         return dao.getCondition(StockPricePolicy.class, "companyId", companyId);
     }
 
@@ -254,7 +244,7 @@ public class DaoApi {
 
 
     public List<StockLive> getStockLive(int companyId, long productId) {
-        return dao.getTwoConditions(StockLive.class, "companyId","productId", companyId, productId);
+        return dao.getTwoConditions(StockLive.class, "companyId", "productId", companyId, productId);
     }
 
     public void createPurchaseCredit(StockPurchase purchase) {
@@ -305,11 +295,11 @@ public class DaoApi {
         dao.persist(credit);
     }
 
-    public void deleteLive(StockLive live){
+    public void deleteLive(StockLive live) {
         dao.delete(live);
     }
 
-    public void updateLive(StockLive live){
+    public void updateLive(StockLive live) {
         dao.update(live);
     }
 
@@ -346,22 +336,90 @@ public class DaoApi {
         }
     }
 
-    public StockReturnSalesStandAlone getSalesReturn(int salesReturnId, int companyId){
+    public StockReturnSalesStandAlone getSalesReturn(int salesReturnId, int companyId) {
         String sql = "select b from StockReturnSalesStandAlone b where b.id = :value0 and b.salesId in (select c.id from StockSales c where c.companyId = :value1)";
-        return dao.findJPQLParams(StockReturnSalesStandAlone.class, sql , salesReturnId, companyId);
+        return dao.findJPQLParams(StockReturnSalesStandAlone.class, sql, salesReturnId, companyId);
     }
 
-    public StockSales findSales(int salesId, int companyId){
+    public StockSales findSales(int salesId, int companyId) {
         return dao.findTwoConditions(StockSales.class, "id", "companyId", salesId, companyId);
     }
 
 
-    public StockPurchase findPurchase(int purchaseId, int companyId){
+    public StockSalesView findSales2(int purchaseId, int companyId) {
+        StockSalesView sales = dao.findTwoConditions(StockSalesView.class, "id", "companyId", purchaseId, companyId);
+        if (sales != null) {
+            for (var item : sales.getItems()) {
+                var view = this.findProduct(item.getStockProductId(), companyId);
+                item.setStockProduct(view);
+            }
+        }
+        return sales;
+    }
+
+    public List<StockSalesView> searchSales(String query, int companyId) {
+        String nameLike = "%" + query + "%";
+        int id = Helper.convertToInteger(query);
+        String sql = "select b from StockSalesView b where b.companyId = :value0 and (" +
+                " b.id = :value1" +
+                " or b.customerId = :value1" +
+                " or lower(b.reference) like :value2)";
+        List<StockSalesView> sales = dao.getJPQLParams(StockSalesView.class, sql, companyId, id, nameLike);
+        for (var ss : sales) {
+            for (var item : ss.getItems()) {
+                var view = this.findProduct(item.getStockProductId(), companyId);
+                item.setStockProduct(view);
+            }
+        }
+        return sales;
+    }
+
+    public List<StockQuotationView> searchQuotation(String query, int companyId) {
+        String nameLike = "%" + query + "%";
+        int id = Helper.convertToInteger(query);
+        String sql = "select b from StockQuotationView b where b.companyId = :value0 and (" +
+                " b.id = :value1" +
+                " or b.customerId = :value1" +
+                " or lower(b.reference) like :value2)";
+        List<StockQuotationView> quotations = dao.getJPQLParams(StockQuotationView.class, sql, companyId, id, nameLike);
+        for (var ss : quotations) {
+            for (var item : ss.getItems()) {
+                var view = this.findProduct(item.getStockProductId(), companyId);
+                item.setStockProduct(view);
+            }
+        }
+        return quotations;
+    }
+
+
+    public StockPurchase findPurchase(int purchaseId, int companyId) {
         return dao.findTwoConditions(StockPurchase.class, "id", "companyId", purchaseId, companyId);
     }
 
-    public StockQuotation findQuotation(int quotationId, int companyId){
+    public StockPurchaseView findPurchase2(int purchaseId, int companyId) {
+        StockPurchaseView purchase = dao.findTwoConditions(StockPurchaseView.class, "id", "companyId", purchaseId, companyId);
+        if (purchase != null) {
+            for (var item : purchase.getItems()) {
+                var view = this.findProduct(item.getStockProductId(), companyId);
+                item.setStockProduct(view);
+            }
+        }
+        return purchase;
+    }
+
+    public StockQuotation findQuotation(int quotationId, int companyId) {
         return dao.findTwoConditions(StockQuotation.class, "id", "companyId", quotationId, companyId);
+    }
+
+    public StockQuotationView findQuotation2(int purchaseId, int companyId) {
+        StockQuotationView q = dao.findTwoConditions(StockQuotationView.class, "id", "companyId", purchaseId, companyId);
+        if (q != null) {
+            for (var item : q.getItems()) {
+                var view = this.findProduct(item.getStockProductId(), companyId);
+                item.setStockProduct(view);
+            }
+        }
+        return q;
     }
 
 
@@ -715,10 +773,10 @@ public class DaoApi {
         return branchSales;
     }
 
-    public double getStockValue(int companyId){
+    public double getStockValue(int companyId) {
         String sql = "select sum(quantity * average_cost) from prd_stk_live_stock where company_id = " + companyId;
         Object o = dao.getNativeSingle(sql);
-        return o == null ? 0 : ((Number)o).doubleValue();
+        return o == null ? 0 : ((Number) o).doubleValue();
     }
 
     private void applyDaySales(int companyId, List<BranchSales> branchSales) {
@@ -835,7 +893,7 @@ public class DaoApi {
         }
     }
 
-    public void createPurchaseCreditPayment(double amount, String reference, char paymentMethod, int contactId, int companyId){
+    public void createPurchaseCreditPayment(double amount, String reference, char paymentMethod, int contactId, int companyId) {
         //check if amount is valid
         StockPurchaseCredit pc = new StockPurchaseCredit();
         pc.setSupplierId(contactId);
@@ -848,7 +906,7 @@ public class DaoApi {
         dao.persist(pc);
     }
 
-    public void createSalesCreditPayment(double amount, String reference, char paymentMethod, int contactId, int companyId){
+    public void createSalesCreditPayment(double amount, String reference, char paymentMethod, int contactId, int companyId) {
         StockSalesCredit sc = new StockSalesCredit();
         sc.setCustomerId(contactId);
         sc.setPaymentMethod(paymentMethod);
