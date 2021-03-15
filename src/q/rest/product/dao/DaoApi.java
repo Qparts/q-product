@@ -715,7 +715,7 @@ public class DaoApi {
     }
 
     public double getStockValue(int companyId){
-        String sql = "select sum(sl.quantity * sl.average_cost) from prd_stk_live_stock sl join prd_stk_product p on sl.product_id = p.id where p.company_id = " + companyId;
+        String sql = "select sum(quantity * average_cost) from prd_stk_live_stock where company_id = " + companyId;
         Object o = dao.getNativeSingle(sql);
         return o == null ? 0 : ((Number)o).doubleValue();
     }
