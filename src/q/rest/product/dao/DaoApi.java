@@ -3,7 +3,6 @@ package q.rest.product.dao;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.entity.v3.product.Brand;
-import q.rest.product.model.entity.v3.product.Product;
 import q.rest.product.model.qstock.*;
 import q.rest.product.model.qstock.views.StockProductView;
 import q.rest.product.model.qstock.views.StockPurchaseSummary;
@@ -16,7 +15,6 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import java.security.Policy;
 import java.time.Year;
 import java.time.YearMonth;
 import java.util.*;
@@ -114,13 +112,21 @@ public class DaoApi {
     }
 
     public List<StockProductView> searchProduct(String query, int companyId) {
-        String numberLike = "%" + query + "%";
-        String sql = "select b from StockProductView b where (b.status = 'P' " +
-                " and b.companyId = :value0 " +
-                " and b.productNumber like :value1) " +
-                "or (b.status = 'A' and b.productNumber like :value1)";
+        String numberLike = "'%" + query + "%'";
 
-        List<StockProductView> views = dao.getJPQLParams(StockProductView.class, sql, companyId, numberLike);
+        String sql = "select * from (" +
+                " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
+                " from prd_view_stock_product" +
+                " where company_id in (0,"+ companyId +")) z where n < 2 " +
+                "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
+                " and z.product_number like "+ numberLike;
+
+//        String sql = "select b from StockProductView b where (b.status = 'P' " +
+//                " and b.companyId = :value0 " +
+//                " and b.productNumber like :value1) " +
+//                "or (b.status = 'A' and b.productNumber like :value1)";
+
+        List<StockProductView> views = dao.getNative(StockProductView.class, sql);
         attachLiveStock(views, companyId);
         return views;
     }
@@ -141,12 +147,20 @@ public class DaoApi {
 
     public StockProductView findStockProductView(int companyId, String productNumber, int brandId) {
         String undecorated = Helper.undecorate(productNumber);
-        String sql = "select b from StockProductView b where b.productNumber =:value0 " +
-                " and b.brandId = :value1 " +
-                " and (b.status = :value2 and b.companyId = :value3" +
-                " or b.companyId = :value4)";
 
-        StockProductView view = dao.findJPQLParams(StockProductView.class, sql, undecorated, brandId, 'A', 0, companyId);
+        String sql = "select * from (" +
+                " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
+                " from prd_view_stock_product" +
+                " where company_id in (0,"+ companyId +")) z where n < 2 " +
+                "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
+                " and z.product_number = "+ undecorated;
+
+//        String sql = "select b from StockProductView b where b.productNumber =:value0 " +
+//                " and b.brandId = :value1 " +
+//                " and (b.status = :value2 and b.companyId = :value3" +
+//                " or b.companyId = :value4)";
+
+        StockProductView view = dao.getNativeSingle(StockProductView.class, sql);
         attachLiveStock(view, companyId);
         return view;
     }
@@ -158,10 +172,18 @@ public class DaoApi {
     }
 
     public StockProductView findProduct(long productId, int companyId) {
-        String sql = "select b from StockProductView b where b.productId =:value0 " +
-                " and (b.status = 'A' and b.companyId = 0" +
-                " or b.companyId = :value1)";
-        StockProductView view = dao.findJPQLParams(StockProductView.class, sql, productId, companyId);
+
+        String sql = "select * from (" +
+                " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
+                " from prd_view_stock_product" +
+                " where company_id in (0,"+ companyId +")) z where n < 2 " +
+                " and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
+                " and z.product_id = "+ productId;
+
+//        String sql = "select b from StockProductView b where b.productId =:value0 " +
+//                " and (b.status = 'A' and b.companyId = 0" +
+//                " or b.companyId = :value1)";
+        StockProductView view = dao.getNativeSingle(StockProductView.class, sql);
         attachLiveStock(view, companyId);
         return view;
 
