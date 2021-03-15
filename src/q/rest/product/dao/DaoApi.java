@@ -494,7 +494,8 @@ public class DaoApi {
             list.add(map);
         }
         try {
-            List<Map<String, Object>> suppliers = getContactObjects(supplierIds, 'C', header);
+            System.out.println("trying to get contact object");
+            List<Map<String, Object>> suppliers = getContactObjects(supplierIds, 'S', header);
             for (var supplier : suppliers) {
                 int cid = (int) supplier.get("id");
                 for (var top : list) {
