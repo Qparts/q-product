@@ -167,10 +167,12 @@ public class DaoApi {
 //        String sql = "select b from StockProductView b where b.productId =:value0 " +
 //                " and (b.status = 'A' and b.companyId = 0" +
 //                " or b.companyId = :value1)";
-        StockProductView view = dao.getNativeSingle(StockProductView.class, sql);
-        attachLiveStock(view, companyId);
-        return view;
-
+        List<StockProductView> views = dao.getNative(StockProductView.class, sql);
+        if(!views.isEmpty()){
+            attachLiveStock(views.get(0), companyId);
+            return views.get(0);
+        }
+        else return null;
     }
 
 
