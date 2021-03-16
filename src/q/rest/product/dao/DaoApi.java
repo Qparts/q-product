@@ -68,18 +68,6 @@ public class DaoApi {
         return dao.persistAndReturn(product);
     }
 
-//
-//    public StockProductView createStockProduct2(String productNumber, int brandId, String name, String nameAr, int companyId) {
-//        //manual insert
-//        String sql = "insert into prd_product (product_number, product_desc, product_desc_ar, brand_id, created_by, created, status) " +
-//                "values('"+productNumber+"',  '"+ name+"', '"+nameAr+"', "+brandId+", "+companyId+", '"+ helper.getDateFormat(new Date())+"', 'P' ) returning ID";
-//        long id = dao.insertNativeAndReturnLongID(sql);
-//        System.out.println(id);
-//        var productView = findProduct(id, companyId);
-//        System.out.println("product view id " + productView.getProductId());
-//        return productView;
-//    }
-
     public StockProductSetting createStockProductSetting(StockCreateProduct create, long productId, int companyId) {
         StockProductSetting scp = new StockProductSetting();
         scp.setProductId(productId);
@@ -113,19 +101,12 @@ public class DaoApi {
 
     public List<StockProductView> searchProduct(String query, int companyId) {
         String numberLike = "'%" + query + "%'";
-
         String sql = "select * from (" +
                 " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
                 " from prd_view_stock_product" +
                 " where company_id in (0,"+ companyId +")) z where n < 2 " +
                 "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
                 " and z.product_number like "+ numberLike;
-
-//        String sql = "select b from StockProductView b where (b.status = 'P' " +
-//                " and b.companyId = :value0 " +
-//                " and b.productNumber like :value1) " +
-//                "or (b.status = 'A' and b.productNumber like :value1)";
-
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
         attachLiveStock(views, companyId);
         return views;
@@ -146,23 +127,26 @@ public class DaoApi {
     }
 
     public StockProductView findStockProductView(int companyId, String productNumber, int brandId) {
-        String undecorated = Helper.undecorate(productNumber);
+        String undecorated = "'" + Helper.undecorate(productNumber) + "'";
 
         String sql = "select * from (" +
                 " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
                 " from prd_view_stock_product" +
                 " where company_id in (0,"+ companyId +")) z where n < 2 " +
                 "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
-                " and z.product_number = "+ undecorated;
+                " and z.product_number = "+ undecorated + "and z.brand_id = " + brandId;
 
 //        String sql = "select b from StockProductView b where b.productNumber =:value0 " +
 //                " and b.brandId = :value1 " +
 //                " and (b.status = :value2 and b.companyId = :value3" +
 //                " or b.companyId = :value4)";
 
-        StockProductView view = dao.getNativeSingle(StockProductView.class, sql);
-        attachLiveStock(view, companyId);
-        return view;
+        List<StockProductView> views = dao.getNative(StockProductView.class, sql);
+        if(!views.isEmpty()){
+            attachLiveStock(views.get(0), companyId);
+            return views.get(0);
+        }
+        else return null;
     }
 
     public StockProduct findProduct(String productNumber, int brandId) {
@@ -574,7 +558,6 @@ public class DaoApi {
             list.add(map);
         }
         try {
-            System.out.println("trying to get contact object");
             List<Map<String, Object>> suppliers = getContactObjects(supplierIds, 'S', header);
             for (var supplier : suppliers) {
                 int cid = (int) supplier.get("id");

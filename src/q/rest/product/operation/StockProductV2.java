@@ -28,7 +28,6 @@ public class StockProductV2 {
     @EJB
     private DaoApi daoApi;
 
-    //must create view
     @SubscriberJwt
     @POST
     @Path("search-product")
