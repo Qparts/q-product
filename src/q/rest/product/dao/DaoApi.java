@@ -100,7 +100,7 @@ public class DaoApi {
     }
 
     public List<StockProductView> searchProduct(String query, int companyId) {
-        String numberLike = "'%" + query + "%'";
+        String numberLike = "'%" + Helper.undecorate(query) + "%'";
         String sql = "select * from (" +
                 " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
                 " from prd_view_stock_product" +
