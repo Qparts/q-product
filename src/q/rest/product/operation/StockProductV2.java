@@ -566,9 +566,8 @@ public class StockProductV2 {
             for (var s : sales) {
                 s.attachCustomer(list);
             }
-        }
+        } else r.close();
     }
-
 
 
     private void attachCustomerObjectForQuotations(List<StockQuotationView> quotationViews, String header) {
@@ -583,7 +582,7 @@ public class StockProductV2 {
             for (var s : quotationViews) {
                 s.attachCustomer(list);
             }
-        }
+        } else r.close();
     }
 
 
@@ -593,7 +592,7 @@ public class StockProductV2 {
             Map<String, Object> map = r.readEntity(new GenericType<Map>() {
             });
             sales.attachCustomer(map);
-        }
+        } else r.close();
     }
 
 
@@ -604,7 +603,7 @@ public class StockProductV2 {
                 Map<String, Object> map = r.readEntity(new GenericType<Map>() {
                 });
                 sales.attachCustomer(map);
-            }
+            } else r.close();
         } catch (Exception ex) {
         }
     }
@@ -617,7 +616,7 @@ public class StockProductV2 {
                 Map<String, Object> map = r.readEntity(new GenericType<Map>() {
                 });
                 quotation.attachCustomer(map);
-            }
+            } else r.close();
         } catch (Exception ignore) {
         }
     }
@@ -634,12 +633,13 @@ public class StockProductV2 {
 
     private void attachSupplierObject(StockPurchaseView purchase, String header) {
         try {
-        Response r = this.getSecuredRequest(AppConstants.getSupplier(purchase.getSupplierId()), header);
-        if (r.getStatus() == 200) {
-            Map<String, Object> map = r.readEntity(new GenericType<Map>() {
-            });
-            purchase.attachSupplier(map);
-        }}catch (Exception ex){}
+            Response r = this.getSecuredRequest(AppConstants.getSupplier(purchase.getSupplierId()), header);
+            if (r.getStatus() == 200) {
+                Map<String, Object> map = r.readEntity(new GenericType<Map>() {
+                });
+                purchase.attachSupplier(map);
+            } else r.close();
+        } catch (Exception ignore) {}
     }
 
 
@@ -649,14 +649,13 @@ public class StockProductV2 {
             ids.append(",").append(s.getSupplierId());
         }
         Response r = this.getSecuredRequest(AppConstants.getSuppliers(ids.toString()), header);
-
         if (r.getStatus() == 200) {
             List<Map> list = r.readEntity(new GenericType<List<Map>>() {
             });
             for (var s : purchases) {
                 s.attachSupplier(list);
             }
-        }
+        } else r.close();
     }
 
 

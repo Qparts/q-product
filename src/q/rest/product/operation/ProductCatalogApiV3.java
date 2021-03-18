@@ -37,6 +37,7 @@ public class ProductCatalogApiV3 {
             });
             return Response.ok().entity(catalogs).build();
         }
+        else r.close();
         return Response.status(400).build();
     }
 
@@ -53,6 +54,7 @@ public class ProductCatalogApiV3 {
             models.forEach(cg -> {cg.setImg(AppConstants.getCatalogImageReplacedLink(cg.getImg()));});
             return Response.ok().entity(models).build();
         }
+        else r.close();
         return Response.status(400).build();
     }
 
@@ -95,6 +97,7 @@ public class ProductCatalogApiV3 {
         String query = info.getQueryParameters().getFirst("query");
         Response r = this.getCatalogSecuredRequest(AppConstants.getCarInfo(query));
         if (r.getStatus() != 200) {
+            r.close();
             async.saveVinSearch(query, null, header, false);
             return Response.status(404).build();
         }
@@ -118,6 +121,7 @@ public class ProductCatalogApiV3 {
             String catalogId = info.getQueryParameters().getFirst("catalogid");
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogCarsByVin(catalogId, vin));
             if (r.getStatus() != 200) {
+                r.close();
                 async.saveVinSearch(vin, catalogId, header, false);
                 return Response.status(404).build();
             }
@@ -148,8 +152,10 @@ public class ProductCatalogApiV3 {
             String encodedCriteria = (criteria == null || criteria.equals("")) ? null : Helper.getEncodedUrl(criteria);
 
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogGroups(catalogId, carId, groupId, encodedCriteria));
-            if (r.getStatus() != 200)
+            if (r.getStatus() != 200) {
+                r.close();
                 return Response.status(404).build();
+            }
 
             List<CatalogGroup> catalogGroups = r.readEntity(new GenericType<List<CatalogGroup>>() {});
             catalogGroups.forEach(cg -> {cg.setImg(AppConstants.getCatalogImageReplacedLink(cg.getImg()));});
@@ -175,6 +181,7 @@ public class ProductCatalogApiV3 {
             String encodedCriteria = (criteria == null || criteria.equals("")) ? null : Helper.getEncodedUrl(criteria);
             Response r = this.getCatalogSecuredRequest(AppConstants.getCatalogParts(catalogId, carId, groupId, encodedCriteria));
             if (r.getStatus() != 200) {
+                r.close();
                 return Response.status(404).build();
             }
             CatalogPart catalogPart = r.readEntity(CatalogPart.class);

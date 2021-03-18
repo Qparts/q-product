@@ -200,7 +200,7 @@ public class ProductQvmApiV3 {
     //for lazy
     private List<CompanyProduct> searchCompanyProducts(String query, int offset, int max) {
         try {
-            String undecorated = "%" + Helper.undecorate(query) + "%";
+            String undecorated = "" + Helper.undecorate(query) + "%";
             String sql = "select b from CompanyProduct b where " +
                     "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
                     " select c.companyProductId from CompanyStock c where c.offerOnly =:value1)" +
@@ -233,7 +233,7 @@ public class ProductQvmApiV3 {
     @GET
     @Path("company-uploads/special-offer/{soId}/products/offset/{offset}/max/{max}/search/{search}")
     public Response getCompanySpecialOffer(@PathParam(value = "soId") int id, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max, @PathParam(value = "search") String search){
-        search = "%" + Helper.undecorate(search) + "%";
+        search = "" + Helper.undecorate(search) + "%";
         String sql = "select count(*) from CompanyProduct b " +
                 " where b.id in (" +
                 " select c.companyProductId from CompanyStockOffer c " +
@@ -489,8 +489,8 @@ public class ProductQvmApiV3 {
     //@POST
 //    @Path("search-company-products-lazy/filtered")
     public Response searchCompanyProductLazyFiltered(SearchObject searchObject){
-        String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
-        String filterUndecorated = "%" + Helper.undecorate(searchObject.getFilter()) + "%";
+        String undecorated = "" + Helper.undecorate(searchObject.getQuery()) + "%";
+        String filterUndecorated = "" + Helper.undecorate(searchObject.getFilter()) + "%";
         String sql = "select count(*) from CompanyProduct z where z.id in (select b.id from CompanyProduct b where " +
                 "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
                 " select c.companyProductId from CompanyStock c where c.offerOnly =:value1 " + searchObject.getLocationFiltersSql("c", false) + ")" +
@@ -533,7 +533,7 @@ public class ProductQvmApiV3 {
     //for lazy (size only)
     private int searchCompanyProductSize(SearchObject searchObject){
         try {
-            String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
+            String undecorated = "" + Helper.undecorate(searchObject.getQuery()) + "%";
             String sql1 = "select count(z.*) from (select p.* from prd_company_product p " +
                     "   join prd_company_stock c on p.id = c.company_product_id " +
                     " where c.offer_only = false" +
@@ -553,7 +553,7 @@ public class ProductQvmApiV3 {
 
     private List<CompanyProduct> searchCompanyProducts(SearchObject searchObject) {
         try {
-            String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
+            String undecorated = "" + Helper.undecorate(searchObject.getQuery()) + "%";
             String sql1 = "select z.* from (select p.*, 0 as on_offer from prd_company_product p " +
                     "   join prd_company_stock c on p.id = c.company_product_id " +
                     " where c.offer_only = false" +
@@ -634,7 +634,7 @@ public class ProductQvmApiV3 {
             if(searchObject.getQuery() == null || Helper.undecorate(searchObject.getQuery()).length() < 3){
                 return Response.status(404).build();
             }
-            String partNumber = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
+            String partNumber = "" + Helper.undecorate(searchObject.getQuery()) + "%";
             String jpql = "select b from Product b where b.productNumber like :value0 and b.status =:value1";
             List<Product> products = dao.getJPQLParamsOffsetMax(Product.class, jpql, 0, 10, partNumber, 'A');
             List<Spec> specs = dao.get(Spec.class);

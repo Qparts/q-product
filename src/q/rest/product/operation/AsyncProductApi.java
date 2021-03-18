@@ -44,7 +44,8 @@ public class AsyncProductApi {
     public void saveSearch(String header, Map<String, Object> map, boolean found) {
         if (map.get("companyId") != null) {
             map.put("found", found);
-            this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
+            Response r = this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
+            r.close();
         }
     }
 
@@ -56,7 +57,8 @@ public class AsyncProductApi {
             map.put("companyId", searchObject.getCompanyId());
             map.put("subscriberId", searchObject.getSubscriberId());
             map.put("found", found);
-            this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
+            Response r = this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
+            r.close();
         }
     }
 
@@ -74,6 +76,7 @@ public class AsyncProductApi {
             map.put("subscriberId", subscriberId);
             map.put("found", found);
             Response r = this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
+            r.close();
         }
     }
 
@@ -89,7 +92,8 @@ public class AsyncProductApi {
             map.put("found", found);
             map.put("companyId", ints[0]);
             map.put("subscriberId", ints[1]);
-            this.postSecuredRequest(AppConstants.POST_SAVE_REPLACEMENTS_KEYWORD, map, header);
+            Response r = this.postSecuredRequest(AppConstants.POST_SAVE_REPLACEMENTS_KEYWORD, map, header);
+            r.close();
         }catch (Exception ignore){
 
         }
@@ -115,6 +119,7 @@ public class AsyncProductApi {
                             });
                             updateStock(rs, psr, dph);
                         }
+                        else r.close();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -241,7 +246,6 @@ public class AsyncProductApi {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();
         b.header(HttpHeaders.AUTHORIZATION, authHeader);
         Response r = b.post(Entity.entity(t, "application/json"));
-       // r.close();
         return r;
     }
 
@@ -258,7 +262,6 @@ public class AsyncProductApi {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();
         b.header(HttpHeaders.AUTHORIZATION, header);
         Response r = b.get();
-//        r.close();
         return r;
     }
 }

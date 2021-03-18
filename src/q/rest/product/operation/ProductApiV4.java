@@ -186,6 +186,7 @@ public class ProductApiV4 {
         //    }
             return Response.ok().entity(ar).build();
         }
+        else r.close();
         return Response.status(404).build();
     }
 
