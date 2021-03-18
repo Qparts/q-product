@@ -2,6 +2,9 @@ package q.rest.product.operation;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import q.rest.product.dao.DAO;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
@@ -238,6 +241,7 @@ public class AsyncProductApi {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();
         b.header(HttpHeaders.AUTHORIZATION, authHeader);
         Response r = b.post(Entity.entity(t, "application/json"));
+       // r.close();
         return r;
     }
 
@@ -254,6 +258,7 @@ public class AsyncProductApi {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();
         b.header(HttpHeaders.AUTHORIZATION, header);
         Response r = b.get();
+//        r.close();
         return r;
     }
 }

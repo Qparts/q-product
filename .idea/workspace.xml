@@ -8,7 +8,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/dao/DaoApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/dao/DaoApi.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/AsyncProductApi.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/StockProductV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/StockProductV2.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +71,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/src/q/rest/product/model/qstock" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.applicationServers" />
@@ -380,7 +381,8 @@
       <workItem from="1615836627299" duration="9025000" />
       <workItem from="1615875078951" duration="1662000" />
       <workItem from="1615879119778" duration="508000" />
-      <workItem from="1615937276156" duration="399000" />
+      <workItem from="1615937276156" duration="1342000" />
+      <workItem from="1615974609761" duration="5195000" />
     </task>
     <servers />
   </component>
@@ -432,6 +434,11 @@
     <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/0.23.1440.788@0.23.1440.788" timestamp="1615708357660" />
     <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/0.23.1440.789@0.23.1440.789" timestamp="1612529790963" />
     <state x="0" y="23" width="635" height="793" key="#com.intellij.ide.util.MemberChooser/0.23.1440.793@0.23.1440.793" timestamp="1608052360547" />
+    <state x="564" y="124" width="1016" height="628" key="#com.intellij.openapi.roots.ui.configuration.libraryEditor.LibraryEditorDialog" timestamp="1616023260356">
+      <screen x="0" y="23" width="1680" height="927" />
+    </state>
+    <state x="564" y="124" key="#com.intellij.openapi.roots.ui.configuration.libraryEditor.LibraryEditorDialog/-1920.23.1920.1057/0.23.1680.927@0.23.1680.927" timestamp="1616023260356" />
+    <state x="-1275" y="127" width="1016" height="628" key="#com.intellij.openapi.roots.ui.configuration.libraryEditor.LibraryEditorDialog/-1920.23.1920.957/0.23.1680.1027@-1920.23.1920.957" timestamp="1615977405554" />
     <state width="958" height="377" key="GridCell.Tab.0.bottom" timestamp="1615877842602">
       <screen x="0" y="23" width="1440" height="779" />
     </state>
@@ -600,10 +607,13 @@
     <state width="958" height="137" key="GridCell.Tab.1.right/0.23.1440.789@0.23.1440.789" timestamp="1614088199643" />
     <state width="958" height="228" key="GridCell.Tab.1.right/0.23.1440.792@0.23.1440.792" timestamp="1608665826668" />
     <state width="958" height="239" key="GridCell.Tab.1.right/0.23.1440.793@0.23.1440.793" timestamp="1608074549828" />
-    <state x="221" y="23" key="SettingsEditor" timestamp="1614758397166">
-      <screen x="0" y="23" width="1440" height="777" />
+    <state x="258" y="23" key="SettingsEditor" timestamp="1616023261220">
+      <screen x="0" y="23" width="1680" height="927" />
     </state>
+    <state x="-1625" y="23" key="SettingsEditor/-1920.23.1920.1057/0.23.1680.927@-1920.23.1920.1057" timestamp="1616020225145" />
+    <state x="258" y="23" key="SettingsEditor/-1920.23.1920.1057/0.23.1680.927@0.23.1680.927" timestamp="1616023261220" />
     <state x="258" y="23" key="SettingsEditor/-1920.23.1920.1057/0.23.1680.939@0.23.1680.939" timestamp="1608323998087" />
+    <state x="-1625" y="23" key="SettingsEditor/-1920.23.1920.957/0.23.1680.1027@-1920.23.1920.957" timestamp="1615976417067" />
     <state x="221" y="23" key="SettingsEditor/0.23.1440.777@0.23.1440.777" timestamp="1614758397166" />
     <state x="221" y="23" key="SettingsEditor/0.23.1440.789@0.23.1440.789" timestamp="1608664575813" />
     <state x="221" y="58" key="SettingsEditor/0.23.1440.793@0.23.1440.793" timestamp="1607874230930" />

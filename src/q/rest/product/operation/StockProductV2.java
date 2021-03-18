@@ -276,7 +276,6 @@ public class StockProductV2 {
         return Response.status(200).entity(list).build();
     }
 
-
     @SubscriberJwt
     @GET
     @Path("purchase/{id}")
