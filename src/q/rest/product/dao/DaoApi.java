@@ -205,10 +205,10 @@ public class DaoApi {
 
 
     public void createNewPolicy(StockPricePolicy policy) {
-        if (policy.isDefaultPolicy()) {
-            String sql = "update prd_stk_policy set default_policy = false where company_id = " + policy.getCompanyId();
-            dao.updateNative(sql);
-        }
+//        if (policy.isDefaultPolicy()) {
+//            String sql = "update prd_stk_policy set default_policy = false where company_id = " + policy.getCompanyId();
+//            dao.updateNative(sql);
+//        }
         dao.persist(policy);
     }
 

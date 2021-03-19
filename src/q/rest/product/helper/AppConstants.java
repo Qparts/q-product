@@ -39,6 +39,7 @@ public class AppConstants {
     public static final String GET_BRANCHES_IDS = SUBSCRIBER_SERVICE_V2 + "branches/ids";
     public static final String POST_SAVE_REPLACEMENTS_KEYWORD = SUBSCRIBER_SERVICE + "replacement-search-keyword";
     public static final String POST_COMPANIES_REDUCED = SUBSCRIBER_SERVICE + "companies/reduced";
+    public static final String POST_DEFAULT_POLICIES = SUBSCRIBER_SERVICE_V2 + "default-policy";
 
     public static  String getPullChunkSize(int companyId) {
         return  SUBSCRIBER_SERVICE + "pull-chunk-size/company/" + companyId;

@@ -13,6 +13,7 @@ import q.rest.product.model.qstock.views.StockSalesSummary;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
@@ -139,6 +140,14 @@ public class StockProductV2 {
         int companyId = Helper.getCompanyFromJWT(header);
         policy.setCompanyId(companyId);
         daoApi.createNewPolicy(policy);
+        List<StockPricePolicy> policies = daoApi.getPolicies(companyId);
+        if(policies.size() == 1) {
+            //create default
+            Map<String,Integer> map = new HashMap<>();
+            map.put("policyId", policy.getId());
+            Response r = this.postSecuredRequest(AppConstants.POST_DEFAULT_POLICIES, map, header);
+            r.close();
+        }
         return Response.status(200).build();
     }
 
@@ -149,7 +158,6 @@ public class StockProductV2 {
         int companyId = Helper.getCompanyFromJWT(header);
         List<StockPricePolicy> policies = daoApi.getPolicies(companyId);
         return Response.status(200).entity(policies).build();
-
     }
 
 
@@ -673,6 +681,14 @@ public class StockProductV2 {
     public <T> Response getSecuredRequest(String link, String header) {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();
         return b.header(HttpHeaders.AUTHORIZATION, header).get();
+    }
+
+
+
+    public <T> Response postSecuredRequest(String link, T t, String authHeader) {
+        Invocation.Builder b = ClientBuilder.newClient().target(link).request();
+        b.header(HttpHeaders.AUTHORIZATION, authHeader);
+        return b.post(Entity.entity(t, "application/json"));
     }
 
 }
