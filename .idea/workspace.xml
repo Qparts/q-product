@@ -8,7 +8,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/StockProductV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/StockProductV2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/dao/DaoApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/dao/DaoApi.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qstock/views/StockProductView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qstock/views/StockProductView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -384,7 +385,7 @@
       <workItem from="1615974609761" duration="7725000" />
       <workItem from="1616167759825" duration="2257000" />
       <workItem from="1616190838036" duration="324000" />
-      <workItem from="1616239909498" duration="283000" />
+      <workItem from="1616239909498" duration="970000" />
     </task>
     <servers />
   </component>
@@ -421,8 +422,8 @@
     </state>
     <state x="305" y="155" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1920.23.1920.1057/0.23.1680.939@0.23.1680.939" timestamp="1609198862022" />
     <state x="261" y="134" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1440.789@0.23.1440.789" timestamp="1608665858123" />
-    <state x="0" y="23" width="1130" height="1057" key="#com.intellij.ide.util.MemberChooser" timestamp="1615841791789">
-      <screen x="0" y="23" width="1680" height="927" />
+    <state x="0" y="23" width="969" height="783" key="#com.intellij.ide.util.MemberChooser" timestamp="1616280922857">
+      <screen x="0" y="23" width="1440" height="783" />
     </state>
     <state x="-1920" y="23" width="1130" height="1057" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.1057/0.23.1680.927@-1920.23.1920.1057" timestamp="1615732368539" />
     <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.1057/0.23.1680.927@0.23.1680.927" timestamp="1615841791789" />
@@ -432,6 +433,7 @@
     <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.1057/0.23.1680.941@0.23.1680.941" timestamp="1609155742209" />
     <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/-1920.23.1920.969/0.23.1680.1027@0.23.1680.1027" timestamp="1609156593606" />
     <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/0.23.1440.777@0.23.1440.777" timestamp="1615560245446" />
+    <state x="0" y="23" width="969" height="783" key="#com.intellij.ide.util.MemberChooser/0.23.1440.783@0.23.1440.783" timestamp="1616280922857" />
     <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/0.23.1440.785@0.23.1440.785" timestamp="1614511948188" />
     <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/0.23.1440.788@0.23.1440.788" timestamp="1615708357660" />
     <state x="0" y="23" key="#com.intellij.ide.util.MemberChooser/0.23.1440.789@0.23.1440.789" timestamp="1612529790963" />
@@ -619,10 +621,11 @@
     <state x="221" y="23" key="SettingsEditor/0.23.1440.777@0.23.1440.777" timestamp="1614758397166" />
     <state x="221" y="23" key="SettingsEditor/0.23.1440.789@0.23.1440.789" timestamp="1608664575813" />
     <state x="221" y="58" key="SettingsEditor/0.23.1440.793@0.23.1440.793" timestamp="1607874230930" />
-    <state x="375" y="33" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1614757694024">
-      <screen x="0" y="23" width="1440" height="777" />
+    <state x="375" y="33" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1616280899627">
+      <screen x="0" y="23" width="1440" height="783" />
     </state>
     <state x="375" y="33" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.23.1440.777@0.23.1440.777" timestamp="1614757694024" />
+    <state x="375" y="33" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.23.1440.783@0.23.1440.783" timestamp="1616280899627" />
     <state x="-1155" y="475" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1615630464827">
       <screen x="-1920" y="23" width="1920" height="1057" />
     </state>

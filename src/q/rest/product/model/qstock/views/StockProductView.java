@@ -2,6 +2,7 @@ package q.rest.product.model.qstock.views;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import q.rest.product.model.qstock.StockLive;
+import q.rest.product.model.qstock.StockProductShelf;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -34,6 +35,16 @@ public class StockProductView {
     private String notes;
     @Transient
     private List<StockLive> liveStock = new ArrayList<>();
+    @Transient
+    private List<StockProductShelf> shelves = new ArrayList<>();
+
+    public List<StockProductShelf> getShelves() {
+        return shelves;
+    }
+
+    public void setShelves(List<StockProductShelf> shelves) {
+        this.shelves = shelves;
+    }
 
     public List<StockLive> getLiveStock() {
         return liveStock;

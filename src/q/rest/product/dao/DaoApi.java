@@ -109,6 +109,7 @@ public class DaoApi {
                 " and z.product_number like "+ numberLike;
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
         attachLiveStock(views, companyId);
+        attachShelves(views, companyId);
         return views;
     }
 
@@ -117,6 +118,20 @@ public class DaoApi {
             String sql = "select b from StockLive b where b.productId =:value0 and b.companyId = :value1";
             List<StockLive> lives = dao.getJPQLParams(StockLive.class, sql, productView.getProductId(), companyId);
             productView.setLiveStock(lives);
+        }
+    }
+
+    private void attachShelves(StockProductView productView, int companyId){
+        if(productView != null) {
+            String sql = "select b from StockProductShelf b where b.productId =:value0 and b.companyId =:value1";
+            List<StockProductShelf> shelves = dao.getJPQLParams(StockProductShelf.class, sql, productView.getProductId(), companyId);
+            productView.setShelves(shelves);
+        }
+    }
+
+    private void attachShelves(List<StockProductView> views, int companyId){
+        for (var productView : views) {
+            attachShelves(productView, companyId);
         }
     }
 
@@ -135,15 +150,10 @@ public class DaoApi {
                 " where company_id in (0,"+ companyId +")) z where n < 2 " +
                 "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
                 " and z.product_number = "+ undecorated + "and z.brand_id = " + brandId;
-
-//        String sql = "select b from StockProductView b where b.productNumber =:value0 " +
-//                " and b.brandId = :value1 " +
-//                " and (b.status = :value2 and b.companyId = :value3" +
-//                " or b.companyId = :value4)";
-
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
         if(!views.isEmpty()){
             attachLiveStock(views.get(0), companyId);
+            attachShelves(views.get(0), companyId);
             return views.get(0);
         }
         else return null;
@@ -170,6 +180,7 @@ public class DaoApi {
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
         if(!views.isEmpty()){
             attachLiveStock(views.get(0), companyId);
+            attachShelves(views.get(0), companyId);
             return views.get(0);
         }
         else return null;
