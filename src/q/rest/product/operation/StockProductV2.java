@@ -141,14 +141,11 @@ public class StockProductV2 {
         policy.setCompanyId(companyId);
         daoApi.createNewPolicy(policy);
         List<StockPricePolicy> policies = daoApi.getPolicies(companyId);
-        System.out.println(policies.size());
         if(policies.size() == 1) {
             //create default
-            System.out.println("will call now : " + AppConstants.POST_DEFAULT_POLICIES);
             Map<String,Integer> map = new HashMap<>();
             map.put("policyId", policy.getId());
-            Response r = this.postSecuredRequest(AppConstants.POST_DEFAULT_POLICIES, map, header);
-            System.out.println(r.getStatus());
+            Response r = this.putSecuredRequest(AppConstants.POST_DEFAULT_POLICIES, map, header);
             r.close();
         }
         return Response.status(200).build();
@@ -692,6 +689,12 @@ public class StockProductV2 {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();
         b.header(HttpHeaders.AUTHORIZATION, authHeader);
         return b.post(Entity.entity(t, "application/json"));
+    }
+
+    public <T> Response putSecuredRequest(String link, T t, String authHeader) {
+        Invocation.Builder b = ClientBuilder.newClient().target(link).request();
+        b.header(HttpHeaders.AUTHORIZATION, authHeader);
+        return b.put(Entity.entity(t, "application/json"));
     }
 
 }
