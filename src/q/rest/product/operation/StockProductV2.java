@@ -446,13 +446,14 @@ public class StockProductV2 {
         int contactId = (int) (type.equals("purchase") ? map.get("supplierId") : map.get("customerId"));
         double amount = ((Number) map.get("amount")).doubleValue();
         String paymentMethod = (String) map.get("paymentMethod");
-
+        long paymentDateLong = (long) map.get("paymentDate");
+        Date paymentDate = new Date(paymentDateLong);
         if (type.equals("purchase")) {
             //check if amount is valid
-            daoApi.createPurchaseCreditPayment(amount, reference, paymentMethod.charAt(0), contactId, companyId);
+            daoApi.createPurchaseCreditPayment(amount, reference, paymentMethod.charAt(0), contactId, companyId, paymentDate);
         } else {
             //check if amount is valid
-            daoApi.createSalesCreditPayment(amount, reference, paymentMethod.charAt(0), contactId, companyId);
+            daoApi.createSalesCreditPayment(amount, reference, paymentMethod.charAt(0), contactId, companyId, paymentDate);
         }
         return Response.status(200).build();
     }

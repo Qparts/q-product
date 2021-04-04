@@ -224,7 +224,8 @@ public class DaoApi {
     }
 
     public List<StockPricePolicy> getPolicies(int companyId) {
-        return dao.getCondition(StockPricePolicy.class, "companyId", companyId);
+        String sql = "select b from StockPricePolicy b where b.companyId = :value0 order by b.id ";
+        return dao.getJPQLParams(StockPricePolicy.class, sql, companyId);
     }
 
     public int createPurchase(StockPurchase purchase) {
@@ -911,7 +912,7 @@ public class DaoApi {
         }
     }
 
-    public void createPurchaseCreditPayment(double amount, String reference, char paymentMethod, int contactId, int companyId) {
+    public void createPurchaseCreditPayment(double amount, String reference, char paymentMethod, int contactId, int companyId, Date date) {
         //check if amount is valid
         StockPurchaseCredit pc = new StockPurchaseCredit();
         pc.setSupplierId(contactId);
@@ -920,11 +921,11 @@ public class DaoApi {
         pc.setCompanyId(companyId);
         pc.setAmount(amount * -1);
         pc.setReference(reference);
-        pc.setCreditDate(new Date());
+        pc.setCreditDate(date);
         dao.persist(pc);
     }
 
-    public void createSalesCreditPayment(double amount, String reference, char paymentMethod, int contactId, int companyId) {
+    public void createSalesCreditPayment(double amount, String reference, char paymentMethod, int contactId, int companyId, Date date) {
         StockSalesCredit sc = new StockSalesCredit();
         sc.setCustomerId(contactId);
         sc.setPaymentMethod(paymentMethod);
@@ -932,7 +933,7 @@ public class DaoApi {
         sc.setSource('Y');
         sc.setAmount(amount * -1);
         sc.setReference(reference);
-        sc.setCreditDate(new Date());
+        sc.setCreditDate(date);
         dao.persist(sc);
     }
 

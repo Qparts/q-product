@@ -9,7 +9,7 @@
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/dao/DaoApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/dao/DaoApi.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qstock/views/StockProductView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qstock/views/StockProductView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/StockProductV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/StockProductV2.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -385,7 +385,9 @@
       <workItem from="1615974609761" duration="7725000" />
       <workItem from="1616167759825" duration="2257000" />
       <workItem from="1616190838036" duration="324000" />
-      <workItem from="1616239909498" duration="970000" />
+      <workItem from="1616239909498" duration="1192000" />
+      <workItem from="1617199584311" duration="847000" />
+      <workItem from="1617523920665" duration="243000" />
     </task>
     <servers />
   </component>
