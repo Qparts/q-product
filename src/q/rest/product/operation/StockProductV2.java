@@ -211,6 +211,55 @@ public class StockProductV2 {
         return Response.status(200).entity(views).build();
     }
 
+    @SubscriberJwt
+    @PUT
+    @Path("pending-item")
+    public Response updatePendingItem(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String,Integer> map){
+        int companyId = Helper.getCompanyFromJWT(header);
+        int salesItemId = map.get("salesItemId");
+        int branchId = map.get("branchId");
+
+        StockSalesItemView salesItem = daoApi.getPendingItem(companyId, salesItemId);
+        if(salesItem == null) {
+            return Response.status(400).entity("Sales Item not found").build();
+        }
+
+        if(salesItem.getStockProduct().getLiveStock() != null) {
+            List<StockLive> lives = salesItem.getStockProduct().getLiveStock();
+            StockLive stockLive = null;
+            for(var live : lives) {
+                if(live.getBranchId() == branchId) {
+                    stockLive = live;
+                }
+            }
+            if(stockLive == null) {
+                return Response.status(400).entity("Quantity Not available").build();
+            }
+
+            if(stockLive.getQuantity() >= salesItem.getPendingQuantity() ) {
+                int salesItemQuantity = salesItem.getQuantity();
+                int salesItemPendingQuantity = salesItem.getPendingQuantity();
+
+                double totalSalesCost = salesItemQuantity * salesItem.getUnitCost();
+                double totalPendingCost = salesItemPendingQuantity * stockLive.getAverageCost();
+                int totalSalesItemQuantity = salesItemQuantity + salesItemPendingQuantity;
+                double newAverage = (totalSalesCost + totalPendingCost) / totalSalesItemQuantity;
+                int newQuantity = salesItemQuantity + salesItemPendingQuantity;
+                salesItem.setUnitCost(newAverage);
+                salesItem.setQuantity(newQuantity);
+                salesItem.setPendingQuantity(0);
+                daoApi.updateSalesItem(salesItem);
+
+                stockLive.setQuantity(stockLive.getQuantity() - salesItemPendingQuantity);
+                if (stockLive.getQuantity() == 0)
+                    daoApi.deleteLive(stockLive);
+                else
+                    daoApi.updateLive(stockLive);
+            }
+        }
+        return Response.status(200).build();
+    }
+
 
     private void updateStock(StockPurchase po) {
         for (var item : po.getItems()) {

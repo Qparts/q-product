@@ -173,10 +173,6 @@ public class DaoApi {
                 " where company_id in (0,"+ companyId +")) z where n < 2 " +
                 " and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
                 " and z.product_id = "+ productId;
-
-//        String sql = "select b from StockProductView b where b.productId =:value0 " +
-//                " and (b.status = 'A' and b.companyId = 0" +
-//                " or b.companyId = :value1)";
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
         if(!views.isEmpty()){
             attachLiveStock(views.get(0), companyId);
@@ -216,10 +212,6 @@ public class DaoApi {
 
 
     public void createNewPolicy(StockPricePolicy policy) {
-//        if (policy.isDefaultPolicy()) {
-//            String sql = "update prd_stk_policy set default_policy = false where company_id = " + policy.getCompanyId();
-//            dao.updateNative(sql);
-//        }
         dao.persist(policy);
     }
 
@@ -324,6 +316,12 @@ public class DaoApi {
     }
 
 
+    public void updateSalesItem(StockSalesItemView view) {
+        dao.update(view);
+    }
+
+
+
     public void createNewStockLive(int companyId, int branchId, long productId, double averageCost, int quantity) {
         StockLive sl = new StockLive();
         sl.setBranchId(branchId);
@@ -385,6 +383,17 @@ public class DaoApi {
             item.setStockProduct(stockProductView);
         }
         return items;
+    }
+
+    public StockSalesItemView getPendingItem(int companyId, int salesItemId){
+        String sql = "select b from StockSalesItemView b where b.pendingQuantity > 0 and b.salesOrderId in (select c.id from StockSalesView c where c.companyId = :value0) and b.id =:value1 order by b.id";
+        StockSalesItemView item = dao.findJPQLParams(StockSalesItemView.class, sql, companyId, salesItemId);
+        if(item != null) {
+            StockProductView stockProductView = this.findProduct(item.getStockProductId(), companyId);
+            item.setStockProduct(stockProductView);
+            return item;
+        }
+        return null;
     }
 
     public List<StockSalesView> searchSales(String query, int companyId) {

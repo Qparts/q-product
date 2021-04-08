@@ -9,8 +9,6 @@
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/dao/DaoApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/dao/DaoApi.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qstock/StockSalesItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qstock/StockSalesItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qstock/StockSalesItemView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qstock/StockSalesItemView.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/StockProductV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/StockProductV2.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -395,7 +393,7 @@
       <workItem from="1616239909498" duration="1192000" />
       <workItem from="1617199584311" duration="847000" />
       <workItem from="1617523920665" duration="380000" />
-      <workItem from="1617614186792" duration="9571000" />
+      <workItem from="1617614186792" duration="12573000" />
     </task>
     <servers />
   </component>
@@ -621,13 +619,14 @@
       <screen x="0" y="23" width="1680" height="927" />
     </state>
     <state x="498" y="243" width="683" height="486" key="find.popup/-1920.23.1920.1057/0.23.1680.927@0.23.1680.927" timestamp="1615838712064" />
-    <state x="385" y="139" width="672" height="672" key="search.everywhere.popup" timestamp="1617823328386">
-      <screen x="0" y="23" width="1440" height="783" />
+    <state x="-1407" y="165" width="896" height="821" key="search.everywhere.popup" timestamp="1617874086761">
+      <screen x="-1920" y="23" width="1920" height="956" />
     </state>
     <state x="-1407" y="179" width="896" height="906" key="search.everywhere.popup/-1920.23.1920.1057/0.23.1680.927@-1920.23.1920.1057" timestamp="1615634511471" />
     <state x="449" y="160" width="784" height="795" key="search.everywhere.popup/-1920.23.1920.1057/0.23.1680.927@0.23.1680.927" timestamp="1615838900906" />
     <state x="-1407" y="179" width="896" height="904" key="search.everywhere.popup/-1920.23.1920.1057/0.23.1680.935@-1920.23.1920.1057" timestamp="1614555637099" />
     <state x="449" y="162" width="783" height="802" key="search.everywhere.popup/-1920.23.1920.1057/0.23.1680.939@0.23.1680.939" timestamp="1613007084182" />
+    <state x="-1407" y="165" width="896" height="821" key="search.everywhere.popup/-1920.23.1920.956/0.23.1680.1027@-1920.23.1920.956" timestamp="1617874086761" />
     <state x="449" y="175" width="783" height="878" key="search.everywhere.popup/-1920.23.1920.969/0.23.1680.1027@0.23.1680.1027" timestamp="1609233962340" />
     <state x="385" y="138" width="672" height="667" key="search.everywhere.popup/0.23.1440.779@0.23.1440.779" timestamp="1615470288538" />
     <state x="385" y="139" width="672" height="672" key="search.everywhere.popup/0.23.1440.783@0.23.1440.783" timestamp="1617823328386" />
