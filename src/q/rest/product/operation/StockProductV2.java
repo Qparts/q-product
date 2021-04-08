@@ -141,9 +141,9 @@ public class StockProductV2 {
         policy.setCompanyId(companyId);
         daoApi.createNewPolicy(policy);
         List<StockPricePolicy> policies = daoApi.getPolicies(companyId);
-        if(policies.size() == 1) {
+        if (policies.size() == 1) {
             //create default
-            Map<String,Integer> map = new HashMap<>();
+            Map<String, Integer> map = new HashMap<>();
             map.put("policyId", policy.getId());
             Response r = this.putSecuredRequest(AppConstants.POST_DEFAULT_POLICIES, map, header);
             r.close();
@@ -186,8 +186,10 @@ public class StockProductV2 {
         sales.setPaymentMethod(sales.getTransactionType() == 'C' ? sales.getPaymentMethod() : null);
         for (StockSalesItem item : sales.getItems()) {
             StockLive live = daoApi.findBranchStockLive(sales.getCompanyId(), item.getStockProduct().getId(), sales.getBranchId());
-            item.setUnitCost(live.getAverageCost());
-            item.setLive(live);
+            if(live != null) {
+                item.setUnitCost(live.getAverageCost());
+                item.setLive(live);
+            }
         }
         if (!verifyQuantities(sales)) return Response.status(400).build();
         int salesId = daoApi.createSales(sales);
@@ -198,6 +200,15 @@ public class StockProductV2 {
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("id", sales.getId());
         return Response.status(200).entity(map).build();
+    }
+
+    @SubscriberJwt
+    @GET
+    @Path("pending-items")
+    public Response pendingItems(@HeaderParam(HttpHeaders.AUTHORIZATION) String header) {
+        int companyId = Helper.getCompanyFromJWT(header);
+        List<StockSalesItemView> views = daoApi.getPendingItems(companyId);
+        return Response.status(200).entity(views).build();
     }
 
 
@@ -213,15 +224,20 @@ public class StockProductV2 {
 
 
     private void updateStock(StockSales sales) {
+        //if pending do not update stock
         for (var item : sales.getItems()) {
-            StockLive live = item.getLive();
-            live.setQuantity(live.getQuantity() - item.getQuantity());
-            if (item.getQuantity() == 0)
-                daoApi.deleteLive(live);
-            else
-                daoApi.updateLive(live);
+            if(item.getLive() != null) {
+                StockLive live = item.getLive();
+                int newQuantity = item.getPendingQuantity() == 0 ? live.getQuantity() - item.getQuantity() : live.getQuantity() - (item.getQuantity() - item.getPendingQuantity());
+                live.setQuantity(newQuantity);
+                if (live.getQuantity() == 0)
+                    daoApi.deleteLive(live);
+                else
+                    daoApi.updateLive(live);
+            }
         }
     }
+
 
     @SubscriberJwt
     @POST
@@ -555,9 +571,21 @@ public class StockProductV2 {
 
     private boolean verifyQuantities(StockSales sales) {
         for (var item : sales.getItems()) {
-            if (item.getLive().getQuantity() < item.getQuantity()) {
-                return false;
+            if(item.getLive() == null) {
+                //this should be all pending
+                if(item.getQuantity() != item.getPendingQuantity()){
+                    return false;
+                }
+            } else {
+                if (item.getPendingQuantity() == 0 && item.getLive().getQuantity() < item.getQuantity()) {
+                    return false;
+                } else if(item.getPendingQuantity() > 0){
+                    if (item.getLive().getQuantity() + item.getPendingQuantity() != item.getQuantity()){
+                        return false;
+                    }
+                }
             }
+
         }
         return true;
     }
@@ -648,7 +676,8 @@ public class StockProductV2 {
                 });
                 purchase.attachSupplier(map);
             } else r.close();
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
     }
 
 
@@ -683,7 +712,6 @@ public class StockProductV2 {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();
         return b.header(HttpHeaders.AUTHORIZATION, header).get();
     }
-
 
 
     public <T> Response postSecuredRequest(String link, T t, String authHeader) {

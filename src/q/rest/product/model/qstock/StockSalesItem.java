@@ -22,6 +22,7 @@ public class StockSalesItem implements Serializable {
     private int quantity;
     private double unitPrice;
     private double unitCost;
+    private int pendingQuantity;
     @Transient
     @JsonIgnore
     private StockLive live;
@@ -80,6 +81,14 @@ public class StockSalesItem implements Serializable {
 
     public void setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    public int getPendingQuantity() {
+        return pendingQuantity;
+    }
+
+    public void setPendingQuantity(int pendingQuantity) {
+        this.pendingQuantity = pendingQuantity;
     }
 
     @Override

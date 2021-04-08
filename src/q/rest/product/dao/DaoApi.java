@@ -377,6 +377,16 @@ public class DaoApi {
         return sales;
     }
 
+    public List<StockSalesItemView> getPendingItems(int companyId ){
+        String sql = "select b from StockSalesItemView b where b.pendingQuantity > 0 and b.salesOrderId in (select c.id from StockSalesView c where c.companyId = :value0) order by b.id";
+        List<StockSalesItemView> items = dao.getJPQLParams(StockSalesItemView.class, sql, companyId);
+        for(var item : items){
+            var stockProductView = this.findProduct(item.getStockProductId(), companyId);
+            item.setStockProduct(stockProductView);
+        }
+        return items;
+    }
+
     public List<StockSalesView> searchSales(String query, int companyId) {
         String nameLike = "%" + query + "%";
         int id = Helper.convertToInteger(query);

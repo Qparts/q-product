@@ -17,12 +17,22 @@ public class StockSalesItemView implements Serializable {
     private long stockProductId;
     @Transient
     private StockProductView stockProduct;
-    @JsonIgnore
+//    @JsonIgnore
     @Column(name="sales_order_id")
     private int salesOrderId;
     private int quantity;
     private double unitPrice;
     private double unitCost;
+    private int pendingQuantity;
+
+
+    public int getPendingQuantity() {
+        return pendingQuantity;
+    }
+
+    public void setPendingQuantity(int pendingQuantity) {
+        this.pendingQuantity = pendingQuantity;
+    }
 
     public long getStockProductId() {
         return stockProductId;
