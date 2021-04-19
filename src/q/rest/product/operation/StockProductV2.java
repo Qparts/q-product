@@ -5,6 +5,7 @@ import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.entity.v3.product.Brand;
+import q.rest.product.model.entity.v3.product.BrandClass;
 import q.rest.product.model.qstock.*;
 import q.rest.product.model.qstock.views.StockProductView;
 import q.rest.product.model.qstock.views.StockPurchaseSummary;
@@ -74,7 +75,7 @@ public class StockProductV2 {
         brand.setName(brand.getName().trim());
         brand.setNameAr(brand.getNameAr().trim());
         brand.setCreatedBy(companyId);
-        if (!daoApi.isBrandAvailable(brand.getName(), brand.getNameAr()))
+        if (!daoApi.isBrandAvailable(brand.getClassId(), brand.getName(), brand.getNameAr()))
             return Response.status(409).build();
         daoApi.createBrand(brand);
         return Response.status(201).build();
@@ -87,6 +88,14 @@ public class StockProductV2 {
         int companyId = Helper.getCompanyFromJWT(header);
         List<Brand> brands = daoApi.getBrands(companyId);
         return Response.status(200).entity(brands).build();
+    }
+
+    @SubscriberJwt
+    @GET
+    @Path("brand-classes")
+    public Response getBrandClasses(){
+        List<BrandClass> brandClasses = daoApi.getBrandClasses();
+        return Response.status(200).entity(brandClasses).build();
     }
 
 

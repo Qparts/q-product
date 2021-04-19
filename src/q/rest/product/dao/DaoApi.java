@@ -3,6 +3,7 @@ package q.rest.product.dao;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.entity.v3.product.Brand;
+import q.rest.product.model.entity.v3.product.BrandClass;
 import q.rest.product.model.qstock.*;
 import q.rest.product.model.qstock.views.StockProductView;
 import q.rest.product.model.qstock.views.StockPurchaseSummary;
@@ -37,9 +38,9 @@ public class DaoApi {
     }
 
 
-    public boolean isBrandAvailable(String name, String nameAr) {
-        String sql = "select b from Brand b where (lower(b.name) = lower(:value0) or lower(b.nameAr) = lower(:value1))";
-        List<StockBrand> check = dao.getJPQLParams(StockBrand.class, sql, name, nameAr);
+    public boolean isBrandAvailable(int classId, String name, String nameAr) {
+        String sql = "select b from Brand b where b.classId =:value0 and ((lower(b.name) = lower(:value1) or lower(b.nameAr) = lower(:value2)))";
+        List<StockBrand> check = dao.getJPQLParams(StockBrand.class, sql, classId, name, nameAr);
         return check.isEmpty();
     }
 //
@@ -97,6 +98,10 @@ public class DaoApi {
     public List<Brand> getBrands(int companyId) {
         String sql = "select b from Brand b where b.status = 'A' or (b.status = 'P' and b.createdBy = :value0) order by b.name";
         return dao.getJPQLParams(Brand.class, sql, companyId);
+    }
+
+    public List<BrandClass> getBrandClasses(){
+        return dao.getOrderBy(BrandClass.class, "id");
     }
 
     public List<StockProductView> searchProduct(String query, int companyId) {

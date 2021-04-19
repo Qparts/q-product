@@ -28,6 +28,9 @@ public class StockProductView {
     private int brandId;
     private String brandName;
     private String brandNameAr;
+    private int brandClassId;
+    private String brandClassName;
+    private String brandClassNameAr;
     @JsonIgnore
     private char status;
     private Integer policyId;
@@ -150,6 +153,29 @@ public class StockProductView {
         this.notes = notes;
     }
 
+    public int getBrandClassId() {
+        return brandClassId;
+    }
+
+    public void setBrandClassId(int brandClassId) {
+        this.brandClassId = brandClassId;
+    }
+
+    public String getBrandClassName() {
+        return brandClassName;
+    }
+
+    public void setBrandClassName(String brandClassName) {
+        this.brandClassName = brandClassName;
+    }
+
+    public String getBrandClassNameAr() {
+        return brandClassNameAr;
+    }
+
+    public void setBrandClassNameAr(String brandClassNameAr) {
+        this.brandClassNameAr = brandClassNameAr;
+    }
 
     public static class StockProductViewPK implements Serializable {
         protected int companyId;
@@ -191,4 +217,5 @@ public class StockProductView {
                 ", liveStock=" + liveStock +
                 '}';
     }
+
 }

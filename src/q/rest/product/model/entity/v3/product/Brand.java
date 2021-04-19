@@ -18,6 +18,7 @@ public class Brand {
     private int id;
     private String name;
     private String nameAr;
+    private int classId;
     @JsonIgnore
     private char status;//A = active, I = inactive , P = pending review
     @JsonIgnore
@@ -26,6 +27,14 @@ public class Brand {
     private int createdBy;//which company created (0 if created in dashboard)
     @JsonIgnore
     private Integer approvedBy;//reviewed by
+
+    public int getClassId() {
+        return classId;
+    }
+
+    public void setClassId(int classId) {
+        this.classId = classId;
+    }
 
     public Integer getApprovedBy() {
         return approvedBy;
