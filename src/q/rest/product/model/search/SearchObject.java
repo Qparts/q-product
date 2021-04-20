@@ -1,6 +1,7 @@
 package q.rest.product.model.search;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import q.rest.product.helper.Helper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,25 @@ public class SearchObject {
 
     @JsonIgnore
     public boolean isNewSearch(){
-        return (max == 0 && offset == 0 && (filter == null || filter.equals("")) && locationFilters.isEmpty());
+        return (max == 0
+                && offset == 0
+                && (filter == null || filter.equals(""))
+                && locationFilters.isEmpty());
+    }
+
+    @JsonIgnore
+    public String getProductFilterSql(){
+        try{
+            String undecorated = Helper.undecorate(filter);
+            if(undecorated != null && undecorated.length() > 0)
+                return "where part_number like '%" + undecorated  +"%'";
+            else
+                throw new Exception();
+        }
+        catch (Exception ex){
+            return "";
+        }
+
     }
 
     @JsonIgnore

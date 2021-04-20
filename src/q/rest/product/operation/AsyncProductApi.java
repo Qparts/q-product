@@ -63,10 +63,9 @@ public class AsyncProductApi {
     }
 
 
-
-
     @Asynchronous
     public void saveSearch2(String header, SearchObject searchObject, boolean found) {
+        System.out.println("is new search? " + searchObject.isNewSearch());
         if (searchObject.isNewSearch()) {
             int companyId = Helper.getCompanyFromJWT(header);
             int subscriberId = Helper.getSubscriberFromJWT(header);
