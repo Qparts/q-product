@@ -1,7 +1,7 @@
 package q.rest.product.filter;
 
 import q.rest.product.dao.DAO;
-import q.rest.product.model.entity.WebApp;
+import q.rest.product.model.WebApp;
 
 import javax.annotation.Priority;
 import javax.ejb.EJB;

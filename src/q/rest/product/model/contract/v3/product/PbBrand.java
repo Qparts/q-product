@@ -1,10 +1,7 @@
 package q.rest.product.model.contract.v3.product;
 
 import q.rest.product.helper.AppConstants;
-import q.rest.product.model.entity.v3.product.Brand;
-
-import javax.persistence.*;
-import java.util.Date;
+import q.rest.product.model.product.full.Brand;
 
 public class PbBrand {
     private int id;

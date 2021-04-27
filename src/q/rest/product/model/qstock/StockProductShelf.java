@@ -1,7 +1,5 @@
 package q.rest.product.model.qstock;
 
-import q.rest.product.model.entity.v3.product.ProductSpec;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;

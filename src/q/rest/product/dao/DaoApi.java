@@ -2,8 +2,8 @@ package q.rest.product.dao;
 
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
-import q.rest.product.model.entity.v3.product.Brand;
-import q.rest.product.model.entity.v3.product.BrandClass;
+import q.rest.product.model.product.full.Brand;
+import q.rest.product.model.product.full.BrandClass;
 import q.rest.product.model.qstock.*;
 import q.rest.product.model.qstock.views.StockProductView;
 import q.rest.product.model.qstock.views.StockPurchaseSummary;

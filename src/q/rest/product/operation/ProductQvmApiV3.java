@@ -16,13 +16,12 @@ import q.rest.product.model.contract.v3.SummaryReport;
 import q.rest.product.model.contract.v3.UploadHolder;
 import q.rest.product.model.contract.v3.UploadsSummary;
 import q.rest.product.model.contract.v3.product.PbProduct;
-import q.rest.product.model.entity.VinSearch;
-import q.rest.product.model.entity.v3.product.Product;
-import q.rest.product.model.entity.v3.product.Spec;
-import q.rest.product.model.entity.v3.stock.*;
+import q.rest.product.model.product.market.MarketProduct;
+import q.rest.product.model.qvm.qvmstock.*;
+import q.rest.product.model.product.full.Product;
+import q.rest.product.model.product.full.Spec;
 import q.rest.product.model.search.SearchObject;
 
-import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
@@ -85,7 +84,8 @@ public class ProductQvmApiV3 {
     @PUT
     @Path("update-stock")
     public Response updateStock(UploadHolder holder) {
-        daoApi.updateStockAsync(holder);
+        System.out.println("called");
+        daoApi.updateStockAsyncOptimized(holder);
         return Response.status(200).build();
     }
 
@@ -358,6 +358,19 @@ public class ProductQvmApiV3 {
             return Response.status(500).build();
         }
     }
+
+
+    @SubscriberJwt
+    @GET
+    @Path("market-supplies")
+    public Response getMarketSupplies(){
+        String sql = "select b from MarketProduct b where b.id in " +
+                "(select c.productId from ProductSupply c where c.quantity > :value0 and c.status = :value1) " +
+                "and b.status = :value2";
+        List<MarketProduct> products = dao.getJPQLParams(MarketProduct.class, sql, 0, 'A', 'A');
+        return Response.status(200).entity(products).build();
+    }
+
 
     public Response getSecuredRequest(String link, String header) {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();

@@ -1,9 +1,12 @@
 package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
+import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.filter.annotation.UserJwt;
 import q.rest.product.helper.Helper;
-import q.rest.product.model.entity.v3.product.*;
+import q.rest.product.model.product.full.*;
+import q.rest.product.model.product.market.MarketProduct;
+import q.rest.product.model.product.market.ProductSupply;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -94,7 +97,6 @@ public class ProductApiV3 {
         dao.update(product);
         return Response.ok().build();
     }
-
 
     @UserJwt
     @POST
@@ -206,6 +208,9 @@ public class ProductApiV3 {
         return brand == null ? Response.status(404).build() : Response.status(200).entity(brand).build();
     }
 
+
+
+    //this belongs to qvm
     @UserJwt
     @PUT
     @Path("merge")

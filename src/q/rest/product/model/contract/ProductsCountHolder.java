@@ -1,6 +1,6 @@
 package q.rest.product.model.contract;
 
-import q.rest.product.model.entity.v3.stock.CompanyProduct;
+import q.rest.product.model.qvm.qvmstock.CompanyProduct;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package q.rest.product.model.contract.v3;
 
-import q.rest.product.model.entity.v3.stock.CompanyOfferUploadRequest;
-import q.rest.product.model.entity.v3.stock.CompanyUploadRequest;
+import q.rest.product.model.qvm.qvmstock.CompanyOfferUploadRequest;
+import q.rest.product.model.qvm.qvmstock.CompanyUploadRequest;
 
 import java.util.List;
 

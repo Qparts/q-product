@@ -2,8 +2,6 @@ package q.rest.product.filter.jwt;
 
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.annotation.InternalApp;
-import q.rest.product.filter.annotation.V3ValidApp;
-import q.rest.product.model.entity.WebApp;
 
 import javax.annotation.Priority;
 import javax.ejb.EJB;

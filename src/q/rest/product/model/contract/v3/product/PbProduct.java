@@ -1,7 +1,10 @@
 package q.rest.product.model.contract.v3.product;
 
 import q.rest.product.helper.AppConstants;
-import q.rest.product.model.entity.v3.product.*;
+import q.rest.product.model.product.full.Product;
+import q.rest.product.model.product.full.ProductSpec;
+import q.rest.product.model.product.market.ProductSupply;
+import q.rest.product.model.product.full.Spec;
 
 import java.util.HashSet;
 import java.util.List;

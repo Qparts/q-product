@@ -1,6 +1,6 @@
 package q.rest.product.model.contract.v3;
 
-import q.rest.product.model.entity.VinSearch;
+import q.rest.product.model.VinSearch;
 
 import java.util.List;
 

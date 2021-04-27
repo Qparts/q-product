@@ -1,7 +1,6 @@
 package q.rest.product.model.qstock.views;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import q.rest.product.model.entity.Variant;
 
 import javax.persistence.*;
 import java.io.Serializable;

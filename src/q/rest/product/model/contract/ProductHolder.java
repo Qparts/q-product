@@ -1,9 +1,10 @@
 package q.rest.product.model.contract;
 
-import q.rest.product.model.entity.*;
-import q.rest.product.model.entity.v3.product.Category;
-import q.rest.product.model.entity.v3.product.Product;
-import q.rest.product.model.entity.v3.product.ProductSpec;
+import q.rest.product.model.archived.ProductPrice;
+import q.rest.product.model.archived.Stock;
+import q.rest.product.model.product.full.Category;
+import q.rest.product.model.product.full.Product;
+import q.rest.product.model.product.full.ProductSpec;
 
 import java.io.Serializable;
 import java.util.List;

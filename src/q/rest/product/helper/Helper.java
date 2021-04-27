@@ -3,7 +3,7 @@ package q.rest.product.helper;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import q.rest.product.model.entity.v3.product.Category;
+import q.rest.product.model.product.full.Category;
 import q.rest.product.model.qstock.StockLive;
 
 import java.net.URLEncoder;

@@ -2,19 +2,16 @@ package q.rest.product.operation;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import q.rest.product.dao.DAO;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.helper.KeyConstant;
 import q.rest.product.model.contract.v3.Branch;
 import q.rest.product.model.contract.v3.PullStockRequest;
-import q.rest.product.model.entity.VinSearch;
-import q.rest.product.model.entity.v3.stock.CompanyProduct;
-import q.rest.product.model.entity.v3.stock.CompanyStock;
-import q.rest.product.model.entity.v3.stock.DataPullHistory;
+import q.rest.product.model.VinSearch;
+import q.rest.product.model.qvm.qvmstock.CompanyProduct;
+import q.rest.product.model.qvm.qvmstock.CompanyStock;
+import q.rest.product.model.qvm.qvmstock.DataPullHistory;
 import q.rest.product.model.qvm.QvmObject;
 import q.rest.product.model.search.SearchObject;
 

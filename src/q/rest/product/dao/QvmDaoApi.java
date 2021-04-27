@@ -4,17 +4,13 @@ import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.v3.SummaryReport;
 import q.rest.product.model.contract.v3.UploadHolder;
 import q.rest.product.model.contract.v3.UploadsSummary;
-import q.rest.product.model.entity.VinSearch;
-import q.rest.product.model.entity.v3.stock.CompanyOfferUploadRequest;
-import q.rest.product.model.entity.v3.stock.CompanyProduct;
-import q.rest.product.model.entity.v3.stock.CompanyUploadRequest;
-import q.rest.product.model.entity.v3.stock.DataPullHistory;
+import q.rest.product.model.VinSearch;
+import q.rest.product.model.qvm.qvmstock.*;
 import q.rest.product.model.search.SearchObject;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.core.Response;
 import java.util.*;
 
 @Stateless
@@ -252,23 +248,28 @@ public class QvmDaoApi {
         return dao.getJPQLParams(CompanyUploadRequest.class, sql, companyId);
     }
 
-
     @Asynchronous
-    public void updateStockAsync(UploadHolder holder) {
+    public void updateStockAsyncOptimized(UploadHolder holder) {
         try {
+            String date = helper.getDateFormat(holder.getDate());
+            String sql = "";
             for (var stockVar : holder.getStockVars()) {
-                stockVar.setPartNumber(Helper.undecorate(stockVar.getPartNumber()));
-                stockVar.setAlternativeNumber(Helper.undecorate(stockVar.getAlternativeNumber()));
-                String sql = "select b from CompanyProduct b where b.partNumber = :value0 and b.companyId =:value1 and b.brandName = :value2";
-                CompanyProduct cp = dao.findJPQLParams(CompanyProduct.class, sql, stockVar.getPartNumber(), holder.getCompanyId(), stockVar.getBrand());
-                if (cp != null) {
-                    cp.updateAfterUploadStock(stockVar, holder);
-                    dao.update(cp);
-                } else {
-                    cp = new CompanyProduct(stockVar, holder);
-                    dao.persist(cp);
-                }
+                String pn = Helper.undecorate(stockVar.getPartNumber());
+                String alt = Helper.undecorate(stockVar.getAlternativeNumber());
+                if (alt == null || alt.length() == 0) alt = "null";
+                String brand = stockVar.getBrand();
+                 sql += " with ins1 as (" +
+                        " insert into prd_company_product (company_id, part_number, alternative_number, product_id, brand_name, retail_price, wholesales_price, created)" +
+                        " values ("+ holder.getCompanyId() +", '" + pn  +"' , " + alt  + " , 0 , '"+ brand+"' , "+ stockVar.getRetailPrice() +" , "+stockVar.getWholesalesPrice()+" , '"+date+"')" +
+                        " on conflict on constraint unique_part_number_company_id_brand_name do update set retail_price = " + stockVar.getRetailPrice() + " , wholesales_price =" + stockVar.getWholesalesPrice() + " , created = '"+date+"'" +
+                        " returning id as company_product_id) " +
+                        " insert into prd_company_stock (company_product_id, branch_id, city_id, region_id, country_id, quantity, created, offer_only) " +
+                        " values ( (select company_product_id from ins1), "+ holder.getBranchId() +" , "+ holder.getCityId() +" , "+holder.getRegionId()+" , " + holder.getCountryId() + " , "+ stockVar.getQuantity() +" , '"+date+"' , false)" +
+                        "on conflict on constraint unique_stock_product_id_branch_id do update set created = '" + date + "'; ";
             }//end for loop
+            System.out.println("inserting");
+            dao.insertNative(sql);
+            System.out.println("done");
             deletePreviousStock(holder);
         } catch (Exception ex) {
             System.out.println("an error occured");
@@ -278,8 +279,7 @@ public class QvmDaoApi {
     private void deletePreviousStock(UploadHolder holder) {
         //delete anything before new date in the branch
         if (holder.isOverridePrevious()) {
-            Helper h = new Helper();
-            String sql = "delete from prd_company_stock where branch_id = " + holder.getBranchId() + " and created < '" + h.getDateFormat(holder.getDate()) + "'";
+            String sql = "delete from prd_company_stock where branch_id = " + holder.getBranchId() + " and created < '" + helper.getDateFormat(holder.getDate()) + "'";
             dao.updateNative(sql);
         }
     }
