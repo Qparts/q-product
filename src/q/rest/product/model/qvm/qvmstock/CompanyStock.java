@@ -41,18 +41,6 @@ public class CompanyStock {
     }
 
 
-
-    //for creating regular stock
-    public CompanyStock(StockHolder stockVar, UploadHolder holder){
-        offerOnly = false;
-        created = holder.getDate();
-        branchId = holder.getBranchId();
-        quantity = stockVar.getQuantity();
-        cityId = holder.getCityId();
-        countryId = holder.getCountryId();
-        regionId = holder.getRegionId();
-    }
-
     public boolean isOfferOnly() {
         return offerOnly;
     }

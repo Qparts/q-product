@@ -42,20 +42,6 @@ public class CompanyProduct {
     }
 
     //used to create a new one after stock upload
-    public CompanyProduct(StockHolder stockVar, UploadHolder holder){
-        this.companyId = holder.getCompanyId();
-        this.partNumber = stockVar.getPartNumber();
-        this.alternativeNumber = stockVar.getAlternativeNumber();
-        this.brandName = stockVar.getBrand();
-        this.retailPrice = stockVar.getRetailPrice();
-        this.wholesalesPrice = stockVar.getWholesalesPrice();
-        this.created = holder.getDate();
-        CompanyStock newStock = new CompanyStock(stockVar, holder);
-        this.stock.add(newStock);
-    }
-
-
-    //used to create a new one after stock upload
     public CompanyProduct(OfferHolder offerVar, UploadHolder holder, CompanyOfferUploadRequest req){
         this.companyId = holder.getCompanyId();
         this.partNumber = offerVar.getPartNumber();
@@ -68,30 +54,6 @@ public class CompanyProduct {
         this.stock.add(newStock);
         addNewOffer(offerVar, holder.getDate(), req);
     }
-
-
-//used to update existing one after stock upload
-    @JsonIgnore
-    public void updateAfterUploadStock(StockHolder stockVar, UploadHolder holder){
-        this.retailPrice = stockVar.getRetailPrice();
-        this.wholesalesPrice = stockVar.getWholesalesPrice();
-        if((this.alternativeNumber == null || this.alternativeNumber.length() == 0) && stockVar.getAlternativeNumber() != null){
-            this.alternativeNumber = stockVar.getAlternativeNumber();
-        }
-        //availability
-        CompanyStock cs = this.getStockFromBranchId(holder.getBranchId());
-        if(cs == null){
-            CompanyStock newStock = new CompanyStock(stockVar, holder);
-            this.stock.add(newStock);
-        }
-        else{
-            //update found stock
-            cs.setQuantity(stockVar.getQuantity());
-            cs.setCreated(holder.getDate());
-            cs.setOfferOnly(false);
-        }
-    }
-
 
     //used to update existing one after offer upload
     @JsonIgnore

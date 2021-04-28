@@ -84,7 +84,6 @@ public class ProductQvmApiV3 {
     @PUT
     @Path("update-stock")
     public Response updateStock(UploadHolder holder) {
-        System.out.println("called");
         daoApi.updateStockAsyncOptimized(holder);
         return Response.status(200).build();
     }
@@ -94,7 +93,7 @@ public class ProductQvmApiV3 {
     @Path("update-special-offer-stock")
     public Response updateSpecialOfferStock(UploadHolder uploadHolder) {
         try {
-            daoApi.updateSpecialOfferStockAsync(uploadHolder);
+            daoApi.updateSpecialOfferStockAsyncOptimized(uploadHolder);
             return Response.status(200).build();
         } catch (Exception ex) {
             return Response.status(500).build();

@@ -248,28 +248,114 @@ public class QvmDaoApi {
         return dao.getJPQLParams(CompanyUploadRequest.class, sql, companyId);
     }
 
+//
+//    @Asynchronous
+//    public void updateSpecialOfferStockAsync(UploadHolder holder) {
+//        try {
+//            CompanyOfferUploadRequest req = dao.find(CompanyOfferUploadRequest.class, holder.getOfferId());
+//            for (var offerVar : holder.getOfferVars()) {
+//                offerVar.setPartNumber(Helper.undecorate(offerVar.getPartNumber()));
+//                offerVar.setAlternativeNumber(Helper.undecorate(offerVar.getAlternativeNumber()));
+//                String sql = "select b from CompanyProduct b where b.partNumber = :value0 and b.companyId =:value1 and b.brandName = :value2";
+//                CompanyProduct cp = dao.findJPQLParams(CompanyProduct.class, sql, offerVar.getPartNumber(), holder.getCompanyId(), offerVar.getBrand());
+//                if (cp != null) {
+//                    cp.updateAfterUploadOffer(offerVar, holder, req);
+//                    dao.update(cp);
+//                } else {
+//                    cp = new CompanyProduct(offerVar, holder, req);
+//                    dao.persist(cp);
+//                }
+//            }//end for loop
+//            deletePreviousOffers(holder);
+//        } catch (Exception ex) {
+//            System.out.println("an error occured");
+//        }
+//    }
+
+    @Asynchronous
+    public void updateSpecialOfferStockAsyncOptimized(UploadHolder holder) {
+        try {
+            CompanyOfferUploadRequest req = dao.find(CompanyOfferUploadRequest.class, holder.getOfferId());
+            String date = "'" +helper.getDateFormat(holder.getDate()) +"'";
+            String offerStart = "'" +helper.getDateFormat(req.getStartDate()) +"'";
+            String offerEnd = "'" +helper.getDateFormat(req.getEndDate()) +"'";
+            String sql = "";
+            int companyId = holder.getCompanyId();
+            int branchId = holder.getBranchId();
+            int cityId = holder.getCityId();
+            int countryId = holder.getCountryId();
+            int regionId = holder.getRegionId();
+
+            for (var offerVar : holder.getOfferVars()){
+                String pn = "'" +Helper.undecorate(offerVar.getPartNumber()) + "'";
+                String alt = Helper.undecorate(offerVar.getAlternativeNumber());
+                String brand = "'" +offerVar.getBrand() + "'";
+                int quantity = offerVar.getQuantity();
+                double retail = 0;
+                double wholesales = 0;
+                double offerPrice = offerVar.getOfferPrice();
+
+                if (alt == null || alt.length() == 0) {
+                    alt = "null";
+                } else {
+                    alt = "'" + alt +"'";
+                }
+
+                sql += " with ins1 as (" +
+                        " insert into prd_company_product (company_id, part_number, alternative_number, product_id, brand_name, retail_price, wholesales_price, created) " +
+                        " values ("+companyId+", "+ pn +" , "+ alt +" , 0 , " + brand +" , "+ retail +" , "+ wholesales +" , "+ date +")" +
+                        " on conflict on constraint unique_part_number_company_id_brand_name do update set alternative_number = excluded.alternative_number " +
+                        " returning id as company_product_id " +
+                        "), ins2 as (" +
+                        " insert into prd_company_stock (company_product_id, branch_id, city_id, region_id, country_id, quantity, created, offer_only) " +
+                        " values ((select company_product_id from ins1), "+ branchId +" , "+ cityId +" , "+ regionId +" , "+ countryId +" , 0 , " + date +" , true)" +
+                        " on conflict on constraint unique_stock_product_id_branch_id do update set created = " + date +
+                        " ) insert into prd_company_stock_offer (company_product_id, quantity, created, offer_price, offer_start_date, offer_end_date, offer_request_id) " +
+                        " values ((select company_product_id from ins1), "+ quantity +", " +date +", "+ offerPrice +", " + offerStart + ",  " + offerEnd +", " +  req.getId()+")" +
+                        " on conflict on constraint unique_special_offer_product_id_offer_id do nothing;";
+            }//end for loop
+            dao.insertNative(sql);
+            deletePreviousOffers(holder);
+        } catch (Exception ex) {
+            System.out.println("an error occured");
+        }
+    }
+
     @Asynchronous
     public void updateStockAsyncOptimized(UploadHolder holder) {
         try {
-            String date = helper.getDateFormat(holder.getDate());
+            String date = "'" +helper.getDateFormat(holder.getDate()) +"'";
             String sql = "";
+            int branchId= holder.getBranchId();
+            int cityId = holder.getCityId();
+            int countryId = holder.getCountryId();
+            int regionId = holder.getRegionId();
+            int companyId = holder.getCompanyId();
             for (var stockVar : holder.getStockVars()) {
-                String pn = Helper.undecorate(stockVar.getPartNumber());
+                String pn = "'" +Helper.undecorate(stockVar.getPartNumber()) + "'";
+                String brand = "'"+stockVar.getBrand()+"'";
                 String alt = Helper.undecorate(stockVar.getAlternativeNumber());
-                if (alt == null || alt.length() == 0) alt = "null";
-                String brand = stockVar.getBrand();
+                double retailPrice = stockVar.getRetailPrice();
+                double wholesales = stockVar.getWholesalesPrice();
+                int quantity =  stockVar.getQuantity();
+
+
+                if (alt == null || alt.length() == 0) {
+                    alt = "null";
+                } else {
+                    alt = "'" + alt +"'";
+                }
+
                  sql += " with ins1 as (" +
-                        " insert into prd_company_product (company_id, part_number, alternative_number, product_id, brand_name, retail_price, wholesales_price, created)" +
-                        " values ("+ holder.getCompanyId() +", '" + pn  +"' , " + alt  + " , 0 , '"+ brand+"' , "+ stockVar.getRetailPrice() +" , "+stockVar.getWholesalesPrice()+" , '"+date+"')" +
-                        " on conflict on constraint unique_part_number_company_id_brand_name do update set retail_price = " + stockVar.getRetailPrice() + " , wholesales_price =" + stockVar.getWholesalesPrice() + " , created = '"+date+"'" +
-                        " returning id as company_product_id) " +
-                        " insert into prd_company_stock (company_product_id, branch_id, city_id, region_id, country_id, quantity, created, offer_only) " +
-                        " values ( (select company_product_id from ins1), "+ holder.getBranchId() +" , "+ holder.getCityId() +" , "+holder.getRegionId()+" , " + holder.getCountryId() + " , "+ stockVar.getQuantity() +" , '"+date+"' , false)" +
-                        "on conflict on constraint unique_stock_product_id_branch_id do update set created = '" + date + "'; ";
+                         " insert into prd_company_product (company_id, part_number, alternative_number, product_id, brand_name, retail_price, wholesales_price, created)" +
+                         " values ("+ companyId +", " + pn  +" , " + alt  + " , 0 , "+ brand+" , "+ retailPrice +" , "+wholesales+" , "+date+")" +
+                         " on conflict on constraint unique_part_number_company_id_brand_name do update set retail_price = " + retailPrice + " , wholesales_price =" + wholesales + " , created = "+date +
+                         " returning id as company_product_id) " +
+                         " insert into prd_company_stock (company_product_id, branch_id, city_id, region_id, country_id, quantity, created, offer_only) " +
+                         " values ( (select company_product_id from ins1), "+ branchId +" , "+ cityId +" , "+regionId+" , " + countryId + " , "+ quantity +" , "+date+" , false)" +
+                         "on conflict on constraint unique_stock_product_id_branch_id do update set created = " + date + "; ";
             }//end for loop
-            System.out.println("inserting");
             dao.insertNative(sql);
-            System.out.println("done");
             deletePreviousStock(holder);
         } catch (Exception ex) {
             System.out.println("an error occured");
@@ -285,28 +371,6 @@ public class QvmDaoApi {
     }
 
 
-    @Asynchronous
-    public void updateSpecialOfferStockAsync(UploadHolder holder) {
-        try {
-            CompanyOfferUploadRequest req = dao.find(CompanyOfferUploadRequest.class, holder.getOfferId());
-            for (var offerVar : holder.getOfferVars()) {
-                offerVar.setPartNumber(Helper.undecorate(offerVar.getPartNumber()));
-                offerVar.setAlternativeNumber(Helper.undecorate(offerVar.getAlternativeNumber()));
-                String sql = "select b from CompanyProduct b where b.partNumber = :value0 and b.companyId =:value1 and b.brandName = :value2";
-                CompanyProduct cp = dao.findJPQLParams(CompanyProduct.class, sql, offerVar.getPartNumber(), holder.getCompanyId(), offerVar.getBrand());
-                if (cp != null) {
-                    cp.updateAfterUploadOffer(offerVar, holder, req);
-                    dao.update(cp);
-                } else {
-                    cp = new CompanyProduct(offerVar, holder, req);
-                    dao.persist(cp);
-                }
-            }//end for loop
-            deletePreviousOffers(holder);
-        } catch (Exception ex) {
-            System.out.println("an error occured");
-        }
-    }
 
 
     private void deletePreviousOffers(UploadHolder holder) {
