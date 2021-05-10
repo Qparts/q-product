@@ -1,21 +1,11 @@
 package q.rest.product.operation.archived;
 
-import q.rest.product.dao.DAO;
-import q.rest.product.filter.SecuredUser;
-import q.rest.product.helper.Helper;
-import q.rest.product.model.contract.ProductHolder;
-import q.rest.product.model.contract.StockDeduct;
-import q.rest.product.model.entity.*;
-
-import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.*;
 
-@Path("/internal/api/v2/")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+//@Path("/internal/api/v2/")
+//@Consumes(MediaType.APPLICATION_JSON)
+//@Produces(MediaType.APPLICATION_JSON)
 public class ProductInternalApiV2 {
 
     /*

@@ -7,11 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/QStockUploadHolder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/product/model/contract/v3/SabaModel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/dao/QvmDaoApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/dao/QvmDaoApi.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/archived/ProductInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/archived/ProductInternalApiV2.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -404,7 +401,7 @@
       <workItem from="1618972975704" duration="2535000" />
       <workItem from="1619513849592" duration="77000" />
       <workItem from="1619513938015" duration="13211000" />
-      <workItem from="1620418509263" duration="8386000" />
+      <workItem from="1620418509263" duration="8612000" />
     </task>
     <servers />
   </component>
