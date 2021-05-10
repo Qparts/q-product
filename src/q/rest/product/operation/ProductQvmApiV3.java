@@ -11,10 +11,7 @@ import q.rest.product.filter.annotation.UserSubscriberJwt;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.helper.KeyConstant;
-import q.rest.product.model.contract.v3.PullStockRequest;
-import q.rest.product.model.contract.v3.SummaryReport;
-import q.rest.product.model.contract.v3.UploadHolder;
-import q.rest.product.model.contract.v3.UploadsSummary;
+import q.rest.product.model.contract.v3.*;
 import q.rest.product.model.contract.v3.product.PbProduct;
 import q.rest.product.model.product.market.MarketProduct;
 import q.rest.product.model.qvm.qvmstock.*;
@@ -85,6 +82,14 @@ public class ProductQvmApiV3 {
     @Path("update-stock")
     public Response updateStock(UploadHolder holder) {
         daoApi.updateStockAsyncOptimized(holder);
+        return Response.status(200).build();
+    }
+
+    @UserJwt
+    @PUT
+    @Path("update-q-stock-stock")
+    public Response updateQStockStock(QStockUploadHolder holder) {
+        daoApi.updateQStockAsyncOptimized(holder);
         return Response.status(200).build();
     }
 

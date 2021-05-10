@@ -1,6 +1,7 @@
 package q.rest.product.dao;
 
 import q.rest.product.helper.Helper;
+import q.rest.product.model.contract.v3.QStockUploadHolder;
 import q.rest.product.model.contract.v3.SummaryReport;
 import q.rest.product.model.contract.v3.UploadHolder;
 import q.rest.product.model.contract.v3.UploadsSummary;
@@ -248,30 +249,6 @@ public class QvmDaoApi {
         return dao.getJPQLParams(CompanyUploadRequest.class, sql, companyId);
     }
 
-//
-//    @Asynchronous
-//    public void updateSpecialOfferStockAsync(UploadHolder holder) {
-//        try {
-//            CompanyOfferUploadRequest req = dao.find(CompanyOfferUploadRequest.class, holder.getOfferId());
-//            for (var offerVar : holder.getOfferVars()) {
-//                offerVar.setPartNumber(Helper.undecorate(offerVar.getPartNumber()));
-//                offerVar.setAlternativeNumber(Helper.undecorate(offerVar.getAlternativeNumber()));
-//                String sql = "select b from CompanyProduct b where b.partNumber = :value0 and b.companyId =:value1 and b.brandName = :value2";
-//                CompanyProduct cp = dao.findJPQLParams(CompanyProduct.class, sql, offerVar.getPartNumber(), holder.getCompanyId(), offerVar.getBrand());
-//                if (cp != null) {
-//                    cp.updateAfterUploadOffer(offerVar, holder, req);
-//                    dao.update(cp);
-//                } else {
-//                    cp = new CompanyProduct(offerVar, holder, req);
-//                    dao.persist(cp);
-//                }
-//            }//end for loop
-//            deletePreviousOffers(holder);
-//        } catch (Exception ex) {
-//            System.out.println("an error occured");
-//        }
-//    }
-
     @Asynchronous
     public void updateSpecialOfferStockAsyncOptimized(UploadHolder holder) {
         try {
@@ -285,6 +262,7 @@ public class QvmDaoApi {
             int cityId = holder.getCityId();
             int countryId = holder.getCountryId();
             int regionId = holder.getRegionId();
+            System.out.println("Will loop " + holder.getOfferVars().size() + "items");
 
             for (var offerVar : holder.getOfferVars()){
                 String pn = "'" +Helper.undecorate(offerVar.getPartNumber()) + "'";
@@ -314,6 +292,7 @@ public class QvmDaoApi {
                         " values ((select company_product_id from ins1), "+ quantity +", " +date +", "+ offerPrice +", " + offerStart + ",  " + offerEnd +", " +  req.getId()+")" +
                         " on conflict on constraint unique_special_offer_product_id_offer_id do nothing;";
             }//end for loop
+            System.out.println("size of loop " + sql.length());
             dao.insertNative(sql);
             deletePreviousOffers(holder);
         } catch (Exception ex) {
@@ -361,6 +340,72 @@ public class QvmDaoApi {
             System.out.println("an error occured");
         }
     }
+
+
+
+
+    @Asynchronous
+    public void updateQStockAsyncOptimized(QStockUploadHolder holder) {
+        try {
+            String sql = "";
+            int branchId = holder.getBranchId();
+            int companyId = holder.getCompanyId();
+            String date = "'" +helper.getDateFormat(holder.getDate()) +"'";
+            for(var part : holder.getUploadPart() ){
+                String undecorated = "'" +Helper.undecorate(part.getPartNumber()) + "'";
+                String pn = "'" + part.getPartNumber() + "'";
+                String brandClass = "'" + part.getBrandClass() + "'";
+                String brandName = "'" + part.getBrandName() + "'";
+                String descEng = "'" + part.getDecsEng() + "'";
+                String descAr = "'" + part.getDecsAr() + "'";
+                String classCode = "'" + part.getClassCode() + "'";
+                String idCode = "'" + part.getIdCode()+ "'";
+                String frCode = "'" + part.getFrCode()+ "'";
+                String location = "'" + part.getLocation()+ "'";
+                double unitCost = part.getUnitCost();
+                double averageCost = part.getAverageCost();
+                double sellingPrice = part.getSellingPrice();
+                double agentPrice = part.getAgentPrice();
+                double wholesalesPrice = part.getWholesalesPrice();
+                double openingUnitCost = part.getOpeningUnitCost();
+                double openingAverageCost = part.getOpeningAverageCost();
+                double openingSellingPrice = part.getOpeningSellingPrice();
+                int quantityIn = part.getQuantityIn();
+                int quantityOut = part.getQuantityOut();
+                int quantityInHand = part.getQuantityInHand();
+                int tempQuantityOut = part.getTempQuantityOut();
+                int openingQtyIn = part.getOpeningQtyIn();
+                int openingBalance = part.getOpeningBalance();
+                int tempIn = part.getTempIn();
+
+                sql += "insert into prd_saba_live_stock (company_id, created, branch_id, brand_class, brand_name, part_number, undecorated_part_number, " +
+                        " decs_eng, decs_ar, class_code, id_code, fr_code, location, unit_cost, average_cost, selling_price, " +
+                        " agent_price, wholesales_price, quantity_in, quantity_out, quantity_in_hand, temp_quantity_out, " +
+                        " opening_qty_in, opening_balance, opening_unit_cost, opening_average_cost, opening_selling_price, temp_in) " +
+                        " values ("+ companyId + ", "+ date +", "+ branchId +"," + brandClass +", "+ brandName +", "+ pn +", " + undecorated +", " +
+                        " " + descEng +", " + descAr +", "+ classCode +", "+ idCode +", " + frCode +", "+ location +", "+ unitCost +", " + averageCost +", " + sellingPrice +", " +
+                        " " +agentPrice +", "+ wholesalesPrice +", "+ quantityIn +", "+ quantityOut +", " + quantityInHand +", "+ tempQuantityOut +", " +
+                        " "+ openingQtyIn +", "+ openingBalance +", "+openingUnitCost +", "+ openingAverageCost +", "+ openingSellingPrice +", "+ tempIn +") " +
+                        "on conflict on constraint prd_saba_live_stock_constraint do update set " +
+                        " unit_cost = "+ unitCost +", location = "+ location +", date = " + date + ", " +
+                        " average_cost = "+ averageCost + ", selling_price = "+ sellingPrice + ", agent_price = "+ agentPrice + ", " +
+                        "  wholesales_price = "+ wholesalesPrice + ", quantity_in = "+ quantityIn +", quantity_out = "+ quantityOut + ", " +
+                        "  quantity_in_hand = "+quantityInHand +", temp_quantity_out = "+ tempQuantityOut +", conflict_update = 'OMG!!';";
+            }
+            System.out.println("inserting batch");
+            dao.insertNative(sql);
+            String delete = "delete from prd_saba_live_stock where branch_id = " + branchId +
+                    " and company_id = " + companyId +
+                    " and created < " + date ;
+            dao.updateNative(delete);
+            System.out.println("done inserting batch");
+            System.out.println("==============");
+        } catch (Exception ex) {
+            System.out.println("an error occured");
+        }
+    }
+
+
 
     private void deletePreviousStock(UploadHolder holder) {
         //delete anything before new date in the branch
