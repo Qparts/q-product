@@ -262,7 +262,6 @@ public class QvmDaoApi {
             int cityId = holder.getCityId();
             int countryId = holder.getCountryId();
             int regionId = holder.getRegionId();
-            System.out.println("Will loop " + holder.getOfferVars().size() + "items");
 
             for (var offerVar : holder.getOfferVars()){
                 String pn = "'" +Helper.undecorate(offerVar.getPartNumber()) + "'";
@@ -292,11 +291,10 @@ public class QvmDaoApi {
                         " values ((select company_product_id from ins1), "+ quantity +", " +date +", "+ offerPrice +", " + offerStart + ",  " + offerEnd +", " +  req.getId()+")" +
                         " on conflict on constraint unique_special_offer_product_id_offer_id do nothing;";
             }//end for loop
-            System.out.println("size of loop " + sql.length());
             dao.insertNative(sql);
             deletePreviousOffers(holder);
         } catch (Exception ex) {
-            System.out.println("an error occured");
+            System.out.println("an error occurred");
         }
     }
 
@@ -387,7 +385,7 @@ public class QvmDaoApi {
                         " " +agentPrice +", "+ wholesalesPrice +", "+ quantityIn +", "+ quantityOut +", " + quantityInHand +", "+ tempQuantityOut +", " +
                         " "+ openingQtyIn +", "+ openingBalance +", "+openingUnitCost +", "+ openingAverageCost +", "+ openingSellingPrice +", "+ tempIn +") " +
                         "on conflict on constraint prd_saba_live_stock_constraint do update set " +
-                        " unit_cost = "+ unitCost +", location = "+ location +", date = " + date + ", " +
+                        " unit_cost = "+ unitCost +", location = "+ location +", created = " + date + ", " +
                         " average_cost = "+ averageCost + ", selling_price = "+ sellingPrice + ", agent_price = "+ agentPrice + ", " +
                         "  wholesales_price = "+ wholesalesPrice + ", quantity_in = "+ quantityIn +", quantity_out = "+ quantityOut + ", " +
                         "  quantity_in_hand = "+quantityInHand +", temp_quantity_out = "+ tempQuantityOut +", conflict_update = 'OMG!!';";
