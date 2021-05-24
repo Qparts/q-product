@@ -7,6 +7,7 @@ import q.rest.product.model.contract.v3.UploadHolder;
 import q.rest.product.model.contract.v3.UploadsSummary;
 import q.rest.product.model.VinSearch;
 import q.rest.product.model.qvm.qvmstock.*;
+import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyProduct;
 import q.rest.product.model.search.SearchObject;
 
 import javax.ejb.Asynchronous;
@@ -124,7 +125,36 @@ public class QvmDaoApi {
                     " ) z " +
                     searchObject.getProductFilterSql() +
                     " order by on_offer desc ";
+            System.out.println(sql1);
             return dao.getNativeOffsetMax(CompanyProduct.class, sql1, searchObject.getOffset(), max);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+
+    public List<PbCompanyProduct> searchCompanyProductsPublic(SearchObject searchObject) {
+        try {
+            int max = searchObject.getMax() == 0 ? 10 : searchObject.getMax();
+            String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
+            String sql1 = "select z.* from (select p.*, 0 as on_offer from prd_company_product p " +
+                    "   join prd_company_stock c on p.id = c.company_product_id " +
+                    " where c.offer_only = false" +
+                    "  and p.part_number like '"+undecorated+"' " +
+                    " and p.id not in (select company_product_id from prd_company_stock_offer where now() between offer_start_date and offer_end_date) " +
+                    searchObject.getLocationFiltersSql("c", true) +
+                    " union" +
+                    " select p.*, 1 as on_offer from prd_company_product p " +
+                    "  join prd_company_stock_offer o on p.id = o.company_product_id " +
+                    " join prd_company_stock s on p.id = s.company_product_id " +
+                    " where now() between o.offer_start_date and o.offer_end_date" +
+                    "  and p.part_number like '"+ undecorated +"' " +
+                    searchObject.getLocationFiltersSql("s", true) +
+                    " ) z " +
+                    searchObject.getProductFilterSql() +
+                    " order by on_offer desc ";
+            return dao.getNativeOffsetMax(PbCompanyProduct.class, sql1, searchObject.getOffset(), max);
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ArrayList<>();

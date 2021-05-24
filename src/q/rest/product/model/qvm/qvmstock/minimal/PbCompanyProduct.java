@@ -18,8 +18,8 @@ public class PbCompanyProduct {
     private double retailPrice;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "company_product_id")
-    //@Where(clause = "id not in (select q.company_product_id from prd_company_stock_offer q where now() between q.offer_start_date and q.offer_end_date and q.branch_id = branch_id)")
     private Set<PbCompanyStock> stock = new HashSet<>();
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "company_product_id")
     @Where(clause = "now() between offer_start_date and offer_end_date")

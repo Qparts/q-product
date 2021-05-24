@@ -8,9 +8,9 @@ import java.util.List;
 
 public class SearchObject {
     private String query;
-    private int specialOfferId;
-    private int subscriberId;
-    private int companyId;
+    private int specialOfferId;//where used?
+    private int subscriberId;//not used?
+    private int companyId;//not used?
     private int max;
     private int offset;
     private String filter;
@@ -23,6 +23,7 @@ public class SearchObject {
                 && (filter == null || filter.equals(""))
                 && locationFilters.isEmpty());
     }
+
 
     @JsonIgnore
     public String getProductFilterSql(){

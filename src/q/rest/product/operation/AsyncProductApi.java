@@ -45,19 +45,19 @@ public class AsyncProductApi {
             r.close();
         }
     }
-
-    @Asynchronous
-    public void saveSearch(String header, SearchObject searchObject, boolean found) {
-        if (searchObject.getCompanyId() > 0) {
-            Map<String,Object> map = new HashMap<>();
-            map.put("query", searchObject.getQuery());
-            map.put("companyId", searchObject.getCompanyId());
-            map.put("subscriberId", searchObject.getSubscriberId());
-            map.put("found", found);
-            Response r = this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
-            r.close();
-        }
-    }
+//
+//    @Asynchronous
+//    public void saveSearch(String header, SearchObject searchObject, boolean found) {
+//        if (searchObject.getCompanyId() > 0) {
+//            Map<String,Object> map = new HashMap<>();
+//            map.put("query", searchObject.getQuery());
+//            map.put("companyId", searchObject.getCompanyId());
+//            map.put("subscriberId", searchObject.getSubscriberId());
+//            map.put("found", found);
+//            Response r = this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
+//            r.close();
+//        }
+//    }
 
 
     @Asynchronous
