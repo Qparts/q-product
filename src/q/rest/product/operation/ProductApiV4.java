@@ -9,6 +9,7 @@ import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.v3.product.PbProduct;
 import q.rest.product.model.product.full.Product;
 import q.rest.product.model.product.full.Spec;
+import q.rest.product.model.qvm.qvmstock.CompanyUploadRequest;
 import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyProduct;
 import q.rest.product.model.qvm.qvmstock.minimal.PbSpecialOffer;
 import q.rest.product.model.search.SearchObject;
@@ -106,24 +107,6 @@ public class ProductApiV4 {
         return Response.status(200).entity(pbProducts).build();
     }
 
-//
-//    //for lazy loading
-//    @SubscriberJwt
-//    @POST
-//    @Path("search-company-products")
-//    public Response searchCompanyProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, SearchObject searchObject){
-//        if(searchObject.getQuery() == null || searchObject.getQuery().length() == 0){
-//            return Response.status(200).entity(new HashMap<>()).build();
-//        }
-//        var size = searchCompanyProductSize(searchObject);
-//        var companyProducts = searchCompanyProducts(searchObject);
-//        async.saveSearch2(header, searchObject, size > 0);
-//        Map<String,Object> map = new HashMap<>();
-//        map.put("searchSize", size);
-//        map.put("companyProducts", companyProducts);
-//        return Response.status(200).entity(map).build();//
-//        }
-
     @SubscriberJwt
     @POST
     @Path("search-company-products")
@@ -139,40 +122,6 @@ public class ProductApiV4 {
         map.put("companyProducts", companyProducts);
         return Response.status(200).entity(map).build();
     }
-//
-//    //for lazy
-//    private List<PbCompanyProduct> searchCompanyProducts(SearchObject searchObject) {
-//        try {
-//            String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
-//            String sql = "select b from PbCompanyProduct b where " +
-//                    "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
-//                    " select c.companyProductId from PbCompanyStock c where c.offerOnly =:value1 " + searchObject.getLocationFiltersSql("c", false) + ")" +
-//                    " or b.id in (select d.companyProductId from PbCompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d", false) +
-//                    " and b.id in (" +
-//                    " select e.companyProductId from PbCompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
-//                    ")))";
-//            return dao.getJPQLParamsOffsetMax(PbCompanyProduct.class, sql, searchObject.getOffset(), searchObject.getMax(), undecorated, false, true);
-//        } catch (Exception ex) {
-//            return new ArrayList<>();
-//        }
-//    }
-//
-//    //for lazy (size only)
-//    private int searchCompanyProductSize(SearchObject searchObject){
-//        try {
-//            String undecorated = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
-//            String sql = "select count(*) from PbCompanyProduct b where " +
-//                    "(b.partNumber like :value0 or b.alternativeNumber like :value0) and (b.id in (" +
-//                    " select c.companyProductId from PbCompanyStock c where c.offerOnly =:value1" + searchObject.getLocationFiltersSql("c", false) +  " )"+
-//                    " or b.id in (select d.companyProductId from PbCompanyStock d where d.offerOnly = :value2 " + searchObject.getLocationFiltersSql("d", false) +
-//                    " and b.id in (" +
-//                    " select e.companyProductId from PbCompanyStockOffer e where now() between e.offerStartDate and e.offerEndDate" +
-//                    ")))";
-//            return dao.findJPQLParams(Number.class, sql, undecorated, false, true).intValue();
-//        } catch (Exception ex) {
-//            return 0;
-//        }
-//    }
 
     @POST
     @Path("search-replacement-product")
@@ -217,4 +166,26 @@ public class ProductApiV4 {
         Response r = b.post(Entity.entity(t, "application/json"));
         return r;
     }
+
+
+
+    @SubscriberJwt
+    @Path("upload-request/stock")
+    @POST
+    public Response requestStockUpload(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, CompanyUploadRequest uploadRequest) {
+        int companyId = Helper.getCompanyFromJWT(header);
+        int subscriberId = Helper.getSubscriberFromJWT(header);
+        uploadRequest.setCreatedBySubscriber(subscriberId);
+        uploadRequest.setCompanyId(companyId);
+        uploadRequest.setCreated(new Date());
+        uploadRequest.setStatus('R');
+        uploadRequest.setUploadSource('Q');//from qvm user
+        daoApi.createStockUploadRequest(uploadRequest);
+        Map<String,Integer> map = new HashMap<>();
+        map.put("id", uploadRequest.getId());
+        return Response.status(200).entity(map).build();
+    }
+
+
+
 }

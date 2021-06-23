@@ -1,11 +1,9 @@
 package q.rest.product.operation;
 
 import q.rest.product.dao.DAO;
-import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.filter.annotation.UserJwt;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.product.full.*;
-import q.rest.product.model.product.market.MarketProduct;
 import q.rest.product.model.product.market.ProductSupply;
 
 import javax.ejb.EJB;

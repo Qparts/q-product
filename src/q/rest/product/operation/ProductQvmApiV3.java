@@ -13,17 +13,19 @@ import q.rest.product.helper.Helper;
 import q.rest.product.helper.KeyConstant;
 import q.rest.product.model.contract.v3.*;
 import q.rest.product.model.contract.v3.product.PbProduct;
-import q.rest.product.model.product.market.MarketProduct;
+import q.rest.product.model.product.market.*;
 import q.rest.product.model.qvm.qvmstock.*;
 import q.rest.product.model.product.full.Product;
 import q.rest.product.model.product.full.Spec;
 import q.rest.product.model.search.SearchObject;
 
 import javax.ejb.EJB;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -375,6 +377,48 @@ public class ProductQvmApiV3 {
         return Response.status(200).entity(products).build();
     }
 
+    @SubscriberJwt
+    @POST
+    @Path("market-order")
+    public Response createMarketOrder(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @Context HttpServletRequest req, MarketOrderRequest marketRequest){
+        int companyId = Helper.getCompanyFromJWT(header);
+        int subscriberId = Helper.getSubscriberFromJWT(header);
+        marketRequest.setClientIp(req.getRemoteAddr());
+        marketRequest.setCompanyId(companyId);
+        marketRequest.setSubscriberId(subscriberId);
+        MarketOrder order = new MarketOrder(marketRequest);
+        calculateSalesPrices(order);
+        dao.persist(order);
+        //calculate base amount
+        double itemsAmount = order.getItemsSalesPrice();
+        //send order to invoice
+        Map<String, Object> paymentRequest = marketRequest.getPaymentRequestObject(order.getId(), itemsAmount);
+        Response r = postSecuredRequest(AppConstants.POST_PAYMENT_REQUEST, paymentRequest, header);
+        System.out.println(r.getStatus());
+        return Response.status(202).entity(r.getEntity()).build();
+    }
+
+    private void calculateSalesPrices(MarketOrder order){
+        for(var item : order.getItems()) {
+            MarketProduct mp = dao.find(MarketProduct.class, item.getMarketProductId());
+            item.setSalesPrice(mp.getAverageSalesPrice());
+        }
+    }
+
+    @SubscriberJwt
+    @POST
+    @Path("activate-market-order")
+    public Response activateMarketOrder(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String,Integer> map){
+        int companyId = Helper.getCompanyFromJWT(header );
+        int salesId = map.get("salesId");
+        int marketOrderId = map.get("marketOrderId");
+        String sql = "select b from MarketOrder b where b.companyId =:value0 and b.id = :value1";
+        MarketOrder marketOrder = dao.findJPQLParams(MarketOrder.class, sql , companyId, marketOrderId);
+        marketOrder.setSalesId(salesId);
+        marketOrder.setStatus('P');
+        dao.update(marketOrder);
+        return Response.status(200).build();
+    }
 
     public Response getSecuredRequest(String link, String header) {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();

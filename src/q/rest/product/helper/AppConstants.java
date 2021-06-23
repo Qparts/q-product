@@ -9,6 +9,7 @@ public class AppConstants {
     private static final String APP_BASE = SysProps.getValue("qvmWebAppBase");
     private static final String LOCATION_SERVICE = SysProps.getValue("locationService").replace("/v2/", "/v3/");
     private static final String CUSTOMER_SERVICE = SysProps.getValue("customerService");
+    private static final String INVOICE_SERVICE = SysProps.getValue("invoiceService").replace("/v2/", "/v3/");
 
     //AWS
     private static final String AMAZON_S3_PATH = SysProps.getValue("amazonS3Path");
@@ -22,6 +23,9 @@ public class AppConstants {
     //TECH DOC
     public static final String TECH_DOC_API_LINK = "https://webservice.tecalliance.services/pegasus-3-0/services/TecdocToCatDLB.jsonEndpoint";
     public static final String TECH_DOC_API_KEY = SysProps.getValue("techDocKey");
+
+    //INVOICE SERVICE
+    public final static String POST_PAYMENT_REQUEST = INVOICE_SERVICE + "payment-order";
 
 
     //LOCATION SERVICE

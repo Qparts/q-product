@@ -38,6 +38,21 @@ public class MarketProduct implements Serializable {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ProductSupply> marketSupply;
 
+
+
+    @JsonIgnore
+    public double getAverageSalesPrice(){
+        try {
+            double total = 0;
+            for (var supply : marketSupply) {
+                total += supply.getSalesPrice();
+            }
+            return total / marketSupply.size();
+        }catch (Exception ex) {
+            return 0;
+        }
+    }
+
     public String getImage(){
         return AppConstants.getProductImage(id);
     }
@@ -121,5 +136,21 @@ public class MarketProduct implements Serializable {
 
     public void setSpecs(Set<MarketProductSpec> specs) {
         this.specs = specs;
+    }
+
+    @Override
+    public String toString() {
+        return "MarketProduct{" +
+                "id=" + id +
+                ", productNumber='" + productNumber + '\'' +
+                ", productDesc='" + productDesc + '\'' +
+                ", productDescAr='" + productDescAr + '\'' +
+                ", details='" + details + '\'' +
+                ", detailsAr='" + detailsAr + '\'' +
+                ", brand=" + brand +
+                ", status=" + status +
+                ", specs=" + specs +
+                ", marketSupply=" + marketSupply +
+                '}';
     }
 }
