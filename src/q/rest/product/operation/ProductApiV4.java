@@ -9,6 +9,7 @@ import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.v3.product.PbProduct;
 import q.rest.product.model.product.full.Product;
 import q.rest.product.model.product.full.Spec;
+import q.rest.product.model.qvm.qvmstock.CompanyOfferUploadRequest;
 import q.rest.product.model.qvm.qvmstock.CompanyUploadRequest;
 import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyProduct;
 import q.rest.product.model.qvm.qvmstock.minimal.PbSpecialOffer;
@@ -187,5 +188,22 @@ public class ProductApiV4 {
     }
 
 
-
+    @SubscriberJwt
+    @Path("upload-request/special-offer")
+    @POST
+    public Response requestUploadSpecialOffer(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, CompanyOfferUploadRequest uploadRequest) {
+        int companyId = Helper.getCompanyFromJWT(header);
+        int subscriberId = Helper.getSubscriberFromJWT(header);
+        uploadRequest.setCreatedBySubscriber(subscriberId);
+        uploadRequest.setCompanyId(companyId);
+        uploadRequest.setCreated(new Date());
+        uploadRequest.setStatus('R');
+        uploadRequest.setUploadSource('Q');//from qvm user
+        uploadRequest.setOfferNameAr(uploadRequest.getOfferName());
+        daoApi.createOfferUploadRequest(uploadRequest);
+        Map<String,Integer> map = new HashMap<>();
+        map.put("id", uploadRequest.getId());
+        return Response.status(200).entity(uploadRequest).build();
+    }
+    
 }
