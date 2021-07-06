@@ -118,7 +118,7 @@ public class StockProductV2 {
         var productView = daoApi.findStockProductView(companyId, scp.getProductNumber(), scp.getBrandId());
         long productId = 0;
         if (productView == null) {
-            StockProduct stockProduct = daoApi.createStockProduct(scp.getProductNumber(), scp.getBrandId(), scp.getName(), scp.getNameAr(), companyId);
+            StockProduct stockProduct = daoApi.createStockProduct(scp.getProductNumber(), scp.getBrandId(), scp.getName(), scp.getNameAr(), scp.getReferencePrice(), companyId);
             productId = stockProduct.getId();
         } else {
             productId = productView.getProductId();

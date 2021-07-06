@@ -23,6 +23,8 @@ public class StockProduct implements Serializable {
     @Column(name="brand_id")
     private int brandId;
     private char status;//A = Active, I = inactive, P = pending review
+    @Column(name="reference_price")
+    private double referencePrice;
 
 //    @OneToMany(fetch = FetchType.EAGER)
 //    @JoinColumn(name = "stock_product_id")
@@ -101,5 +103,13 @@ public class StockProduct implements Serializable {
 
     public void setCreated(Date created) {
         this.created = created;
+    }
+
+    public double getReferencePrice() {
+        return referencePrice;
+    }
+
+    public void setReferencePrice(double referencePrice) {
+        this.referencePrice = referencePrice;
     }
 }

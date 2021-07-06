@@ -56,7 +56,7 @@ public class DaoApi {
         return dao.getJPQLParams(StockProductSetting.class, sql, companyId, productId);
     }
 
-    public StockProduct createStockProduct(String productNumber, int brandId, String name, String nameAr, int companyId) {
+    public StockProduct createStockProduct(String productNumber, int brandId, String name, String nameAr ,double referencePrice, int companyId) {
         StockProduct product = new StockProduct();
         product.setProductNumber(Helper.undecorate(productNumber));
         product.setCreated(new Date());
@@ -65,6 +65,7 @@ public class DaoApi {
         product.setNameAr(nameAr);
         product.setStatus('P');
         product.setCreatedBy(companyId);
+        product.setReferencePrice(referencePrice);
         //manual insert
         return dao.persistAndReturn(product);
     }

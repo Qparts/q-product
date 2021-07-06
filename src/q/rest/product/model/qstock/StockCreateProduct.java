@@ -12,6 +12,7 @@ public class StockCreateProduct {
     private String name;
     private String nameAr;
     private String notes;
+    private double referencePrice;
 
     public String getAlternativeProductNumber() {
         return alternativeProductNumber;
@@ -85,5 +86,13 @@ public class StockCreateProduct {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public double getReferencePrice() {
+        return referencePrice;
+    }
+
+    public void setReferencePrice(double referencePrice) {
+        this.referencePrice = referencePrice;
     }
 }
