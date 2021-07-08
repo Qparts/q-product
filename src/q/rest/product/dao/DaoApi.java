@@ -1,5 +1,6 @@
 package q.rest.product.dao;
 
+import org.jboss.logging.Logger;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.product.full.Brand;
@@ -8,6 +9,7 @@ import q.rest.product.model.qstock.*;
 import q.rest.product.model.qstock.views.StockProductView;
 import q.rest.product.model.qstock.views.StockPurchaseSummary;
 import q.rest.product.model.qstock.views.StockSalesSummary;
+import q.rest.product.operation.StockProductV2;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -26,6 +28,8 @@ public class DaoApi {
     @EJB
     private DAO dao;
     private Helper helper = new Helper();
+    private static final Logger logger = Logger.getLogger(StockProductV2.class);
+
 
     public boolean isProductInLiveStock(long productId) {
         List<StockLive> lives = dao.getCondition(StockLive.class, "stockProductId", productId);
@@ -113,7 +117,11 @@ public class DaoApi {
                 " where company_id in (0,"+ companyId +")) z where n < 2 " +
                 "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
                 " and z.product_number like "+ numberLike;
+
+        logger.info("products sql : "+sql);
+
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
+
         attachLiveStock(views, companyId);
         attachShelves(views, companyId);
         return views;

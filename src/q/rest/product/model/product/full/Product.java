@@ -47,8 +47,7 @@ public class Product implements Serializable {
     @JoinColumn(name = "product_id")
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ProductSupply> marketSupply;
-    @Column(name="reference_price")
-    private double referencePrice;
+
 
     @JsonIgnore
     public PbProduct getPublicProduct(List<Spec> specs){
@@ -168,11 +167,4 @@ public class Product implements Serializable {
         this.specs = specs;
     }
 
-    public double getReferencePrice() {
-        return referencePrice;
-    }
-
-    public void setReferencePrice(double referencePrice) {
-        this.referencePrice = referencePrice;
-    }
 }

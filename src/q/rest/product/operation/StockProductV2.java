@@ -1,5 +1,6 @@
 package q.rest.product.operation;
 
+import org.jboss.logging.Logger;
 import q.rest.product.dao.DaoApi;
 import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.helper.AppConstants;
@@ -30,11 +31,16 @@ public class StockProductV2 {
     @EJB
     private DaoApi daoApi;
 
+    private static final Logger logger = Logger.getLogger(StockProductV2.class);
+
+
     @SubscriberJwt
     @POST
     @Path("search-product")
     public Response searchProduct(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
+        logger.info("start to load products with : "+map.get("query"));
         List<StockProductView> products = daoApi.searchProduct(map.get("query"), Helper.getCompanyFromJWT(header));
+        logger.info("products loaded successfully.");
         return Response.status(200).entity(products).build();
     }
 

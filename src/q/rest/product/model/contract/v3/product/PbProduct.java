@@ -33,7 +33,6 @@ public class PbProduct {
         this.descAr = product.getProductDescAr();
         this.details = product.getDetails();
         this.productNumber = product.getProductNumber();
-        this.referencePrice = product.getReferencePrice();
         this.brand = new PbBrand(product.getBrand());
         this.calculateSalesPrice(product.getMarketSupply());
         this.initSpecs(product.getSpecs(), specs);
