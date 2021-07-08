@@ -47,12 +47,14 @@ public class Product implements Serializable {
     @JoinColumn(name = "product_id")
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ProductSupply> marketSupply;
+    @Column(name="reference_price")
+    private double referencePrice;
+
     @JsonIgnore
     public PbProduct getPublicProduct(List<Spec> specs){
         return new PbProduct(this, specs);
     }
-    @Column(name="reference_price")
-    private double referencePrice;
+
 
     public List<ProductSupply> getMarketSupply() {
         return marketSupply;
