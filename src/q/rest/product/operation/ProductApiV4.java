@@ -203,7 +203,7 @@ public class ProductApiV4 {
         daoApi.createOfferUploadRequest(uploadRequest);
         Map<String,Integer> map = new HashMap<>();
         map.put("id", uploadRequest.getId());
-        return Response.status(200).entity(uploadRequest).build();
+        return Response.status(200).entity(map).build();
     }
-    
+
 }
