@@ -1,5 +1,5 @@
 package q.rest.product.operation;
-
+import org.jboss.logging.Logger;
 import q.rest.product.dao.DAO;
 import q.rest.product.dao.QvmDaoApi;
 import q.rest.product.filter.annotation.SubscriberJwt;
@@ -41,6 +41,8 @@ public class ProductApiV4 {
 
     @EJB
     private AsyncProductApi async;
+
+    public static final Logger logger = Logger.getLogger(ProductApiV4.class);
 
     @SubscriberJwt
     @GET
@@ -94,17 +96,24 @@ public class ProductApiV4 {
     @POST
     @Path("search-products")
     public Response searchProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, SearchObject searchObject){
+
+        logger.info("start to get products with "+searchObject.getQuery());
+
         if(searchObject.getQuery() == null || searchObject.getQuery().length() == 0){
             return Response.status(404).build();
         }
         String partNumber = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
         String jpql = "select b from Product b where b.productNumber like :value0 and b.status =:value1";
         List<Product> products = dao.getJPQLParams(Product.class, jpql, partNumber, 'A');
+
         List<Spec> specs = dao.get(Spec.class);
         List<PbProduct> pbProducts = new ArrayList<>();
         for (var product : products) {
             pbProducts.add(product.getPublicProduct(specs));
         }
+
+        logger.info("products size "+pbProducts.size());
+
         return Response.status(200).entity(pbProducts).build();
     }
 

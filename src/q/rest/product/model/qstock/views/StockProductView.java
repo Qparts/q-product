@@ -33,6 +33,8 @@ public class StockProductView {
     private String brandClassNameAr;
     @JsonIgnore
     private char status;
+    @Column(name="reference_price")
+    private double referencePrice;
     private Integer policyId;
     private Integer shortageFlag;
     private String notes;
@@ -175,6 +177,14 @@ public class StockProductView {
 
     public void setBrandClassNameAr(String brandClassNameAr) {
         this.brandClassNameAr = brandClassNameAr;
+    }
+
+    public double getReferencePrice() {
+        return referencePrice;
+    }
+
+    public void setReferencePrice(double referencePrice) {
+        this.referencePrice = referencePrice;
     }
 
     public static class StockProductViewPK implements Serializable {

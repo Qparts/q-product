@@ -21,6 +21,7 @@ public class PbProduct {
     private PbBrand brand;
     private Set<PbSpec> specs = new HashSet<>();
     private double salesPrice;
+    private double referencePrice;
 
     public String getImage(){
         return AppConstants.getProductImage(id);
@@ -133,5 +134,13 @@ public class PbProduct {
 
     public void setSalesPrice(double salesPrice) {
         this.salesPrice = salesPrice;
+    }
+
+    public double getReferencePrice() {
+        return referencePrice;
+    }
+
+    public void setReferencePrice(double referencePrice) {
+        this.referencePrice = referencePrice;
     }
 }

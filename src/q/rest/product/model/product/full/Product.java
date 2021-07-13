@@ -48,10 +48,12 @@ public class Product implements Serializable {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<ProductSupply> marketSupply;
 
+
     @JsonIgnore
     public PbProduct getPublicProduct(List<Spec> specs){
         return new PbProduct(this, specs);
     }
+
 
     public List<ProductSupply> getMarketSupply() {
         return marketSupply;
@@ -164,4 +166,5 @@ public class Product implements Serializable {
     public void setSpecs(Set<ProductSpec> specs) {
         this.specs = specs;
     }
+
 }
