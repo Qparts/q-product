@@ -201,7 +201,7 @@ public class DaoApi {
 
     public List<Map<String, Object>> getLatestSalesOrders(long productId, int companyId, String header){
         List<Map<String, Object>> sales = getLatestOrders(productId, companyId, "sales");
-        Attacher.attachSuppliersMap(sales, header);
+        Attacher.attachCustomersMap(sales, header);
         return sales;
     }
 
