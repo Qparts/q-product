@@ -4,6 +4,7 @@ import org.jboss.logging.Logger;
 import q.rest.product.dao.DaoApi;
 import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.helper.AppConstants;
+import q.rest.product.helper.Attacher;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.product.full.Brand;
 import q.rest.product.model.product.full.BrandClass;
@@ -17,7 +18,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -309,7 +309,8 @@ public class StockProductV2 {
     public Response searchSales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
         String query = map.get("query");
         List<StockSalesView> sales = daoApi.searchSales(query, Helper.getCompanyFromJWT(header));
-        attachCustomerObject(sales, header);
+        Attacher.attachCustomer(sales, header);
+//        attachCustomerObject(sales, header);
         return Response.status(200).entity(sales).build();
     }
 
@@ -320,7 +321,8 @@ public class StockProductV2 {
     public Response searchPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
         String query = map.get("query");
         List<StockPurchaseView> purchases = daoApi.searchPurchase(query, Helper.getCompanyFromJWT(header));
-        attachSupplierObject(purchases, header);
+        Attacher.attachSupplier(purchases, header);
+//        attachSupplierObject(purchases, header);
         return Response.status(200).entity(purchases).build();
     }
 
@@ -330,7 +332,8 @@ public class StockProductV2 {
     public Response searchQuotation(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
         String query = map.get("query");
         List<StockQuotationView> quotations = daoApi.searchQuotation(query, Helper.getCompanyFromJWT(header));
-        attachCustomerObjectForQuotations(quotations, header);
+        Attacher.attachCustomerQ(quotations, header);
+//        attachCustomerObjectForQuotations(quotations, header);
         return Response.status(200).entity(quotations).build();
     }
 
@@ -369,7 +372,8 @@ public class StockProductV2 {
     @Path("purchase/{id}")
     public Response getPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id) {
         StockPurchaseView purchase = daoApi.findPurchase2(id, Helper.getCompanyFromJWT(header));
-        this.attachSupplierObject(purchase, header);
+        Attacher.attachSupplier(purchase, header);
+//        this.attachSupplierObject(purchase, header);
         return Response.status(200).entity(purchase).build();
     }
 
@@ -379,7 +383,8 @@ public class StockProductV2 {
     @Path("sales/{id}")
     public Response getSales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id) {
         StockSalesView sales = daoApi.findSales2(id, Helper.getCompanyFromJWT(header));
-        this.attachCustomerObject(sales, header);
+        Attacher.attachCustomer(sales, header);
+//        this.attachCustomerObject(sales, header);
         return Response.status(200).entity(sales).build();
     }
 
@@ -389,7 +394,8 @@ public class StockProductV2 {
     @Path("quotation/{id}")
     public Response getQuotation(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id) {
         StockQuotationView quotation = daoApi.findQuotation2(id, Helper.getCompanyFromJWT(header));
-        this.attachCustomerObject(quotation, header);
+        Attacher.attachCustomer(quotation, header);
+//        this.attachCustomerObject(quotation, header);
         return Response.status(200).entity(quotation).build();
     }
 
@@ -401,7 +407,8 @@ public class StockProductV2 {
         int companyId = Helper.getCompanyFromJWT(header);
         StockReturnSalesStandAlone salesReturn = daoApi.getSalesReturn(id, companyId);
         StockSales sales = daoApi.findSales(salesReturn.getSalesId(), companyId);
-        this.attachCustomerObject(sales, header);
+        //this.attachCustomerObject(sales, header);
+        Attacher.attachCustomer(sales, header);
         salesReturn.setCustomer(sales.getCustomer());
         salesReturn.setTaxRate(sales.getTaxRate());
         salesReturn.setCustomerId(sales.getCustomerId());
@@ -442,6 +449,26 @@ public class StockProductV2 {
         map.put("mostProfitableProducts", mostProfitableProducts);
         map.put("mostProfitableBrands", mostProfitableBrands);
         map.put("mostMovingProducts", mostMovingProducts);
+        return Response.status(200).entity(map).build();
+    }
+
+    @SubscriberJwt
+    @GET
+    @Path("product-details-report/{productId}")
+    public Response getProductDetailsReport(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "productId") long productId){
+        //get product
+        int companyId = Helper.getCompanyFromJWT(header);
+        var product =  daoApi.findProduct(productId, companyId);
+        List<Map<String, Object>> salesPastYear = daoApi.getProductYearSales(productId, companyId);
+        List<Map<String, Object>> purchasesPastYear = daoApi.getProductYearPurchase(productId, companyId);
+        List<Map<String, Object>> latestPurchases = daoApi.getLatestPurchaseOrders(productId, companyId, header);
+        List<Map<String, Object>> latestSales = daoApi.getLatestSalesOrders(productId, companyId, header);
+        Map<String,Object> map  = new HashMap<>();
+        map.put("product", product);
+        map.put("salesTwelveMonths", salesPastYear);
+        map.put("purchaseTwelveMonths", purchasesPastYear);
+        map.put("latestPurchases", latestPurchases);
+        map.put("latestSales", latestSales);
         return Response.status(200).entity(map).build();
     }
 
@@ -537,7 +564,6 @@ public class StockProductV2 {
         }
         return Response.status(200).build();
     }
-
 
     @SubscriberJwt
     @POST
@@ -654,111 +680,102 @@ public class StockProductV2 {
         return true;
     }
 
-
-    private void attachCustomerObject(List<StockSalesView> sales, String header) {
-        StringBuilder ids = new StringBuilder("0");
-        for (var s : sales) {
-            ids.append(",").append(s.getCustomerId());
-        }
-        Response r = this.getSecuredRequest(AppConstants.getCustomers(ids.toString()), header);
-        if (r.getStatus() == 200) {
-            List<Map> list = r.readEntity(new GenericType<List<Map>>() {
-            });
-            for (var s : sales) {
-                s.attachCustomer(list);
-            }
-        } else r.close();
-    }
-
-
-    private void attachCustomerObjectForQuotations(List<StockQuotationView> quotationViews, String header) {
-        StringBuilder ids = new StringBuilder("0");
-        for (var s : quotationViews) {
-            ids.append(",").append(s.getCustomerId());
-        }
-        Response r = this.getSecuredRequest(AppConstants.getCustomers(ids.toString()), header);
-        if (r.getStatus() == 200) {
-            List<Map> list = r.readEntity(new GenericType<List<Map>>() {
-            });
-            for (var s : quotationViews) {
-                s.attachCustomer(list);
-            }
-        } else r.close();
-    }
-
-
-    private void attachCustomerObject(StockSales sales, String header) {
-        Response r = this.getSecuredRequest(AppConstants.getCustomer(sales.getCustomerId()), header);
-        if (r.getStatus() == 200) {
-            Map<String, Object> map = r.readEntity(new GenericType<Map>() {
-            });
-            sales.attachCustomer(map);
-        } else r.close();
-    }
-
-
-    private void attachCustomerObject(StockSalesView sales, String header) {
-        try {
-            Response r = this.getSecuredRequest(AppConstants.getCustomer(sales.getCustomerId()), header);
-            if (r.getStatus() == 200) {
-                Map<String, Object> map = r.readEntity(new GenericType<Map>() {
-                });
-                sales.attachCustomer(map);
-            } else r.close();
-        } catch (Exception ex) {
-        }
-    }
-
-
-    private void attachCustomerObject(StockQuotationView quotation, String header) {
-        try {
-            Response r = this.getSecuredRequest(AppConstants.getCustomer(quotation.getCustomerId()), header);
-            if (r.getStatus() == 200) {
-                Map<String, Object> map = r.readEntity(new GenericType<Map>() {
-                });
-                quotation.attachCustomer(map);
-            } else r.close();
-        } catch (Exception ignore) {
-        }
-    }
 //
-//    private void attachSupplierObject(StockPurchase purchase, String header) {
-//        Response r = this.getSecuredRequest(AppConstants.getSupplier(purchase.getSupplierId()), header);
+//    private void attachCustomerObject(List<StockSalesView> sales, String header) {
+//        StringBuilder ids = new StringBuilder("0");
+//        for (var s : sales) {
+//            ids.append(",").append(s.getCustomerId());
+//        }
+//        Response r = this.getSecuredRequest(AppConstants.getCustomers(ids.toString()), header);
+//        if (r.getStatus() == 200) {
+//            List<Map> list = r.readEntity(new GenericType<List<Map>>() {
+//            });
+//            for (var s : sales) {
+//                s.attachCustomer(list);
+//            }
+//        } else r.close();
+//    }
+
+//
+//    private void attachCustomerObjectForQuotations(List<StockQuotationView> quotationViews, String header) {
+//        StringBuilder ids = new StringBuilder("0");
+//        for (var s : quotationViews) {
+//            ids.append(",").append(s.getCustomerId());
+//        }
+//        Response r = this.getSecuredRequest(AppConstants.getCustomers(ids.toString()), header);
+//        if (r.getStatus() == 200) {
+//            List<Map> list = r.readEntity(new GenericType<List<Map>>() {
+//            });
+//            for (var s : quotationViews) {
+//                s.attachCustomer(list);
+//            }
+//        } else r.close();
+//    }
+
+//
+//    private void attachCustomerObject(StockSales sales, String header) {
+//        Response r = this.getSecuredRequest(AppConstants.getCustomer(sales.getCustomerId()), header);
 //        if (r.getStatus() == 200) {
 //            Map<String, Object> map = r.readEntity(new GenericType<Map>() {
 //            });
-//            purchase.attachSupplier(map);
+//            sales.attachCustomer(map);
+//        } else r.close();
+//    }
+
+//
+//    private void attachCustomerObject(StockSalesView sales, String header) {
+//        try {
+//            Response r = this.getSecuredRequest(AppConstants.getCustomer(sales.getCustomerId()), header);
+//            if (r.getStatus() == 200) {
+//                Map<String, Object> map = r.readEntity(new GenericType<Map>() {
+//                });
+//                sales.attachCustomer(map);
+//            } else r.close();
+//        } catch (Exception ex) {
+//        }
+//    }
+//
+//
+//    private void attachCustomerObject(StockQuotationView quotation, String header) {
+//        try {
+//            Response r = this.getSecuredRequest(AppConstants.getCustomer(quotation.getCustomerId()), header);
+//            if (r.getStatus() == 200) {
+//                Map<String, Object> map = r.readEntity(new GenericType<Map>() {
+//                });
+//                quotation.attachCustomer(map);
+//            } else r.close();
+//        } catch (Exception ignore) {
 //        }
 //    }
 
+//
+//    private void attachSupplierObject(StockPurchaseView purchase, String header) {
+//        try {
+//            Response r = this.getSecuredRequest(AppConstants.getSupplier(purchase.getSupplierId()), header);
+//            if (r.getStatus() == 200) {
+//                Map<String, Object> map = r.readEntity(new GenericType<Map>() {
+//                });
+//                purchase.attachSupplier(map);
+//            } else r.close();
+//        } catch (Exception ignore) {
+//        }
+//    }
 
-    private void attachSupplierObject(StockPurchaseView purchase, String header) {
-        try {
-            Response r = this.getSecuredRequest(AppConstants.getSupplier(purchase.getSupplierId()), header);
-            if (r.getStatus() == 200) {
-                Map<String, Object> map = r.readEntity(new GenericType<Map>() {
-                });
-                purchase.attachSupplier(map);
-            } else r.close();
-        } catch (Exception ignore) {
-        }
-    }
-
-
-    private void attachSupplierObject(List<StockPurchaseView> purchases, String header) {
-        StringBuilder ids = new StringBuilder("0");
-        for (var s : purchases) {
-            ids.append(",").append(s.getSupplierId());
-        }
-        Response r = this.getSecuredRequest(AppConstants.getSuppliers(ids.toString()), header);
-        if (r.getStatus() == 200) {
-            List<Map> list = r.readEntity(new GenericType<List<Map>>() {
-            });
-            for (var s : purchases) {
-                s.attachSupplier(list);
-            }
-        } else r.close();
-    }
+//
+//    private void attachSupplierObject(List<StockPurchaseView> purchases, String header) {
+//        StringBuilder ids = new StringBuilder("0");
+//        for (var s : purchases) {
+//            ids.append(",").append(s.getSupplierId());
+//        }
+//        Response r = this.getSecuredRequest(AppConstants.getSuppliers(ids.toString()), header);
+//        if (r.getStatus() == 200) {
+//            List<Map> list = r.readEntity(new GenericType<List<Map>>() {
+//            });
+//            for (var s : purchases) {
+//                s.attachSupplier(list);
+//            }
+//        } else r.close();
+//    }
 
 
     private boolean verifyQuantities(StockReturnPurchase purchaseReturn) {

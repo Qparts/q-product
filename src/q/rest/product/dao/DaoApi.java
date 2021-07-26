@@ -2,6 +2,7 @@ package q.rest.product.dao;
 
 import org.jboss.logging.Logger;
 import q.rest.product.helper.AppConstants;
+import q.rest.product.helper.Attacher;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.product.full.Brand;
 import q.rest.product.model.product.full.BrandClass;
@@ -194,6 +195,97 @@ public class DaoApi {
             return views.get(0);
         }
         else return null;
+    }
+
+
+
+    public List<Map<String, Object>> getLatestSalesOrders(long productId, int companyId, String header){
+        List<Map<String, Object>> sales = getLatestOrders(productId, companyId, "sales");
+        Attacher.attachSuppliersMap(sales, header);
+        return sales;
+    }
+
+    public List<Map<String, Object>> getLatestPurchaseOrders(long productId,  int companyId, String header){
+        List<Map<String, Object>> purchases = getLatestOrders(productId,  companyId, "purchase");
+        Attacher.attachSuppliersMap(purchases, header);
+        return purchases;
+    }
+
+    private List<Map<String, Object>> getLatestOrders(long productId, int companyId, String table){
+        int limit = 5;
+        String beneficiary = table.equals("purchase") ? "supplier" : "customer";
+        String sql = "select ord.id as order_id, " +
+                "  item.quantity as quantity, " +
+                "  item.unit_price as price, " +
+                beneficiary+"_id as "+beneficiary+"_id, " +
+                " branch_id as branch_id " +
+                " from prd_stk_"+ table +"_order_item item left join prd_stk_" + table +"_order ord  on item."+ table +"_order_id= ord.id " +
+                " where item.stock_product_id = " + productId +
+                " and ord.company_id = " + companyId +
+                " order by ord.created desc limit  " + limit;
+        List<Object> result = dao.getNative(sql);
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (Object obj : result) {
+            Object[] row = (Object[]) obj;
+            Map<String, Object> map = new HashMap<String, Object>();
+            int orderId = ((Number) row[0]).intValue();
+            int quantity = ((Number) row[1]).intValue();
+            double price = ((Number) row[2]).doubleValue();
+            int benefeciaryId = ((Number) row[3]).intValue();
+            int branchId = ((Number) row[4]).intValue();
+            map.put("orderId", orderId);
+            map.put("quantity", quantity);
+            map.put("price", price);
+            map.put(beneficiary+"Id", benefeciaryId);
+            map.put("branchId", branchId);
+            list.add(map);
+        }
+        return list;
+    }
+
+    public List<Map<String, Object>> getProductYearSales(long productId, int companyId){
+        return getProductYearGeneric(productId, companyId, "sales");
+    }
+
+    public List<Map<String, Object>> getProductYearPurchase(long productId,  int companyId){
+        return getProductYearGeneric(productId,  companyId, "purchase");
+    }
+
+    private List<Map<String, Object>> getProductYearGeneric(long productId,  int companyId, String table){
+        String sql = " select w.date," +
+                "       to_char(w.date, 'Mon') as mon," +
+                "       extract(year from w.date) as year," +
+                "       coalesce(x.sum,0) as total" +
+                " from (" +
+                " select date (date_trunc('month', d)) as date " +
+                "    from generate_series(" +
+                "        current_date - interval '11 months'," +
+                "        current_date," +
+                "        '1 month'" +
+                ") d) w " +
+                " left join (" +
+                "    select date(date_trunc('month', ord.created)) as date, " +
+                "       sum(item.quantity)" +
+                " from prd_stk_"+ table +"_order_item item join prd_stk_"+ table +"_order ord  on item."+ table +"_order_id = ord.id" +
+                " where stock_product_id = " + productId +
+                " and company_id = " + companyId +
+                " group by date_trunc('month', ord.created)) x on w.date = x.date";
+        List<Object> result = dao.getNative(sql);
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (Object obj : result) {
+            Object[] row = (Object[]) obj;
+            Map<String, Object> map = new HashMap<String, Object>();
+            Date date = (Date) row[0];
+            String monthName = (String) row[1];
+            int year = ((Double) row[2]).intValue();
+            int total = ((Number) row[3]).intValue();
+            map.put("date", date);
+            map.put("month", monthName);
+            map.put("year", year);
+            map.put("total", total);
+            list.add(map);
+        }
+        return list;
     }
 
 
