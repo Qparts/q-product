@@ -161,6 +161,10 @@ public class DAO {
         return em.createNativeQuery(sql).getResultList();
     }
 
+    public List getNativeMax(String sql, int max) {
+        return em.createNativeQuery(sql).setMaxResults(max).getResultList();
+    }
+
 
     @SuppressWarnings("unchecked")
     public List<Object> getNativeOffsetMax(String jpql, int offset, int max){

@@ -233,7 +233,7 @@ public class QvmDaoApi {
 
     public List<Map<String,Object>> getMostSearchedCatalogBrands(){
         String sql = "select catalog_id, count(*) from prd_vin_search where catalog_id is not null group by catalog_id order by count desc, catalog_id";
-        List<Object> ss = dao.getNative(sql);
+        List<Object> ss = dao.getNativeMax(sql, 5);
         List<Map<String,Object>> list = new ArrayList<>();
         for (Object o : ss) {
             if (o instanceof Object[]) {

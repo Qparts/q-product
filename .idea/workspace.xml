@@ -8,8 +8,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/dao/DAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/dao/DAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/product/dao/QvmDaoApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/dao/QvmDaoApi.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV4.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductApiV4.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -159,6 +159,11 @@
               <path>
                 <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
                 <item name="JBoss Server" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              </path>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="JBoss Server" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+                <item name="Failed" type="7427dc5b:ServiceModel$ServiceGroupNode" />
               </path>
             </expand>
             <select />
@@ -418,7 +423,7 @@
       <workItem from="1626138133070" duration="10966000" />
       <workItem from="1627284411311" duration="2467000" />
       <workItem from="1628758457616" duration="6376000" />
-      <workItem from="1629021415149" duration="264000" />
+      <workItem from="1629021415149" duration="1131000" />
     </task>
     <servers />
   </component>
