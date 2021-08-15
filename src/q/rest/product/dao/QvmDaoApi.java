@@ -125,7 +125,6 @@ public class QvmDaoApi {
                     " ) z " +
                     searchObject.getProductFilterSql() +
                     " order by on_offer desc ";
-            System.out.println(sql1);
             return dao.getNativeOffsetMax(CompanyProduct.class, sql1, searchObject.getOffset(), max);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -154,6 +153,7 @@ public class QvmDaoApi {
                     " ) z " +
                     searchObject.getProductFilterSql() +
                     " order by on_offer desc ";
+            System.out.println(sql1);
             return dao.getNativeOffsetMax(PbCompanyProduct.class, sql1, searchObject.getOffset(), max);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -207,6 +207,46 @@ public class QvmDaoApi {
     public void makeOfferCompleted(CompanyOfferUploadRequest uploadRequest){
         uploadRequest.setCompleted(new Date());
         dao.update(uploadRequest);
+    }
+
+    public int getNumberOfItems(){
+        String sql = "select (select count(*) from prd_product) + " +
+                "(select count(*) from prd_company_product)";
+        return dao.getNativeSingle(Number.class, sql).intValue() * 11;
+    }
+
+    public int getNumberOfItemsInCompanyStock(int companyId){
+        String sql = "select count(*) from (select z.* " +
+                " from (select p.*, 0 as on_offer from prd_company_product p " +
+                "    join prd_company_stock c on p.id = c.company_product_id " +
+                " where c.offer_only = false " +
+                "  and company_id = " + companyId +
+                "  and p.id not in" +
+                "      (select company_product_id from prd_company_stock_offer where now() between offer_start_date and offer_end_date)\n" +
+                " union select p.*, 1 as on_offer from prd_company_product p" +
+                "    join prd_company_stock_offer o on p.id = o.company_product_id" +
+                "    join prd_company_stock s on p.id = s.company_product_id" +
+                " where now() between o.offer_start_date and o.offer_end_date and company_id = " + companyId +
+                " ) z  order by on_offer desc) x";
+        return  dao.getNativeSingle(Number.class, sql).intValue();
+    }
+
+    public List<Map<String,Object>> getMostSearchedCatalogBrands(){
+        String sql = "select catalog_id, count(*) from prd_vin_search group by catalog_id order by count desc, catalog_id";
+        List<Object> ss = dao.getNative(sql);
+        List<Map<String,Object>> list = new ArrayList<>();
+        for (Object o : ss) {
+            if (o instanceof Object[]) {
+                Map<String, Object> map = new HashMap<>();
+                Object[] objArray = (Object[]) o;
+                String catalogId = objArray[0].toString();
+                int count = ((Number) objArray[1]).intValue();
+                map.put("catalogId", catalogId);
+                map.put("count", count);
+                list.add(map);
+            }
+        }
+        return list;
     }
 
     public SummaryReport getOverallProductSummaryReport(){

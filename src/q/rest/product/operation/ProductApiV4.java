@@ -23,9 +23,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.util.*;
 
 @Path("/api/v4/main/")
@@ -47,10 +45,27 @@ public class ProductApiV4 {
     @SubscriberJwt
     @GET
     @Path("special-offers/live")
-    public Response getLiveCompanySpecialOfferUpload() {
+    public Response getLiveCompanySpecialOfferUpload(@Context UriInfo info) {
         String sql = "select b from PbSpecialOffer b where :value0 between b.startDate and b.endDate and b.status = :value1 order by b.startDate";
-        List<PbSpecialOffer> list = dao.getJPQLParams(PbSpecialOffer.class, sql, new Date(), 'C');
+        var list = (info.getQueryParameters().getFirst("latest") == null) ?
+                dao.getJPQLParams(PbSpecialOffer.class, sql, new Date(), 'C') :
+                dao.getJPQLParamsMax(PbSpecialOffer.class, sql, 3, new Date(), 'C');
         return Response.status(200).entity(list).build();
+    }
+
+    @SubscriberJwt
+    @GET
+    @Path("dashboard-metrics")
+    public Response getDashboardMetrics(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
+        int companyId = Helper.getCompanyFromJWT(header);
+        Map<String,Object> map = new HashMap<>();
+        var numberOfProducts = daoApi.getNumberOfItems();
+        var numberOfStockProducts = daoApi.getNumberOfItemsInCompanyStock(companyId);
+        var mostSearchedCatalogBrands = daoApi.getMostSearchedCatalogBrands();
+        map.put("mostSearchedCatalogBrands", mostSearchedCatalogBrands);
+        map.put("numberOfProducts",numberOfProducts);
+        map.put("numberOfStockProducts", numberOfStockProducts);
+        return Response.status(200).entity(map).build();
     }
 
 
@@ -157,12 +172,6 @@ public class ProductApiV4 {
             async.saveReplacementSearch(header, query, found);
             ar.getArticles().forEach(art -> art.getImages().forEach(ArticleImage::replaceImages));
 
-
-//            for(var art : ar.getArticles()){
-  //              for(var img : art.getImages()){
-    //                img.replaceImages();
-      //          }
-        //    }
             return Response.ok().entity(ar).build();
         }
         else r.close();
