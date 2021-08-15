@@ -59,13 +59,9 @@ public class ProductApiV4 {
     public Response getDashboardMetrics(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
         int companyId = Helper.getCompanyFromJWT(header);
         Map<String,Object> map = new HashMap<>();
-        System.out.println("calling no items");
         var numberOfProducts = daoApi.getNumberOfItems();
-        System.out.println("calling num of items in stock");
         var numberOfStockProducts = daoApi.getNumberOfItemsInCompanyStock(companyId);
-        System.out.println("calling most searchede cata");
         var mostSearchedCatalogBrands = daoApi.getMostSearchedCatalogBrands();
-        System.out.println("ok");
         map.put("mostSearchedCatalogBrands", mostSearchedCatalogBrands);
         map.put("numberOfProducts",numberOfProducts);
         map.put("numberOfStockProducts", numberOfStockProducts);
