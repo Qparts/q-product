@@ -9,25 +9,28 @@ import q.rest.product.helper.KeyConstant;
 import q.rest.product.model.contract.v3.Branch;
 import q.rest.product.model.contract.v3.PullStockRequest;
 import q.rest.product.model.VinSearch;
+import q.rest.product.model.quotation.SearchList;
+import q.rest.product.model.quotation.SearchListItem;
 import q.rest.product.model.qvm.qvmstock.CompanyProduct;
 import q.rest.product.model.qvm.qvmstock.CompanyStock;
 import q.rest.product.model.qvm.qvmstock.DataPullHistory;
 import q.rest.product.model.qvm.QvmObject;
+import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyProduct;
+import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyStockOffer;
 import q.rest.product.model.search.SearchObject;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,31 +41,7 @@ public class AsyncProductApi {
     private DAO dao;
 
     @Asynchronous
-    public void saveSearch(String header, Map<String, Object> map, boolean found) {
-        if (map.get("companyId") != null) {
-            map.put("found", found);
-            Response r = this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
-            r.close();
-        }
-    }
-//
-//    @Asynchronous
-//    public void saveSearch(String header, SearchObject searchObject, boolean found) {
-//        if (searchObject.getCompanyId() > 0) {
-//            Map<String,Object> map = new HashMap<>();
-//            map.put("query", searchObject.getQuery());
-//            map.put("companyId", searchObject.getCompanyId());
-//            map.put("subscriberId", searchObject.getSubscriberId());
-//            map.put("found", found);
-//            Response r = this.postSecuredRequest(AppConstants.POST_SAVE_SEARCH_KEYWORD, map, header);
-//            r.close();
-//        }
-//    }
-
-
-    @Asynchronous
     public void saveSearch2(String header, SearchObject searchObject, boolean found) {
-        System.out.println("is new search? " + searchObject.isNewSearch());
         if (searchObject.isNewSearch()) {
             int companyId = Helper.getCompanyFromJWT(header);
             int subscriberId = Helper.getSubscriberFromJWT(header);
@@ -76,6 +55,48 @@ public class AsyncProductApi {
         }
     }
 
+    @Asynchronous
+    public void addToSearchList(String header, List<PbCompanyProduct> searchResult){
+        int companyId = Helper.getCompanyFromJWT(header);
+        int subscriberId = Helper.getSubscriberFromJWT(header);
+        for(var result : searchResult) {
+            String sql = "select b from SearchList b where b.companyId =:value0 and b.targetCompanyId =:value1 and cast(b.created as date) =:value2";
+            List<SearchList> existingSearchList = dao.getJPQLParams(SearchList.class, sql, companyId, result.getCompanyId(), new Date());
+            double offerPrice = getOfferPrice(result);
+            Long linkedProductId = getLinkedProductIdToSearch(result.getPartNumber(), result.getBrandName());
+            if(existingSearchList.isEmpty()) {
+                SearchList list = new SearchList(companyId, subscriberId, result.getCompanyId());
+                dao.persist(list);
+                existingSearchList.add(list);
+            }
+            var listId = existingSearchList.get(0).getId();
+            var searchListItem = new SearchListItem(listId, result, offerPrice, linkedProductId);
+            dao.persist(searchListItem);
+        }
+    }
+
+    private Long getLinkedProductIdToSearch(String partNumber, String brand){
+        partNumber = "'" + Helper.undecorate(partNumber) + "'";
+        brand = "'" + brand.toUpperCase().trim()+ "'";
+        String sql = "select pr.id from prd_product pr join prd_brand br on pr.brand_id = br.id" +
+                " where pr.product_number = "+partNumber+" and upper(br.name) = " + brand;
+        System.out.println(sql);
+        List<Number> found = dao.getNative(sql);
+        if(!found.isEmpty()){
+            return found.get(0).longValue();
+        }
+        return null;
+    }
+
+    private double getOfferPrice(PbCompanyProduct companyProduct){
+        Iterator<PbCompanyStockOffer> it = companyProduct.getOffers().iterator();
+        double offerPrice = 0;
+        while (it.hasNext()){
+            var offer = it.next();
+            offerPrice = offer.getOfferPrice();
+        }
+        return offerPrice;
+    }
 
 
     @Asynchronous

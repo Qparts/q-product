@@ -1,25 +1,123 @@
 package q.rest.product.dao;
 
+import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.v3.QStockUploadHolder;
 import q.rest.product.model.contract.v3.SummaryReport;
 import q.rest.product.model.contract.v3.UploadHolder;
 import q.rest.product.model.contract.v3.UploadsSummary;
 import q.rest.product.model.VinSearch;
+import q.rest.product.model.contract.v3.product.PbProduct;
+import q.rest.product.model.product.full.Product;
+import q.rest.product.model.product.full.Spec;
 import q.rest.product.model.qvm.qvmstock.*;
 import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyProduct;
+import q.rest.product.model.qvm.qvmstock.minimal.PbSpecialOffer;
 import q.rest.product.model.search.SearchObject;
+import q.rest.product.operation.AsyncProductApi;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 import java.util.*;
 
 @Stateless
 public class QvmDaoApi {
     @EJB
     private DAO dao;
+
+    @EJB
+    private AsyncProductApi async;
+
     private Helper helper = new Helper();
+
+    public List<Map<String,Object>> getMostSearchedProductsOnStock(int companyId){
+        String sql = "select item.product_number, item.brand, count(*) from prd_search_list_item item " +
+                " left join prd_search_list list on item.search_list_id = list.id " +
+                " where target_company_id = " + companyId +
+                " group by item.product_number, item.brand";
+        List<Object> result = dao.getNativeMax(sql, 5);
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (Object obj : result) {
+            Object[] row = (Object[]) obj;
+            Map<String, Object> map = new HashMap<String, Object>();
+            String productNumber = (String) row[0];
+            String brand = (String) row[1];
+            int total = ((Number) row[2]).intValue();
+            map.put("productNumber", productNumber);
+            map.put("brand", brand);
+            map.put("total", total);
+            list.add(map);
+        }
+        return list;
+    }
+
+    public List<PbSpecialOffer> getLiveSpecialOffers(boolean latest){
+        String sql = "select b from PbSpecialOffer b where :value0 between b.startDate and b.endDate and b.status = :value1 order by b.startDate";
+        return latest ?
+                dao.getJPQLParamsMax(PbSpecialOffer.class, sql, 3, new Date(), 'C') :
+                dao.getJPQLParams(PbSpecialOffer.class, sql, new Date(), 'C');
+    }
+
+    public List<Map<String,Object>> getMostActiveCompaniesOnStock(String header, int companyId){
+        String sql = "select list.company_id, count(*) from prd_search_list_item item " +
+                " left join prd_search_list list on item.search_list_id = list.id " +
+                " where target_company_id = " + companyId +
+                " group by list.company_id";
+        List<Object> result = dao.getNativeMax(sql, 5);
+        List<Map<String, Object>> list = new ArrayList<>();
+        List<Integer> idsList = new ArrayList<>();
+        for (Object obj : result) {
+            Object[] row = (Object[]) obj;
+            Map<String, Object> map = new HashMap<String, Object>();
+            int activeCompanyId = ((Number) row[0]).intValue();
+            int total = ((Number) row[1]).intValue();
+            map.put("company", activeCompanyId);
+            idsList.add(activeCompanyId);
+            map.put("total", total);
+            list.add(map);
+        }
+        //replace company ids with company
+        Response r = async.getSecuredRequest(AppConstants.getCompaniesVisibleFromIds(idsList), header);
+        if(r.getStatus() == 200){
+            List<Map<String,Object>> companies = r.readEntity(new GenericType<List<Map<String,Object>>>(){});
+            for(var company : companies){
+                int foundCompanyId = (int) company.get("id");
+                for(var row : list){
+                    if( ((int)row.get("company")) == foundCompanyId)
+                        row.replace("company", company);
+                }
+            }
+        }
+        return list;
+    }
+
+    public List<Map<String, Object>> getMonthlySearchCount(int companyId){
+        String sql = " select t.date, to_char(t.date, 'Mon') as month, extract(year from t.date) as year, coalesce(numberOfSearches, 0) as numberOfSearches from past_twelve_month_dates t left join " +
+                "  (select date(date_trunc('month', item.created)) as date, " +
+                "  count(*) as numberOfSearches " +
+                "  from prd_search_list_item item join prd_search_list list  on item.search_list_id = list.id " +
+                "  where list.target_company_id = " + companyId +
+                "  group by date_trunc('month', item.created)) z on t.date = z.date";
+        List<Object> result = dao.getNative(sql);
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (Object obj : result) {
+            Object[] row = (Object[]) obj;
+            Map<String, Object> map = new HashMap<String, Object>();
+            Date date = (Date) row[0];
+            String monthName = (String) row[1];
+            int year = ((Double) row[2]).intValue();
+            int total = ((Number) row[3]).intValue();
+            map.put("date", date);
+            map.put("month", monthName);
+            map.put("year", year);
+            map.put("total", total);
+            list.add(map);
+        }
+        return list;
+    }
 
     //user only
     public List<DataPullHistory> getLatestPulls(){
@@ -132,6 +230,18 @@ public class QvmDaoApi {
         }
     }
 
+    public List<PbProduct> searchProducts(String query){
+        String partNumber = "%" + Helper.undecorate(query) + "%";
+        String jpql = "select b from Product b where b.productNumber like :value0 and b.status =:value1";
+        List<Product> products = dao.getJPQLParams(Product.class, jpql, partNumber, 'A');
+        List<Spec> specs = dao.get(Spec.class);
+        List<PbProduct> pbProducts = new ArrayList<>();
+        for (var product : products) {
+            pbProducts.add(product.getPublicProduct(specs));
+        }
+        return pbProducts;
+    }
+
 
     public List<PbCompanyProduct> searchCompanyProductsPublic(SearchObject searchObject) {
         try {
@@ -159,6 +269,41 @@ public class QvmDaoApi {
             ex.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    public Map<String,Object> searchSpecialOfferProducts(SearchObject searchObject){
+        PbSpecialOffer so = dao.find(PbSpecialOffer.class, searchObject.getSpecialOfferId());
+        List<PbCompanyProduct> productsList;
+        int searchSize;
+        if(searchObject.getFilter() == null || searchObject.getFilter().trim().equals("")){
+            String sql2 = "select b from PbCompanyProduct b " +
+                    " where b.id in (" +
+                    " select c.companyProductId from PbCompanyStockOffer c " +
+                    " where c.offerRequestId = :value0)" +
+                    " order by b.partNumber";
+            productsList = dao.getJPQLParamsOffsetMax(PbCompanyProduct.class, sql2, searchObject.getOffset(), searchObject.getMax(), so.getId());
+            searchSize = so.getNumberOfItems();
+        } else {
+            String search = "%" + Helper.undecorate(searchObject.getFilter()) + "%";
+            String sql = "select count(*) from PbCompanyProduct b " +
+                    " where b.id in (" +
+                    " select c.companyProductId from PbCompanyStockOffer c " +
+                    " where c.offerRequestId = :value0)" +
+                    " and b.partNumber like :value1";
+            searchSize = dao.findJPQLParams(Number.class, sql, so.getId(), search).intValue();
+            String sql2 = "select b from PbCompanyProduct b " +
+                    " where b.id in (" +
+                    " select c.companyProductId from PbCompanyStockOffer c " +
+                    " where c.offerRequestId = :value0)" +
+                    " and b.partNumber like :value1" +
+                    " order by b.partNumber";
+            productsList = dao.getJPQLParamsOffsetMax(PbCompanyProduct.class, sql2, searchObject.getOffset(), searchObject.getMax(), so.getId(), search);
+        }
+        Map<String,Object> map = new HashMap<>();
+        map.put("products", productsList);
+        map.put("searchSize", searchSize);
+
+        return map;
     }
 
     public List<CompanyProduct> getSpecialOfferProducts(int offerId, int offset, int max){

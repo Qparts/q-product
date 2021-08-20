@@ -1,6 +1,4 @@
 package q.rest.product.operation;
-import org.jboss.logging.Logger;
-import q.rest.product.dao.DAO;
 import q.rest.product.dao.QvmDaoApi;
 import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.filter.annotation.UserSubscriberJwt;
@@ -32,24 +30,18 @@ import java.util.*;
 public class ProductApiV4 {
 
     @EJB
-    private DAO dao;
-
-    @EJB
-    private QvmDaoApi daoApi;
+    private QvmDaoApi qvmDaoApi;
 
     @EJB
     private AsyncProductApi async;
 
-    public static final Logger logger = Logger.getLogger(ProductApiV4.class);
 
     @SubscriberJwt
     @GET
     @Path("special-offers/live")
     public Response getLiveCompanySpecialOfferUpload(@Context UriInfo info) {
-        String sql = "select b from PbSpecialOffer b where :value0 between b.startDate and b.endDate and b.status = :value1 order by b.startDate";
-        var list = (info.getQueryParameters().getFirst("latest") == null) ?
-                dao.getJPQLParams(PbSpecialOffer.class, sql, new Date(), 'C') :
-                dao.getJPQLParamsMax(PbSpecialOffer.class, sql, 3, new Date(), 'C');
+        var latest = info.getQueryParameters().getFirst("latest") != null;
+        var list = qvmDaoApi.getLiveSpecialOffers(latest);
         return Response.status(200).entity(list).build();
     }
 
@@ -59,12 +51,24 @@ public class ProductApiV4 {
     public Response getDashboardMetrics(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
         int companyId = Helper.getCompanyFromJWT(header);
         Map<String,Object> map = new HashMap<>();
-        var numberOfProducts = daoApi.getNumberOfItems();
-        var numberOfStockProducts = daoApi.getNumberOfItemsInCompanyStock(companyId);
-        var mostSearchedCatalogBrands = daoApi.getMostSearchedCatalogBrands();
+        var numberOfProducts = qvmDaoApi.getNumberOfItems();
+        var numberOfStockProducts = qvmDaoApi.getNumberOfItemsInCompanyStock(companyId);
+        var mostSearchedCatalogBrands = qvmDaoApi.getMostSearchedCatalogBrands();
         map.put("mostSearchedCatalogBrands", mostSearchedCatalogBrands);
         map.put("numberOfProducts",numberOfProducts);
         map.put("numberOfStockProducts", numberOfStockProducts);
+        //premium
+        Response r = async.getSecuredRequest(AppConstants.GET_DASHBOARD_METRICS_ALLOWED, header);
+        if(r.getStatus() == 201){
+            var monthlySearchCountOnStock = qvmDaoApi.getMonthlySearchCount(companyId);
+            var mostSearchedProductsOnStock = qvmDaoApi.getMostSearchedProductsOnStock(companyId);
+            var mostActiveCompaniesOnStock = qvmDaoApi.getMostActiveCompaniesOnStock(header, companyId);
+            map.put("monthlySearchCountOnStock", monthlySearchCountOnStock);
+            map.put("mostSearchedProductsOnStock",mostSearchedProductsOnStock);
+            map.put("mostActiveCompaniesOnStock", mostActiveCompaniesOnStock);
+
+        }
+
         return Response.status(200).entity(map).build();
     }
 
@@ -74,36 +78,7 @@ public class ProductApiV4 {
     @POST
     @Path("special-offer-products")
     public Response getSpecialOfferProducts(SearchObject searchObject){
-        PbSpecialOffer so = dao.find(PbSpecialOffer.class, searchObject.getSpecialOfferId());
-        List<PbCompanyProduct> productsList;
-        int searchSize;
-        if(searchObject.getFilter() == null || searchObject.getFilter().trim().equals("")){
-            String sql2 = "select b from PbCompanyProduct b " +
-                    " where b.id in (" +
-                    " select c.companyProductId from PbCompanyStockOffer c " +
-                    " where c.offerRequestId = :value0)" +
-                    " order by b.partNumber";
-            productsList = dao.getJPQLParamsOffsetMax(PbCompanyProduct.class, sql2, searchObject.getOffset(), searchObject.getMax(), so.getId());
-            searchSize = so.getNumberOfItems();
-        } else {
-            String search = "%" + Helper.undecorate(searchObject.getFilter()) + "%";
-            String sql = "select count(*) from PbCompanyProduct b " +
-                    " where b.id in (" +
-                    " select c.companyProductId from PbCompanyStockOffer c " +
-                    " where c.offerRequestId = :value0)" +
-                    " and b.partNumber like :value1";
-            searchSize = dao.findJPQLParams(Number.class, sql, so.getId(), search).intValue();
-            String sql2 = "select b from PbCompanyProduct b " +
-                    " where b.id in (" +
-                    " select c.companyProductId from PbCompanyStockOffer c " +
-                    " where c.offerRequestId = :value0)" +
-                    " and b.partNumber like :value1" +
-                    " order by b.partNumber";
-            productsList = dao.getJPQLParamsOffsetMax(PbCompanyProduct.class, sql2, searchObject.getOffset(), searchObject.getMax(), so.getId(), search);
-        }
-        Map<String,Object> map = new HashMap<>();
-        map.put("products", productsList);
-        map.put("searchSize", searchSize);
+        Map<String,Object> map = qvmDaoApi.searchSpecialOfferProducts(searchObject);
         return Response.status(200).entity(map).build();
     }
 
@@ -111,25 +86,11 @@ public class ProductApiV4 {
     @POST
     @Path("search-products")
     public Response searchProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, SearchObject searchObject){
-
-        logger.info("start to get products with "+searchObject.getQuery());
-
         if(searchObject.getQuery() == null || searchObject.getQuery().length() == 0){
             return Response.status(404).build();
         }
-        String partNumber = "%" + Helper.undecorate(searchObject.getQuery()) + "%";
-        String jpql = "select b from Product b where b.productNumber like :value0 and b.status =:value1";
-        List<Product> products = dao.getJPQLParams(Product.class, jpql, partNumber, 'A');
-
-        List<Spec> specs = dao.get(Spec.class);
-        List<PbProduct> pbProducts = new ArrayList<>();
-        for (var product : products) {
-            pbProducts.add(product.getPublicProduct(specs));
-        }
-
-        logger.info("products size "+pbProducts.size());
-
-        return Response.status(200).entity(pbProducts).build();
+        List<PbProduct> products = qvmDaoApi.searchProducts(searchObject.getQuery());
+        return Response.status(200).entity(products).build();
     }
 
     @SubscriberJwt
@@ -139,9 +100,10 @@ public class ProductApiV4 {
         if(searchObject.getQuery() == null || searchObject.getQuery().length() == 0){
             return Response.status(200).entity(new HashMap<>()).build();
         }
-        var size = daoApi.searchCompanyProductSize(searchObject);
-        var companyProducts = daoApi.searchCompanyProductsPublic(searchObject);
+        var size = qvmDaoApi.searchCompanyProductSize(searchObject);
+        var companyProducts = qvmDaoApi.searchCompanyProductsPublic(searchObject);
         async.saveSearch2(header, searchObject, size > 0);
+        async.addToSearchList(header, companyProducts);
         Map<String,Object> map = new HashMap<>();
         map.put("searchSize", size);
         map.put("companyProducts", companyProducts);
@@ -199,7 +161,7 @@ public class ProductApiV4 {
         uploadRequest.setCreated(new Date());
         uploadRequest.setStatus('R');
         uploadRequest.setUploadSource('Q');//from qvm user
-        daoApi.createStockUploadRequest(uploadRequest);
+        qvmDaoApi.createStockUploadRequest(uploadRequest);
         Map<String,Integer> map = new HashMap<>();
         map.put("id", uploadRequest.getId());
         return Response.status(200).entity(map).build();
@@ -218,7 +180,7 @@ public class ProductApiV4 {
         uploadRequest.setStatus('R');
         uploadRequest.setUploadSource('Q');//from qvm user
         uploadRequest.setOfferNameAr(uploadRequest.getOfferName());
-        daoApi.createOfferUploadRequest(uploadRequest);
+        qvmDaoApi.createOfferUploadRequest(uploadRequest);
         Map<String,Integer> map = new HashMap<>();
         map.put("id", uploadRequest.getId());
         return Response.status(200).entity(map).build();

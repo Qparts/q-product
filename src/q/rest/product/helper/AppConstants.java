@@ -1,5 +1,8 @@
 package q.rest.product.helper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AppConstants {
 
     public static final String INTERNAL_APP_SECRET = "INTERNAL_APP";
@@ -44,6 +47,15 @@ public class AppConstants {
     public static final String POST_SAVE_REPLACEMENTS_KEYWORD = SUBSCRIBER_SERVICE + "replacement-search-keyword";
     public static final String POST_COMPANIES_REDUCED = SUBSCRIBER_SERVICE + "companies/reduced";
     public static final String POST_DEFAULT_POLICIES = SUBSCRIBER_SERVICE_V2 + "default-policy";
+    public static final String GET_DASHBOARD_METRICS_ALLOWED = SUBSCRIBER_SERVICE_V2 + "dashboard-metrics-allowed";
+
+    public static String getCompaniesVisibleFromIds(List<Integer> idArray){
+        StringBuilder ids = new StringBuilder("0");
+        for (int id : idArray) {
+            ids.append(",").append(id);
+        }
+        return SUBSCRIBER_SERVICE_V2 + "companies/" +ids+"/visible";
+    }
 
     public static  String getPullChunkSize(int companyId) {
         return  SUBSCRIBER_SERVICE + "pull-chunk-size/company/" + companyId;
