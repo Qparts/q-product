@@ -5,12 +5,8 @@ import q.rest.product.filter.annotation.UserSubscriberJwt;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.v3.product.PbProduct;
-import q.rest.product.model.product.full.Product;
-import q.rest.product.model.product.full.Spec;
 import q.rest.product.model.qvm.qvmstock.CompanyOfferUploadRequest;
 import q.rest.product.model.qvm.qvmstock.CompanyUploadRequest;
-import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyProduct;
-import q.rest.product.model.qvm.qvmstock.minimal.PbSpecialOffer;
 import q.rest.product.model.search.SearchObject;
 import q.rest.product.model.tecdoc.article.ArticleImage;
 import q.rest.product.model.tecdoc.article.ArticleResponse;
@@ -109,6 +105,20 @@ public class ProductApiV4 {
         map.put("companyProducts", companyProducts);
         return Response.status(200).entity(map).build();
     }
+
+
+    //not tested
+    @UserSubscriberJwt
+    @GET
+    @Path("search-lists/year/{year}/month/{month}")
+    public Response getTargetVendorQuotations(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month) {
+        Date from = Helper.getFromDate(month, year);
+        Date to = Helper.getToDate(month, year);
+        int companyId = Helper.getCompanyFromJWT(header);
+        var searchLists = qvmDaoApi.getSearchList(header, companyId, from , to);
+        return Response.ok().entity(searchLists).build();
+    }
+
 
     @POST
     @Path("search-replacement-product")

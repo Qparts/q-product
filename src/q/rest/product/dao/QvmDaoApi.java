@@ -10,6 +10,9 @@ import q.rest.product.model.VinSearch;
 import q.rest.product.model.contract.v3.product.PbProduct;
 import q.rest.product.model.product.full.Product;
 import q.rest.product.model.product.full.Spec;
+import q.rest.product.model.quotation.PbSearchList;
+import q.rest.product.model.quotation.PbSearchListItem;
+import q.rest.product.model.quotation.SearchList;
 import q.rest.product.model.qvm.qvmstock.*;
 import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyProduct;
 import q.rest.product.model.qvm.qvmstock.minimal.PbSpecialOffer;
@@ -57,8 +60,35 @@ public class QvmDaoApi {
     public List<PbSpecialOffer> getLiveSpecialOffers(boolean latest){
         String sql = "select b from PbSpecialOffer b where :value0 between b.startDate and b.endDate and b.status = :value1 order by b.startDate";
         return latest ?
-                dao.getJPQLParamsMax(PbSpecialOffer.class, sql, 3, new Date(), 'C') :
+                dao.getJPQLParamsMax(PbSpecialOffer.class, sql, 4, new Date(), 'C') :
                 dao.getJPQLParams(PbSpecialOffer.class, sql, new Date(), 'C');
+    }
+
+    public List<PbSearchList> getSearchList(String header, int companyId, Date from, Date to){
+        String sql = "select b from PbSearchList b where b.targetCompanyId = :value0 " +
+                " and cast(b.created as date) between cast(:value1 as date) and cast(:value2 as date) " +
+                " order by b.created desc";
+        var searchLists = dao.getJPQLParams(PbSearchList.class, sql, companyId, from, to);
+        List<Integer> idsList = new ArrayList<>();
+        for(var sl : searchLists) {
+            idsList.add(sl.getCompanyId());
+            sql = "select b from PbSearchListItem b where b.searchListId = :value0 order by b.created";
+            var items = dao.getJPQLParams(PbSearchListItem.class, sql, sl.getId());
+            sl.setItems(items);
+        }
+
+        Response r = async.getSecuredRequest(AppConstants.getCompaniesVisibleFromIds(idsList), header);
+        if(r.getStatus() == 200){
+            List<Map<String,Object>> companies = r.readEntity(new GenericType<List<Map<String,Object>>>(){});
+            for(var company : companies){
+                int foundCompanyId = (int) company.get("id");
+                for(var searchList : searchLists){
+                    if(searchList.getCompanyId() == foundCompanyId)
+                        searchList.setCompany(company);
+                }
+            }
+        }
+        return searchLists;
     }
 
     public List<Map<String,Object>> getMostActiveCompaniesOnStock(String header, int companyId){

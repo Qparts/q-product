@@ -1,33 +1,46 @@
 package q.rest.product.model.quotation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Table(name="prd_search_list")
 @Entity
-public class SearchList implements Serializable{
+public class PbSearchList implements Serializable{
     @Id
-    @SequenceGenerator(name = "prd_search_list_id_seq_gen", sequenceName = "prd_search_list_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_search_list_id_seq_gen")
     private long id;
-    private int subscriberId;
+    @JsonIgnore
     private int companyId;
+    @JsonIgnore
     private int targetCompanyId;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
+    @JsonIgnore
     private char status;
 
-    public SearchList(){
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created;
+    @Transient
+    private Object company;
+    @Transient
+    private List<PbSearchListItem> items = new ArrayList<>();
 
+    public Object getCompany() {
+        return company;
     }
 
-    public SearchList(int companyId, int subscriberId, int targetCompanyId){
-        this.setCompanyId(companyId);
-        this.setTargetCompanyId(targetCompanyId);
-        this.setSubscriberId(subscriberId);
-        this.setCreated(new Date());
-        this.setStatus('N');
+    public void setCompany(Object company) {
+        this.company = company;
+    }
+
+    public List<PbSearchListItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<PbSearchListItem> items) {
+        this.items = items;
     }
 
 
@@ -37,14 +50,6 @@ public class SearchList implements Serializable{
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public int getSubscriberId() {
-        return subscriberId;
-    }
-
-    public void setSubscriberId(int subscriberId) {
-        this.subscriberId = subscriberId;
     }
 
     public int getCompanyId() {
