@@ -116,16 +116,15 @@ public class QvmDaoApi {
         if(r.getStatus() == 200){
             List<Map<String,Object>> companies = r.readEntity(new GenericType<List<Map<String,Object>>>(){});
             for(var company : companies){
-                System.out.println("company is " + company);
-                System.out.println("company id is " + company.get("id"));
                 int foundCompanyId = (int) company.get("id");
-                System.out.println("found company id " + foundCompanyId);
                 for(var row : list){
-                    System.out.println("row map is " + row);
                     Object rowCompanyId = row.get("company");
-                    System.out.println("row companyId: " + rowCompanyId);
-                    if( ((int) row.get("company")) == foundCompanyId)
-                        row.replace("company", company);
+                    if(rowCompanyId instanceof Integer){
+                        if( ((int) row.get("company")) == foundCompanyId) {
+                            row.replace("company", company);
+                            break;
+                        }
+                    }
                 }
             }
         }
