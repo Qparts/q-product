@@ -121,6 +121,9 @@ public class QvmDaoApi {
                 int foundCompanyId = (int) company.get("id");
                 System.out.println("found company id " + foundCompanyId);
                 for(var row : list){
+                    System.out.println("row map is " + row);
+                    Object rowCompanyId = row.get("company");
+                    System.out.println("row companyId: " + rowCompanyId);
                     if( ((int) row.get("company")) == foundCompanyId)
                         row.replace("company", company);
                 }
