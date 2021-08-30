@@ -97,7 +97,6 @@ public class QvmDaoApi {
                 " where target_company_id = " + companyId +
                 " group by list.company_id";
         List<Object> result = dao.getNativeMax(sql, 5);
-        System.out.println("result size " + result.size());
         List<Map<String, Object>> list = new ArrayList<>();
         List<Integer> idsList = new ArrayList<>();
         for (Object obj : result) {
@@ -110,7 +109,6 @@ public class QvmDaoApi {
             map.put("total", total);
             list.add(map);
         }
-        System.out.println("retrieved");
         //replace company ids with company
         Response r = async.getSecuredRequest(AppConstants.getCompaniesVisibleFromIds(idsList), header);
         if(r.getStatus() == 200){
