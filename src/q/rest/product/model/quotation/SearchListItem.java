@@ -1,5 +1,6 @@
 package q.rest.product.model.quotation;
 
+import q.rest.product.model.qvm.qvmstock.CompanyProduct;
 import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyProduct;
 
 import javax.persistence.*;
@@ -37,6 +38,20 @@ public class SearchListItem {
         this.specialOfferPrice = offerPrice;
         this.linkedProductId = linkedProductId;
     }
+
+
+    public SearchListItem(long searchListId, CompanyProduct companyProduct, double offerPrice, Long linkedProductId){
+        this.searchListId = searchListId;
+        this.productNumber = companyProduct.getPartNumber();
+        this.brand = companyProduct.getBrandName();
+        this.created = new Date();
+        this.status = 'N';
+        this.retailPrice = companyProduct.getRetailPrice();
+        this.specialOffer = !companyProduct.getOffers().isEmpty();
+        this.specialOfferPrice = offerPrice;
+        this.linkedProductId = linkedProductId;
+    }
+
 
     public long getId() {
         return id;

@@ -283,6 +283,7 @@ public class ProductQvmApiV3 {
         var size = daoApi.searchCompanyProductSize(searchObject);
         var companyProducts = daoApi.searchCompanyProducts(searchObject);
         async.saveSearch2(header, searchObject, size > 0);
+        async.addToSearchListOld(header, companyProducts);
         Map<String,Object> map = new HashMap<>();
         map.put("count", size);
         map.put("products", companyProducts);

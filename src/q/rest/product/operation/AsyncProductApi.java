@@ -13,6 +13,7 @@ import q.rest.product.model.quotation.SearchList;
 import q.rest.product.model.quotation.SearchListItem;
 import q.rest.product.model.qvm.qvmstock.CompanyProduct;
 import q.rest.product.model.qvm.qvmstock.CompanyStock;
+import q.rest.product.model.qvm.qvmstock.CompanyStockOffer;
 import q.rest.product.model.qvm.qvmstock.DataPullHistory;
 import q.rest.product.model.qvm.QvmObject;
 import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyProduct;
@@ -45,7 +46,7 @@ public class AsyncProductApi {
         if (searchObject.isNewSearch()) {
             int companyId = Helper.getCompanyFromJWT(header);
             int subscriberId = Helper.getSubscriberFromJWT(header);
-            Map<String,Object> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<>();
             map.put("query", searchObject.getQuery());
             map.put("companyId", companyId);
             map.put("subscriberId", subscriberId);
@@ -56,15 +57,15 @@ public class AsyncProductApi {
     }
 
     @Asynchronous
-    public void addToSearchList(String header, List<PbCompanyProduct> searchResult){
+    public void addToSearchList(String header, List<PbCompanyProduct> searchResult) {
         int companyId = Helper.getCompanyFromJWT(header);
         int subscriberId = Helper.getSubscriberFromJWT(header);
-        for(var result : searchResult) {
+        for (var result : searchResult) {
             String sql = "select b from SearchList b where b.companyId =:value0 and b.targetCompanyId =:value1 and cast(b.created as date) =:value2";
             List<SearchList> existingSearchList = dao.getJPQLParams(SearchList.class, sql, companyId, result.getCompanyId(), new Date());
             double offerPrice = getOfferPrice(result);
             Long linkedProductId = getLinkedProductIdToSearch(result.getPartNumber(), result.getBrandName());
-            if(existingSearchList.isEmpty()) {
+            if (existingSearchList.isEmpty()) {
                 SearchList list = new SearchList(companyId, subscriberId, result.getCompanyId());
                 dao.persist(list);
                 existingSearchList.add(list);
@@ -75,23 +76,58 @@ public class AsyncProductApi {
         }
     }
 
-    private Long getLinkedProductIdToSearch(String partNumber, String brand){
+    //temporary for company product in ProductQvmApiV3
+    @Asynchronous
+    public void addToSearchListOld(String header, List<CompanyProduct> searchResult) {
+        int companyId = Helper.getCompanyFromJWT(header);
+        int subscriberId = Helper.getSubscriberFromJWT(header);
+        for (var result : searchResult) {
+            try {
+                String sql = "select b from SearchList b where b.companyId =:value0 and b.targetCompanyId =:value1 and cast(b.created as date) =:value2";
+                List<SearchList> existingSearchList = dao.getJPQLParams(SearchList.class, sql, companyId, result.getCompanyId(), new Date());
+                double offerPrice = getOfferPrice(result);
+                Long linkedProductId = getLinkedProductIdToSearch(result.getPartNumber(), result.getBrandName());
+                if (existingSearchList.isEmpty()) {
+                    SearchList list = new SearchList(companyId, subscriberId, result.getCompanyId());
+                    dao.persist(list);
+                    existingSearchList.add(list);
+                }
+                var listId = existingSearchList.get(0).getId();
+                var searchListItem = new SearchListItem(listId, result, offerPrice, linkedProductId);
+                dao.persist(searchListItem);
+            } catch (Exception ex) {
+                System.out.println("an error occured in saving search list for old api");
+            }
+        }
+    }
+
+    private Long getLinkedProductIdToSearch(String partNumber, String brand) {
         partNumber = "'" + Helper.undecorate(partNumber) + "'";
-        brand = "'" + brand.toUpperCase().trim()+ "'";
+        brand = "'" + brand.toUpperCase().trim() + "'";
         String sql = "select pr.id from prd_product pr join prd_brand br on pr.brand_id = br.id" +
-                " where pr.product_number = "+partNumber+" and upper(br.name) = " + brand;
+                " where pr.product_number = " + partNumber + " and upper(br.name) = " + brand;
         System.out.println(sql);
         List<Number> found = dao.getNative(sql);
-        if(!found.isEmpty()){
+        if (!found.isEmpty()) {
             return found.get(0).longValue();
         }
         return null;
     }
 
-    private double getOfferPrice(PbCompanyProduct companyProduct){
+    private double getOfferPrice(PbCompanyProduct companyProduct) {
         Iterator<PbCompanyStockOffer> it = companyProduct.getOffers().iterator();
         double offerPrice = 0;
-        while (it.hasNext()){
+        while (it.hasNext()) {
+            var offer = it.next();
+            offerPrice = offer.getOfferPrice();
+        }
+        return offerPrice;
+    }
+
+    private double getOfferPrice(CompanyProduct companyProduct) {
+        Iterator<CompanyStockOffer> it = companyProduct.getOffers().iterator();
+        double offerPrice = 0;
+        while (it.hasNext()) {
             var offer = it.next();
             offerPrice = offer.getOfferPrice();
         }
@@ -100,9 +136,9 @@ public class AsyncProductApi {
 
 
     @Asynchronous
-    public void saveReplacementSearch(String header, String query , boolean found) {
+    public void saveReplacementSearch(String header, String query, boolean found) {
         //get company from header
-        Map<String,Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         try {
             int[] ints = this.readClaims(header);
             map.put("query", query);
@@ -111,11 +147,10 @@ public class AsyncProductApi {
             map.put("subscriberId", ints[1]);
             Response r = this.postSecuredRequest(AppConstants.POST_SAVE_REPLACEMENTS_KEYWORD, map, header);
             r.close();
-        }catch (Exception ignore){
+        } catch (Exception ignore) {
 
         }
     }
-
 
 
     @Asynchronous
@@ -135,8 +170,7 @@ public class AsyncProductApi {
                             List<QvmObject> rs = r.readEntity(new GenericType<List<QvmObject>>() {
                             });
                             updateStock(rs, psr, dph);
-                        }
-                        else r.close();
+                        } else r.close();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -223,12 +257,12 @@ public class AsyncProductApi {
 
             Helper h = new Helper();
             String sql = "delete from prd_company_stock where created < '" + h.getDateFormat(dph.getCreated()) + "' " +
-                    "and company_product_id in (select d.id from prd_company_product d where d.company_id = " +dph.getCompanyId() +")";
+                    "and company_product_id in (select d.id from prd_company_product d where d.company_id = " + dph.getCompanyId() + ")";
             dao.updateNative(sql);
             dph.setStatus('C');
-        }catch (Exception ex){
+        } catch (Exception ex) {
             dph.setStatus('F');
-        }finally {
+        } finally {
             dao.update(dph);
         }
     }
@@ -241,10 +275,9 @@ public class AsyncProductApi {
     }
 
 
-
     @Asynchronous
-    public void saveVinSearch(String vin, String catalogId, String header, boolean found){
-        try{
+    public void saveVinSearch(String vin, String catalogId, String header, boolean found) {
+        try {
             VinSearch vinSearch = new VinSearch();
             vinSearch.setCatalogId(catalogId);
             vinSearch.setVin(vin);
@@ -254,7 +287,7 @@ public class AsyncProductApi {
             vinSearch.setSubscriberId(claims[1]);
             vinSearch.setFound(found);
             dao.persist(vinSearch);
-        }catch (Exception ignore){
+        } catch (Exception ignore) {
             System.out.println("an exception occured!!!");
         }
     }
@@ -266,7 +299,7 @@ public class AsyncProductApi {
         return r;
     }
 
-    public int[] readClaims(String header) throws Exception{
+    public int[] readClaims(String header) throws Exception {
         String token = header.substring("Bearer".length()).trim();
         Claims claims = Jwts.parserBuilder().setSigningKey(KeyConstant.PUBLIC_KEY).build().parseClaimsJws(token).getBody();
         int companyId = Integer.parseInt(claims.get("comp").toString());
