@@ -158,6 +158,16 @@ public class StockProductV2 {
         return Response.status(200).entity(sp).build();
     }
 
+    @SubscriberJwt
+    @PUT
+    @Path("price-policy")
+    public Response updatePricePolicy(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, StockPricePolicy policy){
+        int companyId = Helper.getCompanyFromJWT(header);
+        policy.setCompanyId(companyId);
+        daoApi.updatePricePolicy(policy);
+        return Response.status(200).build();
+    }
+
 
     @SubscriberJwt
     @POST

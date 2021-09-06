@@ -330,6 +330,11 @@ public class DaoApi {
         dao.persist(policy);
     }
 
+    public void updatePricePolicy(StockPricePolicy policy) {
+        dao.update(policy);
+    }
+
+
     public List<StockPricePolicy> getPolicies(int companyId) {
         String sql = "select b from StockPricePolicy b where b.companyId = :value0 order by b.id ";
         return dao.getJPQLParams(StockPricePolicy.class, sql, companyId);
