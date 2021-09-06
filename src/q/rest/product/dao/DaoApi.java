@@ -61,6 +61,15 @@ public class DaoApi {
         return dao.getJPQLParams(StockProductSetting.class, sql, companyId, productId);
     }
 
+    public StockProductView updatePolicy(int companyId, long productId, int policyId){
+        StockProductView view = findProduct(productId, companyId);
+        String sql = "insert into prd_stk_product_setting (product_id, company_id, policy_id, shortage_flag) " +
+                "values (" + productId + ", "+ companyId +" , "+ policyId +", 0)" +
+                " on conflict on constraint prd_stk_company_product_pkey do update set policy_id = " + policyId;
+        dao.updateNative(sql);
+        return view;
+    }
+
     public StockProduct createStockProduct(String productNumber, int brandId, String name, String nameAr ,double referencePrice, int companyId) {
         StockProduct product = new StockProduct();
         product.setProductNumber(Helper.undecorate(productNumber));

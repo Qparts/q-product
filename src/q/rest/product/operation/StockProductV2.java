@@ -115,6 +115,17 @@ public class StockProductV2 {
         return Response.status(200).entity(brands).build();
     }
 
+    @SubscriberJwt
+    @PUT
+    @Path("product-policy")
+    public Response updateProductSetting(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String,Number> map) {
+        int companyId = Helper.getCompanyFromJWT(header);
+        long productId = map.get("productId").longValue();
+        int policyId = map.get("policyId").intValue();
+        StockProductView view = daoApi.updatePolicy(companyId, productId, policyId);
+        view.setPolicyId(policyId);
+        return Response.status(200).entity(view).build();
+    }
 
     @SubscriberJwt
     @POST
