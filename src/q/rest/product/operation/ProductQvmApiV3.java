@@ -262,7 +262,7 @@ public class ProductQvmApiV3 {
     @Path("company-uploads/special-offer/{soId}/products/offset/{offset}/max/{max}")
     public Response getSpecialOfferProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "soId") int offerId, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max){
         List<CompanyProduct> so = daoApi.getSpecialOfferProducts(offerId, offset, max);
-        async.addToSpecialOfferList(header, offerId, offset, so.size(), null);
+        async.addToSpecialOfferList(header, offerId, offset, so.size(), max, null);
         return Response.status(200).entity(so).build();
     }
 
@@ -272,7 +272,7 @@ public class ProductQvmApiV3 {
     public Response getCompanySpecialOffer(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "soId") int offerId, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max, @PathParam(value = "filter") String filter){
         Map<String,Object> map = daoApi.getSpecialOfferProductsWithFilter(filter, offerId, offset, max);
         List<CompanyProduct> list = (List<CompanyProduct>) map.get("products");
-        async.addToSpecialOfferList(header, offerId, offset, list.size(), filter);
+        async.addToSpecialOfferList(header, offerId, offset, list.size(), max, filter);
         return Response.status(200).entity(map).build();
     }
 

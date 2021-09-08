@@ -76,7 +76,7 @@ public class AsyncProductApi {
     }
 
     @Asynchronous
-    public void addToSpecialOfferList(String header, int offerId, int page, int numberOfProducts, String filter){
+    public void addToSpecialOfferList(String header, int offerId, int page, int numberOfProducts, int max, String filter){
         int companyId = Helper.getCompanyFromJWT(header);
         int subscriberId = Helper.getSubscriberFromJWT(header);
         OfferSearchList searchList = new OfferSearchList();
@@ -86,7 +86,7 @@ public class AsyncProductApi {
         searchList.setFilter(filter);
         searchList.setNumberOfProducts(numberOfProducts);
         searchList.setOfferId(offerId);
-        searchList.setPage((page /20) + 1);
+        searchList.setPage((page /max) + 1);
         dao.persist(searchList);
     }
 

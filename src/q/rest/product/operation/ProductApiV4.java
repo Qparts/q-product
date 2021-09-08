@@ -77,7 +77,7 @@ public class ProductApiV4 {
     public Response getSpecialOfferProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, SearchObject searchObject){
         Map<String,Object> map = qvmDaoApi.searchSpecialOfferProducts(searchObject);
         List<PbCompanyProduct> list = (List<PbCompanyProduct>) map.get("products");
-        async.addToSpecialOfferList(header, searchObject.getSpecialOfferId(), searchObject.getOffset(), list.size(), searchObject.getFilter());
+        async.addToSpecialOfferList(header, searchObject.getSpecialOfferId(), searchObject.getOffset(), list.size(), searchObject.getMax(), searchObject.getFilter());
         return Response.status(200).entity(map).build();
     }
 
