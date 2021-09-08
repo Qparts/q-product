@@ -9,6 +9,7 @@ import q.rest.product.helper.KeyConstant;
 import q.rest.product.model.contract.v3.Branch;
 import q.rest.product.model.contract.v3.PullStockRequest;
 import q.rest.product.model.VinSearch;
+import q.rest.product.model.quotation.OfferSearchList;
 import q.rest.product.model.quotation.SearchList;
 import q.rest.product.model.quotation.SearchListItem;
 import q.rest.product.model.qvm.qvmstock.CompanyProduct;
@@ -23,8 +24,6 @@ import q.rest.product.model.search.SearchObject;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -74,6 +73,21 @@ public class AsyncProductApi {
             var searchListItem = new SearchListItem(listId, result, offerPrice, linkedProductId);
             dao.persist(searchListItem);
         }
+    }
+
+    @Asynchronous
+    public void addToSpecialOfferList(String header, int offerId, int page, int numberOfProducts, String filter){
+        int companyId = Helper.getCompanyFromJWT(header);
+        int subscriberId = Helper.getSubscriberFromJWT(header);
+        OfferSearchList searchList = new OfferSearchList();
+        searchList.setCompanyId(companyId);
+        searchList.setSubscriberId(subscriberId);
+        searchList.setCreated(new Date());
+        searchList.setFilter(filter);
+        searchList.setNumberOfProducts(numberOfProducts);
+        searchList.setOfferId(offerId);
+        searchList.setPage((page /20) + 1);
+        dao.persist(searchList);
     }
 
     //temporary for company product in ProductQvmApiV3

@@ -7,6 +7,7 @@ import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.v3.product.PbProduct;
 import q.rest.product.model.qvm.qvmstock.CompanyOfferUploadRequest;
 import q.rest.product.model.qvm.qvmstock.CompanyUploadRequest;
+import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyProduct;
 import q.rest.product.model.search.SearchObject;
 import q.rest.product.model.tecdoc.article.ArticleImage;
 import q.rest.product.model.tecdoc.article.ArticleResponse;
@@ -70,11 +71,13 @@ public class ProductApiV4 {
 
 
 
-    @UserSubscriberJwt
+    @SubscriberJwt
     @POST
     @Path("special-offer-products")
-    public Response getSpecialOfferProducts(SearchObject searchObject){
+    public Response getSpecialOfferProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, SearchObject searchObject){
         Map<String,Object> map = qvmDaoApi.searchSpecialOfferProducts(searchObject);
+        List<PbCompanyProduct> list = (List<PbCompanyProduct>) map.get("products");
+        async.addToSpecialOfferList(header, searchObject.getSpecialOfferId(), searchObject.getOffset(), list.size(), searchObject.getFilter());
         return Response.status(200).entity(map).build();
     }
 

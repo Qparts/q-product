@@ -260,16 +260,19 @@ public class ProductQvmApiV3 {
     @UserSubscriberJwt
     @GET
     @Path("company-uploads/special-offer/{soId}/products/offset/{offset}/max/{max}")
-    public Response getSpecialOfferProducts(@PathParam(value = "soId") int offerId, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max){
+    public Response getSpecialOfferProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "soId") int offerId, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max){
         List<CompanyProduct> so = daoApi.getSpecialOfferProducts(offerId, offset, max);
+        async.addToSpecialOfferList(header, offerId, offset, so.size(), null);
         return Response.status(200).entity(so).build();
     }
 
     @UserSubscriberJwt
     @GET
     @Path("company-uploads/special-offer/{soId}/products/offset/{offset}/max/{max}/search/{filter}")
-    public Response getCompanySpecialOffer(@PathParam(value = "soId") int offerId, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max, @PathParam(value = "filter") String filter){
+    public Response getCompanySpecialOffer(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "soId") int offerId, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max, @PathParam(value = "filter") String filter){
         Map<String,Object> map = daoApi.getSpecialOfferProductsWithFilter(filter, offerId, offset, max);
+        List<CompanyProduct> list = (List<CompanyProduct>) map.get("products");
+        async.addToSpecialOfferList(header, offerId, offset, list.size(), filter);
         return Response.status(200).entity(map).build();
     }
 
