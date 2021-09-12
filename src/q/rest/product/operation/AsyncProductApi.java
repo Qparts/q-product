@@ -187,6 +187,7 @@ public class AsyncProductApi {
                         sl.setCreated(new Date(res.getCreated()));
                         sl.setSubscriberId(res.getSubscriberId());
                         sl.setTargetCompanyId(res.getTargetCompanyId());
+                        dao.persist(sl);
                         for(var qi : res.getQuotationItems()) {
                             SearchListItem sli = new SearchListItem();
                             sli.setBrand(qi.getBrand());
@@ -196,8 +197,9 @@ public class AsyncProductApi {
                             sli.setSpecialOffer(qi.isSpecialOffer());
                             sli.setSpecialOfferPrice(qi.getSpecialOfferPrice());
                             sli.setStatus(qi.getStatus());
+                            sli.setSearchListId(sl.getId());
+                            dao.persist(sli);
                         }
-                        dao.persist(sl) ;
                     }
                     System.out.println("size is " + rs.size());
                 }

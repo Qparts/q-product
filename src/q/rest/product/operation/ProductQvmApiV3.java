@@ -309,7 +309,6 @@ public class ProductQvmApiV3 {
     public Response migrateQuotations(){
         String base = "http://localhost:8081/service-q-quotation/rest/internal/api/v3/migrate-company-quotations/";
         int totalCount = 131797;
-//        int totalCount = 103;
         final int N = 500;
         List<Integer> ints = new ArrayList<>();
         int temp = 0;
