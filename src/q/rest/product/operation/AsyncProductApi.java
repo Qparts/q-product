@@ -169,49 +169,6 @@ public class AsyncProductApi {
     }
 
     @Asynchronous
-    public void migrate(List<String> links){
-        ExecutorService es = Executors.newFixedThreadPool(10);
-        for(int i =0; i < links.size(); i++ ){
-            final int ii=i;
-            Runnable runnable = () -> {
-                String url = links.get(ii);
-                Response r = getSecuredRequest(url, "sompak");
-                if(r.getStatus() == 200) {
-                    List<SearchListForMigration> rs = r.readEntity(new GenericType<List<SearchListForMigration>>() {
-                    });
-
-                    for(var res : rs){
-                        SearchList sl = new SearchList();
-                        sl.setCompanyId(res.getCompanyId());
-                        sl.setStatus(res.getStatus());
-                        sl.setCreated(new Date(res.getCreated()));
-                        sl.setSubscriberId(res.getSubscriberId());
-                        sl.setTargetCompanyId(res.getTargetCompanyId());
-                        dao.persist(sl);
-                        for(var qi : res.getQuotationItems()) {
-                            SearchListItem sli = new SearchListItem();
-                            sli.setBrand(qi.getBrand());
-                            sli.setCreated(new Date(qi.getCreated()));
-                            sli.setProductNumber(qi.getProductNumber());
-                            sli.setRetailPrice(qi.getRetailPrice());
-                            sli.setSpecialOffer(qi.isSpecialOffer());
-                            sli.setSpecialOfferPrice(qi.getSpecialOfferPrice());
-                            sli.setStatus(qi.getStatus());
-                            sli.setSearchListId(sl.getId());
-                            dao.persist(sli);
-                        }
-                    }
-                    System.out.println("size is " + rs.size());
-                }
-            };
-            es.execute(runnable);
-        }
-        es.shutdown();
-        while (!es.isTerminated()) ;
-        System.out.println("over migration");
-    }
-
-    @Asynchronous
     public void callPullData(List<String> links, String header, PullStockRequest psr, DataPullHistory dph) {
         ExecutorService es = Executors.newFixedThreadPool(10);
         for (int i = 0; i < links.size(); i++) {
