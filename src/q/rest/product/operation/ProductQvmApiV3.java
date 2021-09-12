@@ -304,6 +304,27 @@ public class ProductQvmApiV3 {
         }
     }
 
+    @GET
+    @Path("do-migrate-quotations")
+    public Response migrateQuotations(){
+        String base = "http://localhost:8081/service-q-quotation/rest/internal/api/v3/migrate-company-quotations/";
+        int totalCount = 131797;
+//        int totalCount = 103;
+        final int N = 500;
+        List<Integer> ints = new ArrayList<>();
+        int temp = 0;
+        while(totalCount > 0){
+            ints.add(temp);
+            if(totalCount >= N) totalCount -= N;
+            else totalCount -= totalCount;
+            temp += N;
+        }
+        List<String> links = new ArrayList<>();
+        ints.forEach(g -> links.add(base + "offset/"+ g +"/max/" + N));
+        async.migrate(links);
+        return Response.status(200).entity(links).build();
+    }
+
     @UserJwt
     @POST
     @Path("pull-stock")

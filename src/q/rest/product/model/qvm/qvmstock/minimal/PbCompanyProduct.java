@@ -19,11 +19,14 @@ public class PbCompanyProduct {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "company_product_id")
     private Set<PbCompanyStock> stock = new HashSet<>();
-
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "company_product_id")
     @Where(clause = "now() between offer_start_date and offer_end_date")
     private Set<PbCompanyStockOffer> offers = new HashSet<>();
+
+
+
+
 
     public Set<PbCompanyStock> getStock() {
         return stock;

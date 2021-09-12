@@ -11,6 +11,7 @@ import q.rest.product.model.contract.v3.PullStockRequest;
 import q.rest.product.model.VinSearch;
 import q.rest.product.model.quotation.OfferSearchList;
 import q.rest.product.model.quotation.SearchList;
+import q.rest.product.model.quotation.SearchListForMigration;
 import q.rest.product.model.quotation.SearchListItem;
 import q.rest.product.model.qvm.qvmstock.CompanyProduct;
 import q.rest.product.model.qvm.qvmstock.CompanyStock;
@@ -54,6 +55,7 @@ public class AsyncProductApi {
             r.close();
         }
     }
+
 
     @Asynchronous
     public void addToSearchList(String header, List<PbCompanyProduct> searchResult) {
@@ -166,28 +168,65 @@ public class AsyncProductApi {
         }
     }
 
+    @Asynchronous
+    public void migrate(List<String> links){
+        ExecutorService es = Executors.newFixedThreadPool(10);
+        for(int i =0; i < links.size(); i++ ){
+            final int ii=i;
+            Runnable runnable = () -> {
+                String url = links.get(ii);
+                Response r = getSecuredRequest(url, "sompak");
+                if(r.getStatus() == 200) {
+                    List<SearchListForMigration> rs = r.readEntity(new GenericType<List<SearchListForMigration>>() {
+                    });
+
+                    for(var res : rs){
+                        SearchList sl = new SearchList();
+                        sl.setCompanyId(res.getCompanyId());
+                        sl.setStatus(res.getStatus());
+                        sl.setCreated(new Date(res.getCreated()));
+                        sl.setSubscriberId(res.getSubscriberId());
+                        sl.setTargetCompanyId(res.getTargetCompanyId());
+                        for(var qi : res.getQuotationItems()) {
+                            SearchListItem sli = new SearchListItem();
+                            sli.setBrand(qi.getBrand());
+                            sli.setCreated(new Date(qi.getCreated()));
+                            sli.setProductNumber(qi.getProductNumber());
+                            sli.setRetailPrice(qi.getRetailPrice());
+                            sli.setSpecialOffer(qi.isSpecialOffer());
+                            sli.setSpecialOfferPrice(qi.getSpecialOfferPrice());
+                            sli.setStatus(qi.getStatus());
+                        }
+                        dao.persist(sl) ;
+                    }
+                    System.out.println("size is " + rs.size());
+                }
+            };
+            es.execute(runnable);
+        }
+        es.shutdown();
+        while (!es.isTerminated()) ;
+        System.out.println("over migration");
+    }
 
     @Asynchronous
     public void callPullData(List<String> links, String header, PullStockRequest psr, DataPullHistory dph) {
         ExecutorService es = Executors.newFixedThreadPool(10);
         for (int i = 0; i < links.size(); i++) {
             final int ii = i;
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    String url = links.get(ii);
-                    try {
-                        System.out.println("calling url " + url);
-                        Response r = getSecuredRequest(url, header);
-                        System.out.println("response: " + r.getStatus());
-                        if (r.getStatus() == 200) {
-                            List<QvmObject> rs = r.readEntity(new GenericType<List<QvmObject>>() {
-                            });
-                            updateStock(rs, psr, dph);
-                        } else r.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            Runnable runnable = () -> {
+                String url = links.get(ii);
+                try {
+                    System.out.println("calling url " + url);
+                    Response r = getSecuredRequest(url, header);
+                    System.out.println("response: " + r.getStatus());
+                    if (r.getStatus() == 200) {
+                        List<QvmObject> rs = r.readEntity(new GenericType<List<QvmObject>>() {
+                        });
+                        updateStock(rs, psr, dph);
+                    } else r.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             };
             es.execute(runnable);

@@ -15,6 +15,7 @@ import q.rest.product.model.quotation.PbSearchListItem;
 import q.rest.product.model.quotation.SearchList;
 import q.rest.product.model.qvm.qvmstock.*;
 import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyProduct;
+import q.rest.product.model.qvm.qvmstock.minimal.PbCompanyStock;
 import q.rest.product.model.qvm.qvmstock.minimal.PbSpecialOffer;
 import q.rest.product.model.search.SearchObject;
 import q.rest.product.operation.AsyncProductApi;
@@ -276,6 +277,23 @@ public class QvmDaoApi {
             pbProducts.add(product.getPublicProduct(specs));
         }
         return pbProducts;
+    }
+
+    public PbCompanyProduct updateCompanyProductPrice(long id, int companyId, double retailPrice){
+        PbCompanyProduct companyProduct = dao.findTwoConditions(PbCompanyProduct.class, "id", "companyId" , id, companyId);
+        companyProduct.setRetailPrice(retailPrice);
+        dao.update(retailPrice);
+        return companyProduct;
+    }
+
+
+    public CompanyStock updateCompanyProductStockQuantity(long id, int companyId, int branchId, int quantity){
+        String sql = "select b from PbCompanyStock b where b.companyProductId = :value0 and b.branchId = :value1 and b.companyProductId in (" +
+                " select c from PbCompanyProduct c where c.companyId = :value2) ";
+        var stock = dao.findJPQLParams(CompanyStock.class, sql, id, branchId, companyId);
+        stock.setQuantity(quantity);
+        dao.update(stock);
+        return stock;
     }
 
 

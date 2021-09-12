@@ -92,6 +92,31 @@ public class ProductApiV4 {
         return Response.status(200).entity(products).build();
     }
 
+    //not yet implemented
+    @SubscriberJwt
+    @PUT
+    @Path("company-product-price")
+    public Response updateCompanyProductPrice(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String,Number> map){
+        int companyId = Helper.getCompanyFromJWT(header);
+        long companyProductId = map.get("productId").longValue();
+        double retailPrice = map.get("retailPrice").doubleValue();
+        var companyProduct = qvmDaoApi.updateCompanyProductPrice(companyProductId, companyId, retailPrice);
+        return Response.status(200).entity(companyProduct).build();
+    }
+
+    //not yet implemented
+    @SubscriberJwt
+    @PUT
+    @Path("company-product-quantity")
+    public Response updateCompanyProductQuantity(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String,Number> map){
+        int companyId = Helper.getCompanyFromJWT(header);
+        long companyProductId = map.get("productId").longValue();
+        int branchId = map.get("branchId").intValue();
+        int quantity = map.get("quantity").intValue();
+        var companyStock = qvmDaoApi.updateCompanyProductStockQuantity(companyProductId, companyId, branchId, quantity);
+        return Response.status(200).entity(companyStock).build();
+    }
+
     @SubscriberJwt
     @POST
     @Path("search-company-products")

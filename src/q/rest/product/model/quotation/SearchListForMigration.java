@@ -1,37 +1,27 @@
 package q.rest.product.model.quotation;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-@Table(name="prd_search_list")
-@Entity
-public class SearchList implements Serializable{
-    @Id
-    @SequenceGenerator(name = "prd_search_list_id_seq_gen", sequenceName = "prd_search_list_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prd_search_list_id_seq_gen")
+public class SearchListForMigration implements Serializable{
     private long id;
     private int subscriberId;
     private int companyId;
     private int targetCompanyId;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
+    private long created;
     private char status;
+    private List<SearchListItemForMigration> quotationItems = new ArrayList<>();
 
-    public SearchList(){
-
+    public List<SearchListItemForMigration> getQuotationItems() {
+        return quotationItems;
     }
 
-    public SearchList(int companyId, int subscriberId, int targetCompanyId){
-        this.setCompanyId(companyId);
-        this.setTargetCompanyId(targetCompanyId);
-        this.setSubscriberId(subscriberId);
-        this.setCreated(new Date());
-        this.setStatus('N');
+    public void setQuotationItems(List<SearchListItemForMigration> quotationItems) {
+        this.quotationItems = quotationItems;
     }
-
 
     public long getId() {
         return id;
@@ -65,11 +55,11 @@ public class SearchList implements Serializable{
         this.targetCompanyId = targetCompanyId;
     }
 
-    public Date getCreated() {
+    public long getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(long created) {
         this.created = created;
     }
 
