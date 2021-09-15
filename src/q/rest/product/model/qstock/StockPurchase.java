@@ -39,6 +39,16 @@ public class StockPurchase implements Serializable {
     @OrderBy("created asc")
     private Set<StockReturnPurchase> purchaseReturns;
 
+
+    @JsonIgnore
+    public long getStockProductId(long purchaseItemId){
+        for(var item : items){
+            if(item.getId() == purchaseItemId)
+                return item.getStockProduct().getId();
+        }
+        return 0;
+    }
+
     @JsonIgnore
     public double getTotalAmount() {
         double total = deliveryCost;

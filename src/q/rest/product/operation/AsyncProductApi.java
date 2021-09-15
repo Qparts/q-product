@@ -11,7 +11,6 @@ import q.rest.product.model.contract.v3.PullStockRequest;
 import q.rest.product.model.VinSearch;
 import q.rest.product.model.quotation.OfferSearchList;
 import q.rest.product.model.quotation.SearchList;
-import q.rest.product.model.quotation.SearchListForMigration;
 import q.rest.product.model.quotation.SearchListItem;
 import q.rest.product.model.qvm.qvmstock.CompanyProduct;
 import q.rest.product.model.qvm.qvmstock.CompanyStock;
@@ -122,7 +121,6 @@ public class AsyncProductApi {
         brand = "'" + brand.toUpperCase().trim() + "'";
         String sql = "select pr.id from prd_product pr join prd_brand br on pr.brand_id = br.id" +
                 " where pr.product_number = " + partNumber + " and upper(br.name) = " + brand;
-        System.out.println(sql);
         List<Number> found = dao.getNative(sql);
         if (!found.isEmpty()) {
             return found.get(0).longValue();

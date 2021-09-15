@@ -374,10 +374,29 @@ public class DaoApi {
         return dao.findJPQLParams(StockLive.class, sql, companyId, productId, branchId);
     }
 
+    public void deductBranchStock(int companyId, int branchId, long productId, int quantity){
+        StockLive live = findBranchStockLive(companyId, productId, branchId);
+        if (live != null) {
+            live.setQuantity(live.getQuantity() - quantity);
+            if (live.getQuantity() == 0)
+                deleteLive(live);
+            else
+                updateLive(live);
+        }
+    }
+
 
     public List<StockLive> getStockLive(int companyId, long productId) {
         return dao.getTwoConditions(StockLive.class, "companyId", "productId", companyId, productId);
     }
+
+    public double getAverageCost(StockPurchase purchase, int companyId, StockReturnPurchaseItem item){
+        long productId = purchase.getStockProductId(item.getPurchaseItem().getId());
+        List<StockLive> lives = this.getStockLive(companyId, productId);
+        return lives.get(0).getAverageCost();
+    }
+
+
 
     public void createPurchaseCredit(StockPurchase purchase) {
         StockPurchaseCredit credit = new StockPurchaseCredit();
@@ -392,28 +411,32 @@ public class DaoApi {
 
 
     public void createPurchaseReturnCredit(StockReturnPurchase purchaseReturn, StockPurchase purchase) {
-        StockPurchaseCredit credit = new StockPurchaseCredit();
-        credit.setAmount(purchaseReturn.getTotalAmount(purchase.getTaxRate()) * -1);
-        credit.setCreditDate(new Date());
-        credit.setCompanyId(purchase.getCompanyId());
-        credit.setSource('R');
-        credit.setSupplierId(purchase.getSupplierId());
-        credit.setPurchaseOrderId(0);
-        credit.setPurchaseReturnId(purchaseReturn.getId());
-        dao.persist(credit);
+        if(purchaseReturn.getTransactionType() == 'T') {
+            StockPurchaseCredit credit = new StockPurchaseCredit();
+            credit.setAmount(purchaseReturn.getTotalAmount(purchase.getTaxRate()) * -1);
+            credit.setCreditDate(new Date());
+            credit.setCompanyId(purchase.getCompanyId());
+            credit.setSource('R');
+            credit.setSupplierId(purchase.getSupplierId());
+            credit.setPurchaseOrderId(0);
+            credit.setPurchaseReturnId(purchaseReturn.getId());
+            dao.persist(credit);
+        }
     }
 
 
     public void createSalesReturnCredit(StockReturnSales salesReturn, StockSales sales) {
-        StockSalesCredit credit = new StockSalesCredit();
-        credit.setAmount(salesReturn.getTotalAmount(sales.getTaxRate()) * -1);
-        credit.setCompanyId(sales.getCompanyId());
-        credit.setCustomerId(sales.getCustomerId());
-        credit.setSource('R');
-        credit.setCreditDate(new Date());
-        credit.setSalesOrderId(0);
-        credit.setSalesReturnId(salesReturn.getId());
-        dao.persist(credit);
+        if(salesReturn.getTransactionType() == 'T') {
+            StockSalesCredit credit = new StockSalesCredit();
+            credit.setAmount(salesReturn.getTotalAmount(sales.getTaxRate()) * -1);
+            credit.setCompanyId(sales.getCompanyId());
+            credit.setCustomerId(sales.getCustomerId());
+            credit.setSource('R');
+            credit.setCreditDate(new Date());
+            credit.setSalesOrderId(0);
+            credit.setSalesReturnId(salesReturn.getId());
+            dao.persist(credit);
+        }
     }
 
     public void createSalesCredit(StockSales sales) {
@@ -453,21 +476,20 @@ public class DaoApi {
     }
 
 
-    public void updateExistingStockLive(int companyId, int branchId, List<StockLive> lives, long productId, int quantity, double unitCost) {
-        double averageCost = Helper.calculateAveragePrice(lives, unitCost, quantity);
-        updateAveragePrice(lives, averageCost);
+    public void updateExistingStockLive(int companyId, int branchId, List<StockLive> lives, long productId, int quantity, double averageCost) {
         String sql = "select b from StockLive b where b.productId =:value0 and b.branchId =:value1 and b.companyId =:value2";
         StockLive branchLive = dao.findJPQLParams(StockLive.class, sql, productId, branchId, companyId);
         if (branchLive == null) {
             createNewStockLive(companyId, branchId, productId, averageCost, quantity);
         } else {
             branchLive.setQuantity(quantity + branchLive.getQuantity());
+            branchLive.setAverageCost(averageCost);
             dao.update(branchLive);
         }
     }
 
 
-    private void updateAveragePrice(List<StockLive> lives, double averageCost) {
+    public void updateAveragePrice(List<StockLive> lives, double averageCost) {
         for (var live : lives) {
             live.setAverageCost(Helper.round(averageCost));
             dao.update(live);
@@ -665,6 +687,39 @@ public class DaoApi {
             dailySales.add(map);
         }
         return dailySales;
+    }
+
+
+
+    public List<Map<String, Object>> getDailyPurchase(int companyId, long fromLong, long toLong) {
+        List<Date> dates = helper.getAllDatesBetween2(new Date(fromLong), new Date(toLong));
+        List<Map<String, Object>> dailyPurchase = new ArrayList<>();
+        for (Date date : dates) {
+            String sql = "select sum((i.unit_price * i.quantity) + (i.unit_price * i.quantity) * s.tax_rate) as total " +
+                    " from prd_stk_purchase_order_item i join prd_stk_purchase_order s on i.purchase_order_id = s.id " +
+                    " where s.company_id = " + companyId +
+                    " and cast(s.created as date ) = '" + helper.getDateFormat(date, "yyyy-MM-dd") + "'" +
+                    " group by cast(s.created as date)";
+            Object object = dao.getNativeSingle(sql);
+            double totalPurchase = object == null ? 0 : ((Number) object).doubleValue();
+            String sqlReturn = "select sum ((si.unit_price * sri.quantity + r.delivery_charge) +  (si.unit_price * sri.quantity + r.delivery_charge) * s.tax_rate) as total_returned " +
+                    " from prd_stk_purchase_return_item sri" +
+                    "    join prd_stk_purchase_return r on sri.purchase_return_id = r.id" +
+                    "    join prd_stk_purchase_order s on r.purchase_id = s.id" +
+                    "    join prd_stk_purchase_order_item si on sri.purchase_item_id = si.id" +
+                    " where s.company_id = " + companyId +
+                    " and cast(r.created as date ) = '" + helper.getDateFormat(date, "yyyy-MM-dd") + "'" +
+                    " group by cast(r.created as date)";
+            Object o2 = dao.getNativeSingle(sqlReturn);
+            double totalReturned = o2 == null ? 0 : ((Number) o2).doubleValue();
+            Map<String, Object> map = new HashMap<>();
+            map.put("total", totalPurchase - totalReturned);//to be removed
+            map.put("purchase", totalPurchase);
+            map.put("returned", totalReturned);
+            map.put("date", date);
+            dailyPurchase.add(map);
+        }
+        return dailyPurchase;
     }
 
     public List<StockSalesSummary> getDailySalesSummary(Date from, Date to, int companyId) {

@@ -38,9 +38,7 @@ public class StockProductV2 {
     @POST
     @Path("search-product")
     public Response searchProduct(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
-        logger.info("start to load products with : "+map.get("query"));
         List<StockProductView> products = daoApi.searchProduct(map.get("query"), Helper.getCompanyFromJWT(header));
-        logger.info("products loaded successfully.");
         return Response.status(200).entity(products).build();
     }
 
@@ -296,14 +294,32 @@ public class StockProductV2 {
         return Response.status(200).build();
     }
 
+    //update stock after sales return
+    private void updateStock(int companyId, StockSales sales, StockReturnSales salesReturn) {
+        for (var item : salesReturn.getItems()) {
+            long productId = sales.getStockProductIdFromSalesItem(item.getSalesItem().getId());
+            List<StockLive> lives = daoApi.getStockLive(companyId, productId);
+            if (lives.isEmpty())
+                daoApi.createNewStockLive(companyId, salesReturn.getBranchId(), productId, item.getSalesItem().getUnitCost(), item.getQuantity());
+            else {
+                double averageCost = Helper.calculateAveragePrice(lives, item.getSalesItem().getUnitCost(), item.getQuantity());
+                daoApi.updateAveragePrice(lives, averageCost);
+                daoApi.updateExistingStockLive(companyId, salesReturn.getBranchId(), lives, productId, item.getQuantity(), averageCost);
+            }
+        }
+    }
 
+    //update stock after purchase order
     private void updateStock(StockPurchase po) {
         for (var item : po.getItems()) {
             List<StockLive> lives = daoApi.getProductLiveStock(po.getCompanyId(), item.getStockProduct().getId());
             if (lives.isEmpty())
                 daoApi.createNewStockLive(po.getCompanyId(), po.getBranchId(), item.getStockProduct().getId(), item.getUnitPrice(), item.getQuantity());
-            else
-                daoApi.updateExistingStockLive(po.getCompanyId(), po.getBranchId(), lives, item.getStockProduct().getId(), item.getQuantity(), item.getUnitPrice());
+            else {
+                double averageCost = Helper.calculateAveragePrice(lives, item.getUnitPrice(), item.getQuantity());
+                daoApi.updateAveragePrice(lives, averageCost);
+                daoApi.updateExistingStockLive(po.getCompanyId(), po.getBranchId(), lives, item.getStockProduct().getId(), item.getQuantity(), averageCost);
+            }
         }
     }
 
@@ -440,7 +456,9 @@ public class StockProductV2 {
     @SubscriberJwt
     @GET
     @Path("sales-report/{year}/{month}")
-    public Response getDailySales2(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month) {
+    public Response getDailySales2(@HeaderParam(HttpHeaders.AUTHORIZATION) String header,
+                                   @PathParam(value = "year") int year,
+                                   @PathParam(value = "month") int month) {
         Date from = Helper.getFromDate(month, year);
         Date to = Helper.getToDate(month, year);//month = 1 - 12
         int companyId = Helper.getCompanyFromJWT(header);
@@ -531,6 +549,15 @@ public class StockProductV2 {
         return Response.status(200).entity(dailySales).build();
     }
 
+    @SubscriberJwt
+    @GET
+    @Path("daily-purchase/from/{from}/to/{to}")
+    public Response getDailyPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong) {
+        int companyId = Helper.getCompanyFromJWT(header);
+        List<Map<String, Object>> dailyPurchase = daoApi.getDailyPurchase(companyId, fromLong, toLong);
+        return Response.status(200).entity(dailyPurchase).build();
+    }
+
     private List<Integer> getBranchIds(String header) {
         Response r = getSecuredRequest(AppConstants.GET_BRANCHES_IDS, header);
         Map<String, ArrayList<Integer>> map = r.readEntity(Map.class);
@@ -597,24 +624,16 @@ public class StockProductV2 {
 
         purchaseReturn.setCreated(new Date());
         purchaseReturn.setPaymentMethod(purchaseReturn.getTransactionType() == 'C' ? purchaseReturn.getPaymentMethod() : null);
-
         if (!verifyQuantities(purchaseReturn)) return Response.status(400).build();
-        //unit average cost
-        for (var item : purchaseReturn.getItems()) {
-            List<StockLive> lives = daoApi.getStockLive(companyId, item.getPurchaseItem().getStockProduct().getId());
-            item.setUnitAverageCost(lives.get(0).getAverageCost());
-        }
-        int purchaseReturnId = daoApi.createPurchaseReturn(purchaseReturn);
-        purchaseReturn.setPurchaseId(purchaseReturnId);
-
-        if (purchaseReturn.getTransactionType() == 'T') {
-            daoApi.createPurchaseReturnCredit(purchaseReturn, purchase);
-        }
-        updateStock(companyId, purchaseReturn);
-        return Response.status(200).build();
-
+        //unit average cost to items
+        populateAverageCosts(purchaseReturn, purchase);
+        daoApi.createPurchaseReturn(purchaseReturn);
+        daoApi.createPurchaseReturnCredit(purchaseReturn, purchase);
+        updateStock(companyId, purchase, purchaseReturn);
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        map.put("id", purchaseReturn.getId());
+        return Response.status(200).entity(purchaseReturn).build();
     }
-
 
     @SubscriberJwt
     @POST
@@ -629,17 +648,24 @@ public class StockProductV2 {
         salesReturn.setCreated(new Date());
         salesReturn.setPaymentMethod(salesReturn.getTransactionType() == 'C' ? salesReturn.getPaymentMethod() : null);
         if (!verifyQuantities(salesReturn)) return Response.status(400).build();
-        int salesReturnId = daoApi.createSalesReturn(salesReturn);
-        salesReturn.setId(salesReturnId);
 
-        if (salesReturn.getTransactionType() == 'T') {
-            daoApi.createSalesReturnCredit(salesReturn, sales);
-        }
-        updateStock(companyId, salesReturn);
+        daoApi.createSalesReturn(salesReturn);
+        daoApi.createSalesReturnCredit(salesReturn, sales);
+
+        updateStock(companyId, sales, salesReturn);
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("id", salesReturn.getId());
         return Response.status(200).entity(map).build();
     }
+
+    private void populateAverageCosts(StockReturnPurchase purchaseReturn, StockPurchase purchase){
+        for (var item : purchaseReturn.getItems()) {
+            double averageCost = daoApi.getAverageCost(purchase, purchase.getCompanyId(), item);
+            item.setUnitAverageCost(averageCost);
+        }
+    }
+
+
 
     @SubscriberJwt
     @POST
@@ -656,27 +682,15 @@ public class StockProductV2 {
     }
 
 
-    private void updateStock(int companyId, StockReturnSales salesReturn) {
-        for (var item : salesReturn.getItems()) {
-            List<StockLive> lives = daoApi.getStockLive(companyId, item.getSalesItem().getStockProduct().getId());
-            if (lives.isEmpty())
-                daoApi.createNewStockLive(companyId, salesReturn.getBranchId(), item.getSalesItem().getStockProduct().getId(), item.getSalesItem().getUnitCost(), item.getQuantity());
-            else
-                daoApi.updateExistingStockLive(companyId, salesReturn.getBranchId(), lives, item.getSalesItem().getStockProduct().getId(), item.getQuantity(), item.getSalesItem().getUnitCost());
-        }
-    }
 
 
-    private void updateStock(int companyId, StockReturnPurchase purchaseReturn) {
+
+    private void updateStock(int companyId, StockPurchase purchase, StockReturnPurchase purchaseReturn) {
         for (var item : purchaseReturn.getItems()) {
-            StockLive live = daoApi.findBranchStockLive(companyId, item.getPurchaseItem().getStockProduct().getId(), purchaseReturn.getBranchId());
-            if (live != null) {
-                live.setQuantity(live.getQuantity() - item.getQuantity());
-                if (live.getQuantity() == 0)
-                    daoApi.deleteLive(live);
-                else
-                    daoApi.updateLive(live);
-            }
+            long productId = purchase.getStockProductId(item.getPurchaseItem().getId());
+            int branchId = purchaseReturn.getBranchId();
+            int quantity = item.getQuantity();
+            daoApi.deductBranchStock(companyId, branchId, productId, quantity);
         }
     }
 

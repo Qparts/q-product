@@ -398,7 +398,6 @@ public class ProductQvmApiV3 {
         //send order to invoice
         Map<String, Object> paymentRequest = marketRequest.getPaymentRequestObject(order.getId(), itemsAmount);
         Response r = postSecuredRequest(AppConstants.POST_PAYMENT_REQUEST, paymentRequest, header);
-        System.out.println(r.getStatus());
         return Response.status(202).entity(r.getEntity()).build();
     }
 

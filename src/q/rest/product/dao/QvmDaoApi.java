@@ -317,7 +317,6 @@ public class QvmDaoApi {
                     " ) z " +
                     searchObject.getProductFilterSql() +
                     " order by on_offer desc ";
-            System.out.println(sql1);
             return dao.getNativeOffsetMax(PbCompanyProduct.class, sql1, searchObject.getOffset(), max);
         } catch (Exception ex) {
             ex.printStackTrace();

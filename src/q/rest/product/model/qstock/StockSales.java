@@ -39,6 +39,17 @@ public class StockSales implements Serializable {
     @OrderBy("created asc")
     private Set<StockReturnSales> salesReturns;
 
+
+    @JsonIgnore
+    public long getStockProductIdFromSalesItem(long salesItemId){
+        for(var item : items){
+            if(item.getId() == salesItemId)
+                return item.getStockProduct().getId();
+        }
+        return 0;
+    }
+
+
     @JsonIgnore
     public double getTotalAmount() {
         double total = deliveryCharge;

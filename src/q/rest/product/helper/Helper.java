@@ -299,5 +299,11 @@ public class Helper {
         return convertToDate(from);
     }
 
+    public static Date getFromDate(int month, int year, int startDay) {
+        YearMonth ym = YearMonth.of(year, month);
+        LocalDate from = ym.atDay(1);
+        return convertToDate(from);
+    }
+
 
 }
