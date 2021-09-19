@@ -120,13 +120,41 @@ public class DaoApi {
     }
 
     public List<StockProductView> searchProduct(String query, int companyId) {
-        String numberLike = "'" + Helper.undecorate(query) + "%'";
+        List<StockProductView> byNumber = searchProductByNumber(query, companyId);
+        List<StockProductView> byName = searchProductByName(query, companyId);
+        byNumber.addAll(byName);
+        return byNumber;
+    }
+
+    private List<StockProductView> searchProductByNumber(String query, int companyId) {
+        String undecorated = Helper.undecorate(query);
+        if(undecorated.length() == 0)
+            return new ArrayList<>();
+        String numberLike = "'" + undecorated + "%'";
         String sql = "select * from (" +
                 " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
                 " from prd_view_stock_product" +
                 " where company_id in (0,"+ companyId +")) z where n < 2 " +
                 "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
                 " and z.product_number like "+ numberLike;
+
+        logger.info("products sql : "+sql);
+
+        List<StockProductView> views = dao.getNative(StockProductView.class, sql);
+
+        attachLiveStock(views, companyId);
+        attachShelves(views, companyId);
+        return views;
+    }
+
+    private List<StockProductView> searchProductByName(String query, int companyId) {
+        String nameLike = "'" + query.trim().toLowerCase() + "%'";
+        String sql = "select * from (" +
+                " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
+                " from prd_view_stock_product" +
+                " where company_id in (0,"+ companyId +")) z where n < 2 " +
+                "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
+                "  and lower(z.name) like "+ nameLike +" or lower(z.name_ar) like "+ nameLike;
 
         logger.info("products sql : "+sql);
 

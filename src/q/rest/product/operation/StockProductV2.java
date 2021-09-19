@@ -18,9 +18,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.util.*;
 
 @Path("/api/v4/stock/")
@@ -37,11 +35,11 @@ public class StockProductV2 {
     @SubscriberJwt
     @POST
     @Path("search-product")
-    public Response searchProduct(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
-        List<StockProductView> products = daoApi.searchProduct(map.get("query"), Helper.getCompanyFromJWT(header));
+    public Response searchProduct(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, Object> map) {
+        String query = (String) map.get("query");
+        List<StockProductView> products = daoApi.searchProduct(query, Helper.getCompanyFromJWT(header));
         return Response.status(200).entity(products).build();
     }
-
 
     @SubscriberJwt
     @GET
