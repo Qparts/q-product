@@ -2,7 +2,6 @@ package q.rest.product.operation;
 import org.jboss.logging.Logger;
 import q.rest.product.dao.QvmDaoApi;
 import q.rest.product.filter.annotation.SubscriberJwt;
-import q.rest.product.filter.annotation.UserSubscriberJwt;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
 import q.rest.product.model.contract.v3.product.PbProduct;
@@ -152,7 +151,7 @@ public class ProductApiV4 {
 
 
     //not tested
-    @UserSubscriberJwt
+    @SubscriberJwt
     @GET
     @Path("search-lists/year/{year}/month/{month}")
     public Response getTargetVendorQuotations(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month) {
@@ -161,7 +160,7 @@ public class ProductApiV4 {
         Date to = Helper.getToDate(month, year);
         int companyId = Helper.getCompanyFromJWT(header);
         var searchLists = qvmDaoApi.getSearchList(header, companyId, from , to);
-        logger.info("get search list by year and month يخىث");
+        logger.info("get search list by year and month done");
         return Response.ok().entity(searchLists).build();
     }
 

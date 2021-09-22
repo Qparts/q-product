@@ -2,7 +2,6 @@ package q.rest.product.operation;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.jboss.logging.Logger;
 import q.rest.product.dao.DAO;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Helper;
