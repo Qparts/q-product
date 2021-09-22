@@ -1,5 +1,6 @@
 package q.rest.product.operation;
 
+import org.jboss.logging.Logger;
 import q.rest.product.dao.DAO;
 import q.rest.product.filter.annotation.UserJwt;
 import q.rest.product.helper.Helper;
@@ -22,10 +23,13 @@ public class ProductApiV3 {
     @EJB
     private DAO dao;
 
+    private static final Logger logger = Logger.getLogger(ProductApiV3.class);
+
     @UserJwt
     @POST
     @Path("product")
     public Response addProduct(Product product){
+        logger.info("create product");
         product.setProductNumber(Helper.undecorate(product.getProductNumber()));
         product.setStatus('A');
         product.setCreated(new Date());
@@ -38,6 +42,7 @@ public class ProductApiV3 {
             ps.setStatus('A');
         }
         dao.persist(product);
+        logger.info("create product done");
         return Response.status(200).entity(product).build();
     }
 
@@ -45,9 +50,11 @@ public class ProductApiV3 {
     @DELETE
     @Path("product/{id}/tag/{tag}")
     public Response deleteProductTag(@PathParam(value = "id") long id, @PathParam(value = "tag") String tag) {
+        logger.info("delete product tag");
         Product product = dao.find(Product.class, id);
         product.getTags().remove(tag);
         dao.update(product);
+        logger.info("delete product tag done");
         return Response.ok().build();
     }
 
@@ -55,10 +62,12 @@ public class ProductApiV3 {
     @DELETE
     @Path("product/{id}/category/{category}")
     public Response deleteProductCategory(@PathParam(value = "id") long id, @PathParam(value = "category") int categoryId) {
+        logger.info("delete product category");
         Product product = dao.find(Product.class, id);
         Category category = dao.find(Category.class, categoryId);
         product.getCategories().remove(category);
         dao.update(product);
+        logger.info("delete product category done");
         return Response.ok().build();
     }
 
@@ -66,10 +75,12 @@ public class ProductApiV3 {
     @DELETE
     @Path("product/{id}/spec/{specId}")
     public Response deleteProductSpec(@PathParam(value = "id") long id, @PathParam(value = "specId") int specId){
+        logger.info("delete product spec");
         Product product = dao.find(Product.class, id);
         ProductSpec ps = dao.findTwoConditions(ProductSpec.class, "productId" , "specId" , id , specId);
         product.getSpecs().remove(ps);
         dao.update(product);
+        logger.info("delete product spec done");
         return Response.ok().build();
     }
 
@@ -78,10 +89,12 @@ public class ProductApiV3 {
     @POST
     @Path("product/spec")
     public Response addCategoryToProduct(ProductSpec ps){
+        logger.info("create product spec");
         ps.setCreated(new Date());
         Product product = dao.find(Product.class, ps.getProductId());
         product.getSpecs().add(ps);
         dao.update(product);
+        logger.info("create product spec done");
         return Response.ok().build();
     }
 
@@ -89,10 +102,12 @@ public class ProductApiV3 {
     @POST
     @Path("product/market-supply")
     public Response addMarketSupply(ProductSupply supply){
+        logger.info("create product market supply");
         supply.setCreated(new Date());
         Product product = dao.find(Product.class, supply.getProductId());
         product.getMarketSupply().add(supply);
         dao.update(product);
+        logger.info("create product market supply done");
         return Response.ok().build();
     }
 
@@ -100,12 +115,14 @@ public class ProductApiV3 {
     @POST
     @Path("product/category")
     public Response addCategoryToProduct(Map<String, Object> map){
+        logger.info("create product category");
         long productId = ((Number) map.get("productId")).longValue();
         int categoryId = ((Number) map.get("categoryId")).intValue();
         Product product = dao.find(Product.class, productId);
         Category category = dao.find(Category.class, categoryId);
         product.getCategories().add(category);
         dao.update(product);
+        logger.info("create product category done");
         return Response.ok().build();
     }
 
@@ -113,11 +130,13 @@ public class ProductApiV3 {
     @POST
     @Path("product/tag")
     public Response addTagToProduct(Map<String, Object> map){
+        logger.info("create product tag");
         long productId = ((Number) map.get("productId")).longValue();
         String tag = (String) map.get("tag");
         Product product = dao.find(Product.class, productId);
         product.getTags().add(Helper.properTag(tag));
         dao.update(product);
+        logger.info("create product tag done");
         return Response.ok().build();
     }
 
@@ -125,8 +144,10 @@ public class ProductApiV3 {
     @GET
     @Path("brands")
     public Response getBrands(){
+        logger.info("get brands");
         String sql = "select b from Brand b order by b.name";
         List<Brand> brands = dao.getJPQLParams(Brand.class, sql);
+        logger.info("get brands done");
         return Response.ok().entity(brands).build();
 
     }
@@ -135,6 +156,7 @@ public class ProductApiV3 {
     @PUT
     @Path("product")
     public Response updateProduct(Map<String, Object> map){
+        logger.info("update product");
         long productId = ((Number) map.get("productId")).longValue();
         String number = Helper.undecorate((String) map.get("number"));
         String desc = (String) map.get("desc");
@@ -161,6 +183,7 @@ public class ProductApiV3 {
         }
         product.setStatus(status);
         dao.update(product);
+        logger.info("update product done");
         return Response.ok().build();
     }
 
@@ -169,7 +192,9 @@ public class ProductApiV3 {
     @GET
     @Path("product/{id}")
     public Response getProduct(@PathParam(value = "id") long id) {
+        logger.info("get product by id");
         Product product = dao.find(Product.class, id);
+        logger.info("get product by id done");
         return product == null ? Response.status(404).build() : Response.status(200).entity(product).build();
     }
 
@@ -177,7 +202,9 @@ public class ProductApiV3 {
     @GET
     @Path("category/{id}")
     public Response getCategory(@PathParam(value = "id") int id) {
+        logger.info("get category by id");
         Category category = dao.find(Category.class, id);
+        logger.info("get category by id done");
         return category == null ? Response.status(404).build() : Response.status(200).entity(category).build();
     }
 
@@ -185,7 +212,9 @@ public class ProductApiV3 {
     @GET
     @Path("categories")
     public Response getRootCategories(){
+        logger.info("get categories");
         List<Category> categories = dao.getCondition(Category.class, "root", true);
+        logger.info("get categories done");
         return Response.ok().entity(categories).build();
     }
 
@@ -193,7 +222,9 @@ public class ProductApiV3 {
     @GET
     @Path("specs")
     public Response getSpecs(){
+        logger.info("get specs");
         List<Spec> specs = dao.get(Spec.class);
+        logger.info("get specs done");
         return Response.ok().entity(specs).build();
     }
 
@@ -202,7 +233,9 @@ public class ProductApiV3 {
     @GET
     @Path("brand/{id}")
     public Response getBrand(@PathParam(value = "id") int id) {
+        logger.info("get brand by id");
         Brand brand = dao.find(Brand.class, id);
+        logger.info("get product by id done");
         return brand == null ? Response.status(404).build() : Response.status(200).entity(brand).build();
     }
 
@@ -213,10 +246,12 @@ public class ProductApiV3 {
     @PUT
     @Path("merge")
     public Response merge(Map<String,Integer> map){
+        logger.info("merge prdocut vin search");
         int mainId = map.get("mainId");
         int secId = map.get("secondaryId");
         String sql = "update prd_vin_search set company_id = " + mainId + " where company_id = " + secId;
         dao.updateNative(sql);
+        logger.info("merge prdocut vin search done");
         return Response.status(200).build();
     }
 

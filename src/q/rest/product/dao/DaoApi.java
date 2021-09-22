@@ -29,7 +29,6 @@ public class DaoApi {
     @EJB
     private DAO dao;
     private Helper helper = new Helper();
-    private static final Logger logger = Logger.getLogger(StockProductV2.class);
 
 
     public boolean isProductInLiveStock(long productId) {
@@ -138,8 +137,6 @@ public class DaoApi {
                 "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
                 " and z.product_number like "+ numberLike;
 
-        logger.info("products sql : "+sql);
-
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
 
         attachLiveStock(views, companyId);
@@ -156,7 +153,6 @@ public class DaoApi {
                 "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
                 "  and lower(z.name) like "+ nameLike +" or lower(z.name_ar) like "+ nameLike;
 
-        logger.info("products sql : "+sql);
 
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
 

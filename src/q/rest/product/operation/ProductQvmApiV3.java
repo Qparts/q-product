@@ -3,6 +3,7 @@ package q.rest.product.operation;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.jboss.logging.Logger;
 import q.rest.product.dao.DAO;
 import q.rest.product.dao.QvmDaoApi;
 import q.rest.product.filter.annotation.SubscriberJwt;
@@ -45,12 +46,16 @@ public class ProductQvmApiV3 {
     @EJB
     private QvmDaoApi daoApi;
 
+    private static final Logger logger = Logger.getLogger(ProductQvmApiV3.class);
+
 
     @UserJwt
     @GET
     @Path("last-pulls")
     public Response getCompaniesLastPulls() {
+        logger.info("get last pulls");
         List<DataPullHistory> pullHistories = daoApi.getLatestPulls();
+        logger.info("get last pulls done");
         return Response.ok().entity(pullHistories).build();
     }
 
@@ -59,8 +64,10 @@ public class ProductQvmApiV3 {
     @GET
     @Path("sample-products")
     public Response getSampleProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
+        logger.info("get sample products");
         int companyId = Helper.getCompanyFromJWT(header);
         List<CompanyProduct> products = daoApi.getSampleProducts(companyId);
+        logger.info("get sample products done");
         return Response.ok().entity(products).build();
     }
 
@@ -69,21 +76,21 @@ public class ProductQvmApiV3 {
     @GET
     @Path("vin-search-activity/from/{from}/to/{to}")
     public Response getVinSearchReport(@PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong) {
-        try {
-            Helper h = new Helper();
-            List<Date> dates = h.getAllDatesBetween(new Date(fromLong), new Date(toLong));
-            List<Map<String,Object>> kgs = daoApi.getVinSearchReport(dates);
-            return Response.status(200).entity(kgs).build();
-        } catch (Exception ex) {
-            return Response.status(500).build();
-        }
+        logger.info("get vin search activities from to");
+        Helper h = new Helper();
+        List<Date> dates = h.getAllDatesBetween(new Date(fromLong), new Date(toLong));
+        List<Map<String,Object>> kgs = daoApi.getVinSearchReport(dates);
+        logger.info("get vin search activities from to done");
+        return Response.status(200).entity(kgs).build();
     }
 
     @UserJwt
     @PUT
     @Path("update-stock")
     public Response updateStock(UploadHolder holder) {
+        logger.info("update stock");
         daoApi.updateStockAsyncOptimized(holder);
+        logger.info("update stock done");
         return Response.status(200).build();
     }
 
@@ -91,7 +98,9 @@ public class ProductQvmApiV3 {
     @PUT
     @Path("update-q-stock-stock")
     public Response updateQStockStock(QStockUploadHolder holder) {
+        logger.info("update q stock stock");
         daoApi.updateQStockAsyncOptimized(holder);
+        logger.info("update q stock stock done");
         return Response.status(200).build();
     }
 
@@ -99,72 +108,60 @@ public class ProductQvmApiV3 {
     @PUT
     @Path("update-special-offer-stock")
     public Response updateSpecialOfferStock(UploadHolder uploadHolder) {
-        try {
-            daoApi.updateSpecialOfferStockAsyncOptimized(uploadHolder);
-            return Response.status(200).build();
-        } catch (Exception ex) {
-            return Response.status(500).build();
-        }
+        logger.info("update special offer stock");
+        daoApi.updateSpecialOfferStockAsyncOptimized(uploadHolder);
+        logger.info("update specoal offer stock done");
+        return Response.status(200).build();
     }
 
     @UserSubscriberJwt
     @Path("upload-special-offer-requests/{companyId}")
     @GET
     public Response getUploadSpecialOfferRequests(@PathParam(value = "companyId") int companyId) {
-        try {
-            List<CompanyOfferUploadRequest> list = daoApi.getOfferUploadRequest(companyId);
-            return Response.status(200).entity(list).build();
-        } catch (Exception ex) {
-            return Response.status(500).build();
-        }
+        logger.info("upload special offer request by company id");
+        List<CompanyOfferUploadRequest> list = daoApi.getOfferUploadRequest(companyId);
+        logger.info("upload special offerr request by company id done");
+        return Response.status(200).entity(list).build();
     }
 
     @UserJwt
     @Path("upload-request")
     @PUT
     public Response updateRequestUpload(CompanyUploadRequest uploadRequest) {
-        try {
-            daoApi.updateUploadRequest(uploadRequest);
-            return Response.status(200).build();
-        } catch (Exception ee) {
-            return Response.status(500).build();
-        }
+        logger.info("update upload request");
+        daoApi.updateUploadRequest(uploadRequest);
+        logger.info("update upload request done");
+        return Response.status(200).build();
     }
 
     @UserJwt
     @GET
     @Path("company-uploads/pending")
     public Response getPendingVendorUploads() {
-        try {
-            List<CompanyUploadRequest> uploads = daoApi.getPendingStockUploads();
-            return Response.ok().entity(uploads).build();
-        } catch (Exception ex) {
-            return Response.status(500).build();
-        }
+        logger.info("get company uploads pending");
+        List<CompanyUploadRequest> uploads = daoApi.getPendingStockUploads();
+        logger.info("get company uploads pending done");
+        return Response.ok().entity(uploads).build();
     }
 
     @UserJwt
     @GET
     @Path("company-uploads")
     public Response getAllCompanyUploads() {
-        try {
-            List<CompanyUploadRequest> uploads = daoApi.getAllStockUploads();
-            return Response.ok().entity(uploads).build();
-        } catch (Exception ex) {
-            return Response.status(500).build();
-        }
+        logger.info("get company uploads");
+        List<CompanyUploadRequest> uploads = daoApi.getAllStockUploads();
+        logger.info("get company uploads done");
+        return Response.ok().entity(uploads).build();
     }
 
     @UserJwt
     @GET
     @Path("company-uploads/special-offer")
     public Response getAllSpecialOfferUploads() {
-        try {
-            List<CompanyOfferUploadRequest> uploads = daoApi.getAllOfferUploads();
-            return Response.status(200).entity(uploads).build();
-        } catch (Exception ex) {
-            return Response.status(500).build();
-        }
+        logger.info("get company uploads special offer");
+        List<CompanyOfferUploadRequest> uploads = daoApi.getAllOfferUploads();
+        logger.info("get company uploads special offer done");
+        return Response.status(200).entity(uploads).build();
     }
 
 
@@ -172,7 +169,9 @@ public class ProductQvmApiV3 {
     @GET
     @Path("company-uploads/special-offers/live")
     public Response getLiveCompanySpecialOfferUpload() {
+        logger.info("get company uploads special offers live");
         List<CompanyOfferUploadRequest> list = daoApi.getLiveOffers();
+        logger.info("get company uploads special offers live done");
         return Response.status(200).entity(list).build();
     }
 
@@ -182,12 +181,14 @@ public class ProductQvmApiV3 {
     @DELETE
     public Response inactivateSpecialOffer(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "offerId") int id){
         try {
+            logger.info("delete special offer by id");
             int companyId = this.getCompanyIdFromHeader(header);
 
             CompanyOfferUploadRequest offer = daoApi.findOffer(id);
             if(offer.getCompanyId() != companyId) throwError(401);
 
             daoApi.makeOfferExpired(offer);
+            logger.info("delete special offer by id done");
             return Response.status(200).build();
         }catch (Exception e){
             return Response.status(500).build();
@@ -198,19 +199,20 @@ public class ProductQvmApiV3 {
     @Path("upload-special-offer-request")
     @PUT
     public Response updateSpecialOfferRequestUpload(CompanyOfferUploadRequest uploadRequest) {
-        try {
-            daoApi.makeOfferCompleted(uploadRequest);
-            return Response.status(201).build();
-        } catch (Exception ee) {
-            return Response.status(500).build();
-        }
+        logger.info("update special offer request");
+        daoApi.makeOfferCompleted(uploadRequest);
+        logger.info("update special offer request done");
+        return Response.status(201).build();
+
     }
 
     @UserJwt
     @GET
     @Path("summary-report/company/{id}")
     public Response getCompanySummaryRepoort(@PathParam(value = "id") int companyId) {
+        logger.info("get summary report by company id");
         SummaryReport report = daoApi.getCompanyProductSummaryReport(companyId);
+        logger.info("get summary report by company id done");
         return Response.ok().entity(report).build();
     }
 
@@ -219,7 +221,9 @@ public class ProductQvmApiV3 {
     @GET
     @Path("uploads-summary/company/{id}")
     public Response getUploadsSummary(@PathParam(value = "id") int companyId) {
+        logger.info("get upload summary by company id");
         UploadsSummary us = daoApi.getCompanyUploadsSummary(companyId);
+        logger.info("get upload summary by company id done");
         return Response.ok().entity(us).build();
     }
 
@@ -229,7 +233,9 @@ public class ProductQvmApiV3 {
     @GET
     @Path("summary-report")
     public Response getHomeSummary() {
+        logger.info("get summary report");
         SummaryReport report = daoApi.getOverallProductSummaryReport();
+        logger.info("get summary report done");
         return Response.ok().entity(report).build();
     }
 
@@ -237,7 +243,9 @@ public class ProductQvmApiV3 {
     @Path("special-offer-upload-request")
     @POST
     public Response requestUploadSpecialOffer(CompanyOfferUploadRequest uploadRequest) {
+        logger.info("create special offer upload request");
         daoApi.createOfferUploadRequest(uploadRequest);
+        logger.info("create special offer upload request done");
         return Response.status(200).entity(uploadRequest).build();
     }
 
@@ -245,7 +253,9 @@ public class ProductQvmApiV3 {
     @Path("upload-request")
     @POST
     public Response requestStockUpload(CompanyUploadRequest uploadRequest) {
+        logger.info("create upload request");
         daoApi.createStockUploadRequest(uploadRequest);
+        logger.info("create upload request done");
         return Response.status(200).entity(uploadRequest).build();
     }
 
@@ -253,7 +263,9 @@ public class ProductQvmApiV3 {
     @Path("upload-requests/{companyId}")
     @GET
     public Response getUploadRequests(@PathParam(value = "companyId") int companyId) {
+        logger.info("get upload requests by company id");
         List<CompanyUploadRequest> list = daoApi.getStockUploadRequests(companyId);
+        logger.info("get upload requests by company id done");
         return Response.status(200).entity(list).build();
     }
 
@@ -261,8 +273,10 @@ public class ProductQvmApiV3 {
     @GET
     @Path("company-uploads/special-offer/{soId}/products/offset/{offset}/max/{max}")
     public Response getSpecialOfferProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "soId") int offerId, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max){
+        logger.info("search company uploads special offer id by product offset and max");
         List<CompanyProduct> so = daoApi.getSpecialOfferProducts(offerId, offset, max);
         async.addToSpecialOfferList(header, offerId, offset, so.size(), max, null);
+        logger.info("search company uploads special offer id by product offset and max done");
         return Response.status(200).entity(so).build();
     }
 
@@ -270,9 +284,11 @@ public class ProductQvmApiV3 {
     @GET
     @Path("company-uploads/special-offer/{soId}/products/offset/{offset}/max/{max}/search/{filter}")
     public Response getCompanySpecialOffer(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "soId") int offerId, @PathParam(value = "offset") int offset, @PathParam(value = "max") int max, @PathParam(value = "filter") String filter){
+        logger.info("search company uploads special offer id by product offset and max filter");
         Map<String,Object> map = daoApi.getSpecialOfferProductsWithFilter(filter, offerId, offset, max);
         List<CompanyProduct> list = (List<CompanyProduct>) map.get("products");
         async.addToSpecialOfferList(header, offerId, offset, list.size(), max, filter);
+        logger.info("search company uploads special offer id by product offset and max filter done");
         return Response.status(200).entity(map).build();
     }
 
@@ -280,6 +296,7 @@ public class ProductQvmApiV3 {
     @POST
     @Path("search-company-products")
     public Response searchCompanyProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, SearchObject searchObject){
+        logger.info("search company products");
         if(searchObject.getQuery() == null || searchObject.getQuery().length() == 0){
             return Response.status(200).entity(new HashMap<>()).build();
         }
@@ -288,12 +305,11 @@ public class ProductQvmApiV3 {
         async.saveSearch2(header, searchObject, size > 0);
         async.addToSearchListOld(header, companyProducts);
         Map<String,Object> map = new HashMap<>();
-        map.put("count", size);
         map.put("products", companyProducts);
+        map.put("count", size);
+        logger.info("search company products done");
         return Response.status(200).entity(map).build();
     }
-
-    ////////////////////////////////////////////////////////
 
     private void validateDataPull(int companyId){
         Date date = Helper.addDays(new Date(), -1);
@@ -308,6 +324,7 @@ public class ProductQvmApiV3 {
     @POST
     @Path("pull-stock")
     public Response pullStock(@HeaderParam(HttpHeaders.AUTHORIZATION) String qvmHeader, PullStockRequest psr) {
+        logger.info("create pull stock");
         validateDataPull(psr.getCompanyId());
         String header = "Bearer " + psr.getSecret();
         Response r = async.getSecuredRequest(psr.getAllStockEndPoint() + "count", header);
@@ -329,6 +346,7 @@ public class ProductQvmApiV3 {
             async.callPullData(links, header, psr, dph);
             return Response.status(200).entity(links).build();
         }
+        logger.info("create pull stock done");
         return Response.status(404).entity("error code in calling count : " + r.getStatus()).build();
     }
 
@@ -352,6 +370,7 @@ public class ProductQvmApiV3 {
     @Path("search-parts")
     public Response searchParts(SearchObject searchObject) {
         try {
+            logger.info("search parts");
             if(searchObject.getQuery() == null || Helper.undecorate(searchObject.getQuery()).length() < 3){
                 return Response.status(404).build();
             }
@@ -363,6 +382,7 @@ public class ProductQvmApiV3 {
             for (var product : products) {
                 pbProducts.add(product.getPublicProduct(specs));
             }
+            logger.info("search parts done");
             return Response.status(200).entity(pbProducts).build();
         } catch (Exception ex) {
             return Response.status(500).build();
@@ -374,10 +394,12 @@ public class ProductQvmApiV3 {
     @GET
     @Path("market-supplies")
     public Response getMarketSupplies(){
+        logger.info("get market supplies");
         String sql = "select b from MarketProduct b where b.id in " +
                 "(select c.productId from ProductSupply c where c.quantity > :value0 and c.status = :value1) " +
                 "and b.status = :value2";
         List<MarketProduct> products = dao.getJPQLParams(MarketProduct.class, sql, 0, 'A', 'A');
+        logger.info("get market supplies done");
         return Response.status(200).entity(products).build();
     }
 
@@ -385,6 +407,7 @@ public class ProductQvmApiV3 {
     @POST
     @Path("market-order")
     public Response createMarketOrder(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @Context HttpServletRequest req, MarketOrderRequest marketRequest){
+        logger.info("create market order");
         int companyId = Helper.getCompanyFromJWT(header);
         int subscriberId = Helper.getSubscriberFromJWT(header);
         marketRequest.setClientIp(req.getRemoteAddr());
@@ -398,6 +421,7 @@ public class ProductQvmApiV3 {
         //send order to invoice
         Map<String, Object> paymentRequest = marketRequest.getPaymentRequestObject(order.getId(), itemsAmount);
         Response r = postSecuredRequest(AppConstants.POST_PAYMENT_REQUEST, paymentRequest, header);
+        logger.info("create market order done");
         return Response.status(202).entity(r.getEntity()).build();
     }
 
@@ -412,6 +436,7 @@ public class ProductQvmApiV3 {
     @POST
     @Path("activate-market-order")
     public Response activateMarketOrder(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String,Integer> map){
+        logger.info("activate market order");
         int companyId = Helper.getCompanyFromJWT(header );
         int salesId = map.get("salesId");
         int marketOrderId = map.get("marketOrderId");
@@ -420,6 +445,7 @@ public class ProductQvmApiV3 {
         marketOrder.setSalesId(salesId);
         marketOrder.setStatus('P');
         dao.update(marketOrder);
+        logger.info("activate market order done");
         return Response.status(200).build();
     }
 

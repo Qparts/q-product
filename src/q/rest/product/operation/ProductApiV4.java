@@ -1,4 +1,5 @@
 package q.rest.product.operation;
+import org.jboss.logging.Logger;
 import q.rest.product.dao.QvmDaoApi;
 import q.rest.product.filter.annotation.SubscriberJwt;
 import q.rest.product.filter.annotation.UserSubscriberJwt;
@@ -32,13 +33,17 @@ public class ProductApiV4 {
     @EJB
     private AsyncProductApi async;
 
+    private static final Logger logger = Logger.getLogger(ProductApiV4.class);
+
 
     @SubscriberJwt
     @GET
     @Path("special-offers/live")
     public Response getLiveCompanySpecialOfferUpload(@Context UriInfo info) {
+        logger.info("get special offers live");
         var latest = info.getQueryParameters().getFirst("latest") != null;
         var list = qvmDaoApi.getLiveSpecialOffers(latest);
+        logger.info("get special offers live done");
         return Response.status(200).entity(list).build();
     }
 
@@ -46,6 +51,7 @@ public class ProductApiV4 {
     @GET
     @Path("dashboard-metrics")
     public Response getDashboardMetrics(@HeaderParam(HttpHeaders.AUTHORIZATION) String header){
+        logger.info("get dashboard metrics");
         int companyId = Helper.getCompanyFromJWT(header);
         Map<String,Object> map = new HashMap<>();
         var numberOfProducts = qvmDaoApi.getNumberOfItems();
@@ -65,7 +71,7 @@ public class ProductApiV4 {
             map.put("mostActiveCompaniesOnStock", mostActiveCompaniesOnStock);
 
         }
-
+        logger.info("get dashboard metrics done");
         return Response.status(200).entity(map).build();
     }
 
@@ -75,9 +81,11 @@ public class ProductApiV4 {
     @POST
     @Path("special-offer-products")
     public Response getSpecialOfferProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, SearchObject searchObject){
+        logger.info("search special offer products");
         Map<String,Object> map = qvmDaoApi.searchSpecialOfferProducts(searchObject);
         List<PbCompanyProduct> list = (List<PbCompanyProduct>) map.get("products");
         async.addToSpecialOfferList(header, searchObject.getSpecialOfferId(), searchObject.getOffset(), list.size(), searchObject.getMax(), searchObject.getFilter());
+        logger.info("search special offer products 2");
         return Response.status(200).entity(map).build();
     }
 
@@ -85,10 +93,12 @@ public class ProductApiV4 {
     @POST
     @Path("search-products")
     public Response searchProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, SearchObject searchObject){
+        logger.info("search products");
         if(searchObject.getQuery() == null || searchObject.getQuery().length() == 0){
             return Response.status(404).build();
         }
         List<PbProduct> products = qvmDaoApi.searchProducts(searchObject.getQuery());
+        logger.info("search products done");
         return Response.status(200).entity(products).build();
     }
 
@@ -97,10 +107,12 @@ public class ProductApiV4 {
     @PUT
     @Path("company-product-price")
     public Response updateCompanyProductPrice(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String,Number> map){
+        logger.info("update company product price");
         int companyId = Helper.getCompanyFromJWT(header);
         long companyProductId = map.get("productId").longValue();
         double retailPrice = map.get("retailPrice").doubleValue();
         var companyProduct = qvmDaoApi.updateCompanyProductPrice(companyProductId, companyId, retailPrice);
+        logger.info("update company product price done");
         return Response.status(200).entity(companyProduct).build();
     }
 
@@ -109,11 +121,13 @@ public class ProductApiV4 {
     @PUT
     @Path("company-product-quantity")
     public Response updateCompanyProductQuantity(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String,Number> map){
+        logger.info("update company product quantity");
         int companyId = Helper.getCompanyFromJWT(header);
         long companyProductId = map.get("productId").longValue();
         int branchId = map.get("branchId").intValue();
         int quantity = map.get("quantity").intValue();
         var companyStock = qvmDaoApi.updateCompanyProductStockQuantity(companyProductId, companyId, branchId, quantity);
+        logger.info("update company product quantity done");
         return Response.status(200).entity(companyStock).build();
     }
 
@@ -121,6 +135,7 @@ public class ProductApiV4 {
     @POST
     @Path("search-company-products")
     public Response searchCompanyProducts(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, SearchObject searchObject){
+        logger.info("search company products");
         if(searchObject.getQuery() == null || searchObject.getQuery().length() == 0){
             return Response.status(200).entity(new HashMap<>()).build();
         }
@@ -131,6 +146,7 @@ public class ProductApiV4 {
         Map<String,Object> map = new HashMap<>();
         map.put("searchSize", size);
         map.put("companyProducts", companyProducts);
+        logger.info("search company products done");
         return Response.status(200).entity(map).build();
     }
 
@@ -140,10 +156,12 @@ public class ProductApiV4 {
     @GET
     @Path("search-lists/year/{year}/month/{month}")
     public Response getTargetVendorQuotations(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month) {
+        logger.info("get search list by year and month");
         Date from = Helper.getFromDate(month, year);
         Date to = Helper.getToDate(month, year);
         int companyId = Helper.getCompanyFromJWT(header);
         var searchLists = qvmDaoApi.getSearchList(header, companyId, from , to);
+        logger.info("get search list by year and month يخىث");
         return Response.ok().entity(searchLists).build();
     }
 
@@ -152,6 +170,7 @@ public class ProductApiV4 {
     @Path("search-replacement-product")
     @SubscriberJwt
     public Response searchReplacement(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String,String> queryMap){
+        logger.info("search replacement products");
         String query = queryMap.get("query");
         Map<String, Object> map = new HashMap<>();
         map.put("articleCountry", "SA");
@@ -175,6 +194,7 @@ public class ProductApiV4 {
             return Response.ok().entity(ar).build();
         }
         else r.close();
+        logger.info("search replacement products done");
         return Response.status(404).build();
     }
 
@@ -192,6 +212,7 @@ public class ProductApiV4 {
     @Path("upload-request/stock")
     @POST
     public Response requestStockUpload(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, CompanyUploadRequest uploadRequest) {
+        logger.info("upload request / stock");
         int companyId = Helper.getCompanyFromJWT(header);
         int subscriberId = Helper.getSubscriberFromJWT(header);
         uploadRequest.setCreatedBySubscriber(subscriberId);
@@ -202,6 +223,7 @@ public class ProductApiV4 {
         qvmDaoApi.createStockUploadRequest(uploadRequest);
         Map<String,Integer> map = new HashMap<>();
         map.put("id", uploadRequest.getId());
+        logger.info("upload request / stock done");
         return Response.status(200).entity(map).build();
     }
 
@@ -210,6 +232,7 @@ public class ProductApiV4 {
     @Path("upload-request/special-offer")
     @POST
     public Response requestUploadSpecialOffer(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, CompanyOfferUploadRequest uploadRequest) {
+        logger.info("upload request / special offers");
         int companyId = Helper.getCompanyFromJWT(header);
         int subscriberId = Helper.getSubscriberFromJWT(header);
         uploadRequest.setCreatedBySubscriber(subscriberId);
@@ -221,6 +244,7 @@ public class ProductApiV4 {
         qvmDaoApi.createOfferUploadRequest(uploadRequest);
         Map<String,Integer> map = new HashMap<>();
         map.put("id", uploadRequest.getId());
+        logger.info("upload request / special offers done");
         return Response.status(200).entity(map).build();
     }
 

@@ -37,7 +37,9 @@ public class StockProductV2 {
     @Path("search-product")
     public Response searchProduct(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, Object> map) {
         String query = (String) map.get("query");
+        logger.info("search-product");
         List<StockProductView> products = daoApi.searchProduct(query, Helper.getCompanyFromJWT(header));
+        logger.info("search-product:done");
         return Response.status(200).entity(products).build();
     }
 
@@ -46,7 +48,9 @@ public class StockProductV2 {
     @Path("product/{id}")
     public Response findProductById(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") long id) {
         int companyId = Helper.getCompanyFromJWT(header);
+        logger.info("product/" + id);
         var product = daoApi.findProduct(id, companyId);
+        logger.info("product/" + id + ": done");
         return Response.status(200).entity(product).build();
     }
 
@@ -57,7 +61,7 @@ public class StockProductV2 {
         String partNumber = (String) map.get("productNumber");
         int brandId = (int) map.get("brandId");
         int companyId = Helper.getCompanyFromJWT(header);
-
+        logger.info("find-product");
         StockProductView product = daoApi.findStockProductView(companyId, partNumber, brandId);
         if (product == null) {
             return Response.status(200).build();
@@ -65,7 +69,7 @@ public class StockProductV2 {
 
         if (product.getPolicyId() != null)
             return Response.status(409).build();
-
+        logger.info("find-product: done");
         return Response.status(200).entity(product).build();
     }
 
@@ -77,9 +81,11 @@ public class StockProductV2 {
         brand.setName(brand.getName().trim());
         brand.setNameAr(brand.getNameAr().trim());
         brand.setCreatedBy(companyId);
+        logger.info("create brand");
         if (!daoApi.isBrandAvailable(brand.getClassId(), brand.getName(), brand.getNameAr()))
             return Response.status(409).build();
         daoApi.createBrand(brand);
+        logger.info("creating brand done");
         return Response.status(201).build();
     }
 
@@ -88,7 +94,9 @@ public class StockProductV2 {
     @Path("brands")
     public Response getAllBrand(@HeaderParam(HttpHeaders.AUTHORIZATION) String header) {
         int companyId = Helper.getCompanyFromJWT(header);
+        logger.info("get brands ");
         List<Brand> brands = daoApi.getBrands(companyId);
+        logger.info("get brands done");
         return Response.status(200).entity(brands).build();
     }
 
@@ -96,7 +104,9 @@ public class StockProductV2 {
     @GET
     @Path("brand-classes")
     public Response getBrandClasses(){
+        logger.info("get brand classes");
         List<BrandClass> brandClasses = daoApi.getBrandClasses();
+        logger.info("get brand classes done");
         return Response.status(200).entity(brandClasses).build();
     }
 
@@ -107,7 +117,9 @@ public class StockProductV2 {
     public Response searchBrand(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
         int companyId = Helper.getCompanyFromJWT(header);
         String name = map.get("query");
+        logger.info("search brands");
         List<Brand> brands = daoApi.searchBrands(companyId, name);
+        logger.info("search brands done");
         return Response.status(200).entity(brands).build();
     }
 
@@ -118,8 +130,10 @@ public class StockProductV2 {
         int companyId = Helper.getCompanyFromJWT(header);
         long productId = map.get("productId").longValue();
         int policyId = map.get("policyId").intValue();
+        logger.info("update product policy");
         StockProductView view = daoApi.updatePolicy(companyId, productId, policyId);
         view.setPolicyId(policyId);
+        logger.info("update product policy done");
         return Response.status(200).entity(view).build();
     }
 
@@ -130,6 +144,7 @@ public class StockProductV2 {
         int companyId = Helper.getCompanyFromJWT(header);
         var productView = daoApi.findStockProductView(companyId, scp.getProductNumber(), scp.getBrandId());
         long productId = 0;
+        logger.info("create product");
         if (productView == null) {
             StockProduct stockProduct = daoApi.createStockProduct(scp.getProductNumber(), scp.getBrandId(), scp.getName(), scp.getNameAr(), scp.getReferencePrice(), companyId);
             productId = stockProduct.getId();
@@ -140,6 +155,7 @@ public class StockProductV2 {
                 return Response.status(409).entity("product already added").build();
         }
         StockProductSetting companyProduct = daoApi.createStockProductSetting(scp, productId, companyId);
+        logger.info("create product done");
         return Response.status(200).entity(companyProduct).build();
     }
 
@@ -149,8 +165,10 @@ public class StockProductV2 {
     @Path("product/number/{number}/brand/{brand}")
     public Response findCompanyProduct(@PathParam(value = "number") String number, @PathParam(value = "brand") int brandId) {
         String productNumber = Helper.undecorate(number);
+        logger.info("find product");
         StockProduct sp = daoApi.findProduct(productNumber, brandId);
         if (sp == null) return Response.status(404).entity("product not found").build();
+        logger.info("find product done");
         return Response.status(200).entity(sp).build();
     }
 
@@ -160,7 +178,9 @@ public class StockProductV2 {
     public Response updatePricePolicy(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, StockPricePolicy policy){
         int companyId = Helper.getCompanyFromJWT(header);
         policy.setCompanyId(companyId);
+        logger.info("update price policy");
         daoApi.updatePricePolicy(policy);
+        logger.info("update price policy done");
         return Response.status(200).build();
     }
 
@@ -172,6 +192,7 @@ public class StockProductV2 {
         int companyId = Helper.getCompanyFromJWT(header);
         policy.setCompanyId(companyId);
         daoApi.createNewPolicy(policy);
+        logger.info("create price policy");
         List<StockPricePolicy> policies = daoApi.getPolicies(companyId);
         if (policies.size() == 1) {
             //create default
@@ -180,6 +201,7 @@ public class StockProductV2 {
             Response r = this.putSecuredRequest(AppConstants.POST_DEFAULT_POLICIES, map, header);
             r.close();
         }
+        logger.info("create price policy done");
         return Response.status(200).build();
     }
 
@@ -188,7 +210,9 @@ public class StockProductV2 {
     @Path("price-policies")
     public Response getPolicies(@HeaderParam(HttpHeaders.AUTHORIZATION) String header) {
         int companyId = Helper.getCompanyFromJWT(header);
+        logger.info("get price policies");
         List<StockPricePolicy> policies = daoApi.getPolicies(companyId);
+        logger.info("get price policies done");
         return Response.status(200).entity(policies).build();
     }
 
@@ -200,12 +224,14 @@ public class StockProductV2 {
         po.setCompanyId(Helper.getCompanyFromJWT(header));
         po.setCreated(new Date());
         po.setPaymentMethod(po.getTransactionType() == 'C' ? po.getPaymentMethod() : null);
+        logger.info("create purchase");
         int purchaseID = daoApi.createPurchase(po);
         po.setId(purchaseID);
         if (po.getTransactionType() == 'T') daoApi.createPurchaseCredit(po);
         updateStock(po);
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("id", purchaseID);
+        logger.info("create purchase done");
         return Response.status(200).entity(map).build();
     }
 
@@ -216,6 +242,7 @@ public class StockProductV2 {
         sales.setCompanyId(Helper.getCompanyFromJWT(header));
         sales.setCreated(new Date());
         sales.setPaymentMethod(sales.getTransactionType() == 'C' ? sales.getPaymentMethod() : null);
+        logger.info("create sales");
         for (StockSalesItem item : sales.getItems()) {
             StockLive live = daoApi.findBranchStockLive(sales.getCompanyId(), item.getStockProduct().getId(), sales.getBranchId());
             if(live != null) {
@@ -231,6 +258,7 @@ public class StockProductV2 {
         updateStock(sales);
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("id", sales.getId());
+        logger.info("create sales done");
         return Response.status(200).entity(map).build();
     }
 
@@ -239,7 +267,9 @@ public class StockProductV2 {
     @Path("pending-items")
     public Response pendingItems(@HeaderParam(HttpHeaders.AUTHORIZATION) String header) {
         int companyId = Helper.getCompanyFromJWT(header);
+        logger.info("get pending items");
         List<StockSalesItemView> views = daoApi.getPendingItems(companyId);
+        logger.info("get pending items done");
         return Response.status(200).entity(views).build();
     }
 
@@ -250,7 +280,7 @@ public class StockProductV2 {
         int companyId = Helper.getCompanyFromJWT(header);
         int salesItemId = map.get("salesItemId");
         int branchId = map.get("branchId");
-
+        logger.info("update pending items");
         StockSalesItemView salesItem = daoApi.getPendingItem(companyId, salesItemId);
         if(salesItem == null) {
             return Response.status(400).entity("Sales Item not found").build();
@@ -289,6 +319,7 @@ public class StockProductV2 {
                     daoApi.updateLive(stockLive);
             }
         }
+        logger.info("update pending items done");
         return Response.status(200).build();
     }
 
@@ -342,10 +373,11 @@ public class StockProductV2 {
     @POST
     @Path("search-sales")
     public Response searchSales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
+        logger.info("search sales");
         String query = map.get("query");
         List<StockSalesView> sales = daoApi.searchSales(query, Helper.getCompanyFromJWT(header));
         Attacher.attachCustomer(sales, header);
-//        attachCustomerObject(sales, header);
+        logger.info("search sales done");
         return Response.status(200).entity(sales).build();
     }
 
@@ -355,9 +387,10 @@ public class StockProductV2 {
     @Path("search-purchase")
     public Response searchPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
         String query = map.get("query");
+        logger.info("search puchase");
         List<StockPurchaseView> purchases = daoApi.searchPurchase(query, Helper.getCompanyFromJWT(header));
         Attacher.attachSupplier(purchases, header);
-//        attachSupplierObject(purchases, header);
+        logger.info("search purchase done");
         return Response.status(200).entity(purchases).build();
     }
 
@@ -366,9 +399,10 @@ public class StockProductV2 {
     @Path("search-quotation")
     public Response searchQuotation(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
         String query = map.get("query");
+        logger.info("search quotation");
         List<StockQuotationView> quotations = daoApi.searchQuotation(query, Helper.getCompanyFromJWT(header));
         Attacher.attachCustomerQ(quotations, header);
-//        attachCustomerObjectForQuotations(quotations, header);
+        logger.info("search quotation done");
         return Response.status(200).entity(quotations).build();
     }
 
@@ -377,8 +411,10 @@ public class StockProductV2 {
     @GET
     @Path("sales-credit-balance")
     public Response getSalesCreditBalance(@HeaderParam(HttpHeaders.AUTHORIZATION) String header) {
+        logger.info("get sales credit balance");
         int companyId = Helper.getCompanyFromJWT(header);
         List<Map<String, Object>> creditBalance = daoApi.getSalesCreditBalance(companyId, header);
+        logger.info("get sales credit balance done");
         return Response.status(200).entity(creditBalance).build();
     }
 
@@ -387,8 +423,10 @@ public class StockProductV2 {
     @GET
     @Path("purchase-credit-balance")
     public Response getPurchaseCreditBalance(@HeaderParam(HttpHeaders.AUTHORIZATION) String header) {
+        logger.info("get purchase credit balance");
         int companyId = Helper.getCompanyFromJWT(header);
         List<Map<String, Object>> creditBalance = daoApi.getPurchaseCreditBalance(companyId, header);
+        logger.info("get purchase credit balance done");
         return Response.status(200).entity(creditBalance).build();
     }
 
@@ -397,8 +435,10 @@ public class StockProductV2 {
     @GET
     @Path("branches-sales/{date}")
     public Response getAllBranchSales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "date") long dateLong) {
+        logger.info("get branch sales by date");
         int companyId = Helper.getCompanyFromJWT(header);
         List<Map<String, Object>> list = daoApi.getBranchSales(companyId, dateLong);
+        logger.info("get branch sales by date done");
         return Response.status(200).entity(list).build();
     }
 
@@ -406,9 +446,10 @@ public class StockProductV2 {
     @GET
     @Path("purchase/{id}")
     public Response getPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id) {
+        logger.info("get purchase by id");
         StockPurchaseView purchase = daoApi.findPurchase2(id, Helper.getCompanyFromJWT(header));
         Attacher.attachSupplier(purchase, header);
-//        this.attachSupplierObject(purchase, header);
+        logger.info("get purchase by id done");
         return Response.status(200).entity(purchase).build();
     }
 
@@ -417,9 +458,10 @@ public class StockProductV2 {
     @GET
     @Path("sales/{id}")
     public Response getSales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id) {
+        logger.info("get sales by id");
         StockSalesView sales = daoApi.findSales2(id, Helper.getCompanyFromJWT(header));
         Attacher.attachCustomer(sales, header);
-//        this.attachCustomerObject(sales, header);
+        logger.info("get sales by id done");
         return Response.status(200).entity(sales).build();
     }
 
@@ -428,9 +470,10 @@ public class StockProductV2 {
     @GET
     @Path("quotation/{id}")
     public Response getQuotation(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id) {
+        logger.info("get quotation by id ");
         StockQuotationView quotation = daoApi.findQuotation2(id, Helper.getCompanyFromJWT(header));
         Attacher.attachCustomer(quotation, header);
-//        this.attachCustomerObject(quotation, header);
+        logger.info("get quotation by id done");
         return Response.status(200).entity(quotation).build();
     }
 
@@ -439,14 +482,15 @@ public class StockProductV2 {
     @GET
     @Path("sales-return/{id}")
     public Response getSalesReturn(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "id") int id) {
+        logger.info("get sales return by id");
         int companyId = Helper.getCompanyFromJWT(header);
         StockReturnSalesStandAlone salesReturn = daoApi.getSalesReturn(id, companyId);
         StockSales sales = daoApi.findSales(salesReturn.getSalesId(), companyId);
-        //this.attachCustomerObject(sales, header);
         Attacher.attachCustomer(sales, header);
         salesReturn.setCustomer(sales.getCustomer());
         salesReturn.setTaxRate(sales.getTaxRate());
         salesReturn.setCustomerId(sales.getCustomerId());
+        logger.info("get sales return by id done");
         return Response.status(200).entity(salesReturn).build();
     }
 
@@ -457,6 +501,7 @@ public class StockProductV2 {
     public Response getDailySales2(@HeaderParam(HttpHeaders.AUTHORIZATION) String header,
                                    @PathParam(value = "year") int year,
                                    @PathParam(value = "month") int month) {
+        logger.info("get sales report by year and month");
         Date from = Helper.getFromDate(month, year);
         Date to = Helper.getToDate(month, year);//month = 1 - 12
         int companyId = Helper.getCompanyFromJWT(header);
@@ -468,6 +513,7 @@ public class StockProductV2 {
         map.put("daysSummary", summaries);
         map.put("topCustomers", topCustomers);
         map.put("topBrands", topBrands);
+        logger.info("get sales report by year and month done");
         return Response.status(200).entity(map).build();
     }
 
@@ -476,6 +522,7 @@ public class StockProductV2 {
     @GET
     @Path("products-report/from/{from}/to/{to}")
     public Response getProductsReport(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong) {
+        logger.info("get products report from to");
         int companyId = Helper.getCompanyFromJWT(header);
         Date from = new Date(fromLong);
         Date to = new Date(toLong);
@@ -486,6 +533,7 @@ public class StockProductV2 {
         map.put("mostProfitableProducts", mostProfitableProducts);
         map.put("mostProfitableBrands", mostProfitableBrands);
         map.put("mostMovingProducts", mostMovingProducts);
+        logger.info("get products reprot from to done");
         return Response.status(200).entity(map).build();
     }
 
@@ -493,7 +541,7 @@ public class StockProductV2 {
     @GET
     @Path("product-details-report/{productId}")
     public Response getProductDetailsReport(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "productId") long productId){
-        //get product
+        logger.info("get product details report by id");
         int companyId = Helper.getCompanyFromJWT(header);
         var product =  daoApi.findProduct(productId, companyId);
         List<Map<String, Object>> salesPastYear = daoApi.getProductYearSales(productId, companyId);
@@ -506,6 +554,7 @@ public class StockProductV2 {
         map.put("purchaseTwelveMonths", purchasesPastYear);
         map.put("latestPurchases", latestPurchases);
         map.put("latestSales", latestSales);
+        logger.info("get product details report by id done");
         return Response.status(200).entity(map).build();
     }
 
@@ -514,6 +563,7 @@ public class StockProductV2 {
     @GET
     @Path("purchase-report/{year}/{month}")
     public Response getDailyPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month) {
+        logger.info("get purchase report by year and month");
         Date from = Helper.getFromDate(month, year);
         Date to = Helper.getToDate(month, year);//month = 1 - 12
         int companyId = Helper.getCompanyFromJWT(header);
@@ -524,6 +574,7 @@ public class StockProductV2 {
         map.put("daysSummary", summaries);
         map.put("topSuppliers", topSuppliers);
         map.put("topBrands", topBrands);
+        logger.info("get purchase report by year and date");
         return Response.status(200).entity(map).build();
     }
 
@@ -531,9 +582,11 @@ public class StockProductV2 {
     @GET
     @Path("branches-sales-summary")
     public Response getAllBranchSales2(@HeaderParam(HttpHeaders.AUTHORIZATION) String header) {
+        logger.info("get branch sales summary");
         int companyId = Helper.getCompanyFromJWT(header);
         List<Integer> branchIds = getBranchIds(header);
         List<BranchSales> branchSales = daoApi.getLiveBranchSales(branchIds, companyId);
+        logger.info("get branch sales summary done");
         return Response.status(200).entity(branchSales).build();
     }
 
@@ -542,8 +595,10 @@ public class StockProductV2 {
     @GET
     @Path("daily-sales/from/{from}/to/{to}")
     public Response getDailySales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong) {
+        logger.info("get daily sales from to");
         int companyId = Helper.getCompanyFromJWT(header);
         List<Map<String, Object>> dailySales = daoApi.getDailySales(companyId, fromLong, toLong);
+        logger.info("get daily sales from to done");
         return Response.status(200).entity(dailySales).build();
     }
 
@@ -551,8 +606,10 @@ public class StockProductV2 {
     @GET
     @Path("daily-purchase/from/{from}/to/{to}")
     public Response getDailyPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong) {
+        logger.info("get daily purchase from to");
         int companyId = Helper.getCompanyFromJWT(header);
         List<Map<String, Object>> dailyPurchase = daoApi.getDailyPurchase(companyId, fromLong, toLong);
+        logger.info("get daily purchase from to done");
         return Response.status(200).entity(dailyPurchase).build();
     }
 
@@ -567,8 +624,10 @@ public class StockProductV2 {
     @GET
     @Path("monthly-sales/year/{year}/month/{month}/length/{length}")
     public Response getPreviousMonthlySales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month, @PathParam(value = "length") int length) {
+        logger.info("get monthly sales by year and month and length");
         int companyId = Helper.getCompanyFromJWT(header);
         List<Map<String, Object>> monthlySales = daoApi.getMonthlySales(companyId, year, month, length);
+        logger.info("get monthly sales by year and month and length done");
         return Response.status(200).entity(monthlySales).build();
     }
 
@@ -577,10 +636,12 @@ public class StockProductV2 {
     @GET
     @Path("stock-value")
     public Response getStockValue(@HeaderParam(HttpHeaders.AUTHORIZATION) String header) {
+        logger.info("get stock value");
         int companyId = Helper.getCompanyFromJWT(header);
         double total = daoApi.getStockValue(companyId);
         Map<String, Object> map = new HashMap<>();
         map.put("stockValue", total);
+        logger.info("get stock value done");
         return Response.status(200).entity(map).build();
     }
 
@@ -589,6 +650,7 @@ public class StockProductV2 {
     @POST
     @Path("credit-payment/{type}")
     public Response createCreditPayment(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "type") String typePath, Map<String, Object> map) {
+        logger.info("create credit payment by type");
         int companyId = Helper.getCompanyFromJWT(header);
         String type;
         if (typePath.equals("purchase")) type = "purchase";
@@ -608,6 +670,7 @@ public class StockProductV2 {
             //check if amount is valid
             daoApi.createSalesCreditPayment(amount, reference, paymentMethod.charAt(0), contactId, companyId, paymentDate);
         }
+        logger.info("create credit payment by type done");
         return Response.status(200).build();
     }
 
@@ -615,6 +678,7 @@ public class StockProductV2 {
     @POST
     @Path("purchase-return")
     public Response createPurchaseReturn(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, StockReturnPurchase purchaseReturn) {
+        logger.info("create purchase return");
         int companyId = Helper.getCompanyFromJWT(header);
         StockPurchase purchase = daoApi.findPurchase(purchaseReturn.getPurchaseId(), companyId);
         if (purchase.getCompanyId() != Helper.getCompanyFromJWT(header))
@@ -630,6 +694,7 @@ public class StockProductV2 {
         updateStock(companyId, purchase, purchaseReturn);
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("id", purchaseReturn.getId());
+        logger.info("create purchase return done");
         return Response.status(200).entity(purchaseReturn).build();
     }
 
@@ -637,7 +702,7 @@ public class StockProductV2 {
     @POST
     @Path("sales-return")
     public Response createSalesReturn(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, StockReturnSales salesReturn) {
-        //make sure that the sales belongs to the caller
+        logger.info("create sales return");
         int companyId = Helper.getCompanyFromJWT(header);
         StockSales sales = daoApi.findSales(salesReturn.getSalesId(), companyId);
         if (sales.getCompanyId() != Helper.getCompanyFromJWT(header))
@@ -653,6 +718,7 @@ public class StockProductV2 {
         updateStock(companyId, sales, salesReturn);
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("id", salesReturn.getId());
+        logger.info("create sales return done");
         return Response.status(200).entity(map).build();
     }
 
@@ -669,6 +735,7 @@ public class StockProductV2 {
     @POST
     @Path("quotation")
     public Response createQuotation(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, StockQuotation quotation) {
+        logger.info("create quotation ");
         quotation.setCompanyId(Helper.getCompanyFromJWT(header));
         quotation.setCreated(new Date());
         quotation.setPaymentMethod(quotation.getTransactionType() == 'C' ? quotation.getPaymentMethod() : null);
@@ -676,6 +743,7 @@ public class StockProductV2 {
         quotation.setId(quotationId);
         Map<String, Integer> map = new HashMap<String, Integer>();
         map.put("id", quotation.getId());
+        logger.info("create quotation done");
         return Response.status(200).entity(map).build();
     }
 
@@ -712,104 +780,6 @@ public class StockProductV2 {
         }
         return true;
     }
-
-//
-//    private void attachCustomerObject(List<StockSalesView> sales, String header) {
-//        StringBuilder ids = new StringBuilder("0");
-//        for (var s : sales) {
-//            ids.append(",").append(s.getCustomerId());
-//        }
-//        Response r = this.getSecuredRequest(AppConstants.getCustomers(ids.toString()), header);
-//        if (r.getStatus() == 200) {
-//            List<Map> list = r.readEntity(new GenericType<List<Map>>() {
-//            });
-//            for (var s : sales) {
-//                s.attachCustomer(list);
-//            }
-//        } else r.close();
-//    }
-
-//
-//    private void attachCustomerObjectForQuotations(List<StockQuotationView> quotationViews, String header) {
-//        StringBuilder ids = new StringBuilder("0");
-//        for (var s : quotationViews) {
-//            ids.append(",").append(s.getCustomerId());
-//        }
-//        Response r = this.getSecuredRequest(AppConstants.getCustomers(ids.toString()), header);
-//        if (r.getStatus() == 200) {
-//            List<Map> list = r.readEntity(new GenericType<List<Map>>() {
-//            });
-//            for (var s : quotationViews) {
-//                s.attachCustomer(list);
-//            }
-//        } else r.close();
-//    }
-
-//
-//    private void attachCustomerObject(StockSales sales, String header) {
-//        Response r = this.getSecuredRequest(AppConstants.getCustomer(sales.getCustomerId()), header);
-//        if (r.getStatus() == 200) {
-//            Map<String, Object> map = r.readEntity(new GenericType<Map>() {
-//            });
-//            sales.attachCustomer(map);
-//        } else r.close();
-//    }
-
-//
-//    private void attachCustomerObject(StockSalesView sales, String header) {
-//        try {
-//            Response r = this.getSecuredRequest(AppConstants.getCustomer(sales.getCustomerId()), header);
-//            if (r.getStatus() == 200) {
-//                Map<String, Object> map = r.readEntity(new GenericType<Map>() {
-//                });
-//                sales.attachCustomer(map);
-//            } else r.close();
-//        } catch (Exception ex) {
-//        }
-//    }
-//
-//
-//    private void attachCustomerObject(StockQuotationView quotation, String header) {
-//        try {
-//            Response r = this.getSecuredRequest(AppConstants.getCustomer(quotation.getCustomerId()), header);
-//            if (r.getStatus() == 200) {
-//                Map<String, Object> map = r.readEntity(new GenericType<Map>() {
-//                });
-//                quotation.attachCustomer(map);
-//            } else r.close();
-//        } catch (Exception ignore) {
-//        }
-//    }
-
-//
-//    private void attachSupplierObject(StockPurchaseView purchase, String header) {
-//        try {
-//            Response r = this.getSecuredRequest(AppConstants.getSupplier(purchase.getSupplierId()), header);
-//            if (r.getStatus() == 200) {
-//                Map<String, Object> map = r.readEntity(new GenericType<Map>() {
-//                });
-//                purchase.attachSupplier(map);
-//            } else r.close();
-//        } catch (Exception ignore) {
-//        }
-//    }
-
-//
-//    private void attachSupplierObject(List<StockPurchaseView> purchases, String header) {
-//        StringBuilder ids = new StringBuilder("0");
-//        for (var s : purchases) {
-//            ids.append(",").append(s.getSupplierId());
-//        }
-//        Response r = this.getSecuredRequest(AppConstants.getSuppliers(ids.toString()), header);
-//        if (r.getStatus() == 200) {
-//            List<Map> list = r.readEntity(new GenericType<List<Map>>() {
-//            });
-//            for (var s : purchases) {
-//                s.attachSupplier(list);
-//            }
-//        } else r.close();
-//    }
-
 
     private boolean verifyQuantities(StockReturnPurchase purchaseReturn) {
         // TODO: 04/02/2021 We have to cheeck if the returnn quantity is valid, check against quantities in purchase, live stock, and other purchase returns
