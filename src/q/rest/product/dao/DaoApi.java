@@ -123,11 +123,36 @@ public class DaoApi {
     }
 
     public Set<StockProductView> searchProduct(String query, int companyId) {
-        List<StockProductView> byNumber = searchProductByNumber(query, companyId);
-        List<StockProductView> byName = searchProductByName(query, companyId);
-        Set<StockProductView> productsSet = new HashSet<>(byNumber);
-        productsSet.addAll(byName);
-        return productsSet;
+        List<StockProductView> views = searchProductCombined(query, companyId);
+//        List<StockProductView> byNumber = searchProductByNumber(query, companyId);
+  //      List<StockProductView> byName = searchProductByName(query, companyId);
+        return new HashSet<>(views);
+//        return productsSet;
+    }
+
+    private List<StockProductView> searchProductCombined(String query, int companyId){
+        if(query.trim().length() == 0)
+            return new ArrayList<>();
+        String nameLike = "'" + query.trim().toLowerCase() + "%'";
+        String numberLike = "'" + Helper.undecorate(query) + "%'";
+        String sql = "select * from (" +
+                " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
+                " from prd_view_stock_product" +
+                " where company_id in (0,"+ companyId +")) z where n < 2 " +
+                "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
+                " and z.product_number like "+ numberLike +
+                " UNION ALL" +
+                " select * from (" +
+                " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
+                " from prd_view_stock_product" +
+                " where company_id in (0,"+ companyId +")) z where n < 2 " +
+                "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
+                "  and lower(z.name) like "+ nameLike +" or lower(z.name_ar) like "+ nameLike;
+        List<StockProductView> views = dao.getNative(StockProductView.class, sql);
+        attachLiveStock(views, companyId);
+        attachShelves(views, companyId);
+        return views;
+
     }
 
     private List<StockProductView> searchProductByNumber(String query, int companyId) {
