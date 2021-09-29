@@ -38,7 +38,7 @@ public class StockProductV2 {
     public Response searchProduct(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, Object> map) {
         String query = (String) map.get("query");
         logger.info("search-product");
-        List<StockProductView> products = daoApi.searchProduct(query, Helper.getCompanyFromJWT(header));
+        Set<StockProductView> products = daoApi.searchProduct(query, Helper.getCompanyFromJWT(header));
         logger.info("search-product:done");
         return Response.status(200).entity(products).build();
     }
@@ -134,6 +134,21 @@ public class StockProductV2 {
         StockProductView view = daoApi.updatePolicy(companyId, productId, policyId);
         view.setPolicyId(policyId);
         logger.info("update product policy done");
+        return Response.status(200).entity(view).build();
+    }
+
+    @SubscriberJwt
+    @PUT
+    @Path("product-shelf")
+    public Response updateProductShelf(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String,Object> map){
+        int companyId = Helper.getCompanyFromJWT(header);
+        long productId = ((Number) map.get("productId")).longValue();
+        int branchId = ((Number) map.get("branchId")).intValue();
+        String newShelf = (String) map.get("shelf");
+        logger.info("update shelf");
+        daoApi.updateShelf(companyId, productId, branchId, newShelf);
+        StockProductView view = daoApi.findProduct(productId, companyId);
+        logger.info("update shelf done");
         return Response.status(200).entity(view).build();
     }
 

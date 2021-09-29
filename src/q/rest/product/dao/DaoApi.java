@@ -1,6 +1,5 @@
 package q.rest.product.dao;
 
-import org.jboss.logging.Logger;
 import q.rest.product.helper.AppConstants;
 import q.rest.product.helper.Attacher;
 import q.rest.product.helper.Helper;
@@ -10,7 +9,6 @@ import q.rest.product.model.qstock.*;
 import q.rest.product.model.qstock.views.StockProductView;
 import q.rest.product.model.qstock.views.StockPurchaseSummary;
 import q.rest.product.model.qstock.views.StockSalesSummary;
-import q.rest.product.operation.StockProductV2;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -47,12 +45,6 @@ public class DaoApi {
         List<StockBrand> check = dao.getJPQLParams(StockBrand.class, sql, classId, name, nameAr);
         return check.isEmpty();
     }
-//
-//    public boolean isStockProductAvailable(String productNumber, int brandId) {
-//        String sql = "select b from StockProduct b where b.productNumber =:value0 and b.brandId = :value1";
-//        List<StockProduct> products = dao.getJPQLParams(StockProduct.class, sql, productNumber, brandId);
-//        return products.isEmpty();
-//    }
 
 
     public List<StockProductSetting> getStockProductSetting(long productId, int companyId) {
@@ -67,6 +59,18 @@ public class DaoApi {
                 " on conflict on constraint prd_stk_company_product_pkey do update set policy_id = " + policyId;
         dao.updateNative(sql);
         return view;
+    }
+
+
+    public void updateShelf(int companyId, long productId, int branchId, String newShelf){
+        var shelf = this.findShelf(productId, companyId, branchId);
+        shelf.setShelf(newShelf);
+        dao.update(shelf);
+    }
+
+    public StockProductShelf findShelf(long productId, int companyId, int branchId){
+        String sql = "select b from StockProductShelf b where b.productId = :value0 and b.companyId = :value1 and b.branchId = :value2";
+        return dao.findJPQLParams(StockProductShelf.class, sql , productId, companyId, branchId);
     }
 
     public StockProduct createStockProduct(String productNumber, int brandId, String name, String nameAr ,double referencePrice, int companyId) {
@@ -118,11 +122,12 @@ public class DaoApi {
         return dao.getOrderBy(BrandClass.class, "id");
     }
 
-    public List<StockProductView> searchProduct(String query, int companyId) {
+    public Set<StockProductView> searchProduct(String query, int companyId) {
         List<StockProductView> byNumber = searchProductByNumber(query, companyId);
         List<StockProductView> byName = searchProductByName(query, companyId);
-        byNumber.addAll(byName);
-        return byNumber;
+        Set<StockProductView> productsSet = new HashSet<>(byNumber);
+        productsSet.addAll(byName);
+        return productsSet;
     }
 
     private List<StockProductView> searchProductByNumber(String query, int companyId) {
@@ -152,7 +157,6 @@ public class DaoApi {
                 " where company_id in (0,"+ companyId +")) z where n < 2 " +
                 "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
                 "  and lower(z.name) like "+ nameLike +" or lower(z.name_ar) like "+ nameLike;
-
 
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
 
