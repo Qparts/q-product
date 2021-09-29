@@ -140,14 +140,8 @@ public class DaoApi {
                 " from prd_view_stock_product" +
                 " where company_id in (0,"+ companyId +")) z where n < 2 " +
                 "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
-                " and z.product_number like "+ numberLike +
-                " UNION ALL" +
-                " select * from (" +
-                " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
-                " from prd_view_stock_product" +
-                " where company_id in (0,"+ companyId +")) z where n < 2 " +
-                "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
-                "  and lower(z.name) like "+ nameLike +" or lower(z.name_ar) like "+ nameLike;
+                " and (z.product_number like "+ numberLike +
+                " or lower(z.name) like "+ nameLike +" or lower(z.name_ar) like "+ nameLike + ")";
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
         attachLiveStock(views, companyId);
         attachShelves(views, companyId);
