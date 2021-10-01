@@ -1,9 +1,14 @@
 package q.rest.product.model.qvm.qvmstock;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Table(name="prd_company_special_offer_upload_request")
 @Entity
@@ -39,6 +44,19 @@ public class CompanyOfferUploadRequest implements Serializable {
     private Date endDate;
     @Transient
     private List<CompanyProduct> products;
+    @OrderBy(value = "tag")
+    @ElementCollection(targetClass=String.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "prd_special_offer_brand_tag", joinColumns = @JoinColumn(name = "offer"))
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private Set<String> tag = new HashSet<>();
+
+    public Set<String> getTag() {
+        return tag;
+    }
+
+    public void setTag(Set<String> tag) {
+        this.tag = tag;
+    }
 
     public List<CompanyProduct> getProducts() {
         return products;

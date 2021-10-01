@@ -517,6 +517,20 @@ public class QvmDaoApi {
         return dao.getJPQLParams(CompanyUploadRequest.class, sql, companyId);
     }
 
+
+    public void createBrandTag(int offerId, String brandTag){
+        CompanyOfferUploadRequest request = dao.find(CompanyOfferUploadRequest.class, offerId);
+        request.getTag().add(brandTag);
+        dao.update(request);
+    }
+
+
+    public void deleteBrandTag(int offerId, String brandTag){
+        CompanyOfferUploadRequest request = dao.find(CompanyOfferUploadRequest.class, offerId);
+        request.getTag().remove(brandTag);
+        dao.update(request);
+    }
+
     @Asynchronous
     public void updateSpecialOfferStockAsyncOptimized(UploadHolder holder) {
         try {

@@ -114,6 +114,24 @@ public class ProductQvmApiV3 {
         return Response.status(200).build();
     }
 
+    @UserJwt
+    @POST
+    @Path("offer-brand-tag")
+    public Response createBrandTag(Map<String,Object> map){
+        int offerId = ((Number) map.get("offerId")).intValue();
+        String brandTag = (String) map.get("brandTag");
+        daoApi.createBrandTag(offerId, brandTag);
+        return Response.status(200).build();
+    }
+
+    @UserJwt
+    @DELETE
+    @Path("offer-brand-tag/offer/{offerId}/brand-tag/{brandTag}")
+    public Response deleteBrandTag(@PathParam(value = "offerId") int offerId, @PathParam(value = "brandTag") String brandTag){
+        daoApi.deleteBrandTag(offerId, brandTag);
+        return Response.status(200).build();
+    }
+
     @UserSubscriberJwt
     @Path("upload-special-offer-requests/{companyId}")
     @GET
@@ -160,7 +178,7 @@ public class ProductQvmApiV3 {
     public Response getAllSpecialOfferUploads() {
         logger.info("get company uploads special offer");
         List<CompanyOfferUploadRequest> uploads = daoApi.getAllOfferUploads();
-        logger.info("get company uploads special offer done");
+        logger.info("get company uploads special offer done ");
         return Response.status(200).entity(uploads).build();
     }
 
