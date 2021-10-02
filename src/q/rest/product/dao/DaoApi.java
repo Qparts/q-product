@@ -13,6 +13,7 @@ import q.rest.product.model.qstock.views.StockSalesSummary;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
@@ -354,22 +355,6 @@ public class DaoApi {
     }
 
 
-    public List<StockPurchaseView> searchPurchase(String query, int companyId) {
-        String nameLike = "%" + query + "%";
-        int id = Helper.convertToInteger(query);
-        String sql = "select b from StockPurchaseView b where b.companyId = :value0 and (" +
-                " b.id = :value1" +
-                " or b.supplierId = :value1" +
-                " or lower(b.reference) like :value2)";
-        var purchases = dao.getJPQLParams(StockPurchaseView.class, sql, companyId, id, nameLike);
-        for (var pur : purchases) {
-            for (var item : pur.getItems()) {
-                var view = this.findProduct(item.getStockProductId(), companyId);
-                item.setStockProduct(view);
-            }
-        }
-        return purchases;
-    }
 
 
 
@@ -585,14 +570,42 @@ public class DaoApi {
         return null;
     }
 
-    public List<StockSalesView> searchSales(String query, int companyId) {
-        String nameLike = "%" + query + "%";
-        int id = Helper.convertToInteger(query);
-        String sql = "select b from StockSalesView b where b.companyId = :value0 and (" +
-                " b.id = :value1" +
-                " or b.customerId = :value1" +
-                " or lower(b.reference) like :value2)";
-        List<StockSalesView> sales = dao.getJPQLParams(StockSalesView.class, sql, companyId, id, nameLike);
+
+    public List<StockPurchaseView> searchPurchase(String query, int companyId, List<Integer> supplierIds) {
+        String nameLike = "'%" + query.toLowerCase() + "%'";
+        int purchaseId = Helper.convertToInteger(query);
+        StringBuilder sql = new StringBuilder("select * from prd_stk_purchase_order where company_id = " + companyId +
+                " and (" +
+                " id = " + purchaseId +
+                " or lower(reference) like " + nameLike +
+                " or supplier_id in (0");
+        for(int customerId : supplierIds) {
+            sql.append(",").append(customerId);
+        }
+        sql.append("))");
+        var purchases = dao.getNative(StockPurchaseView.class, sql.toString());
+        for (var pur : purchases) {
+            for (var item : pur.getItems()) {
+                var view = this.findProduct(item.getStockProductId(), companyId);
+                item.setStockProduct(view);
+            }
+        }
+        return purchases;
+    }
+
+    public List<StockSalesView> searchSales(String query, int companyId, List<Integer> customerIds) {
+        String nameLike = "'%" + query.toLowerCase() + "%'";
+        int salesId = Helper.convertToInteger(query);
+        StringBuilder sql = new StringBuilder("select * from prd_stk_sales_order where company_id = " + companyId +
+                " and (" +
+                " id = " + salesId +
+                " or lower(reference) like " + nameLike +
+                " or customer_id in (0");
+        for(int customerId : customerIds) {
+            sql.append(",").append(customerId);
+        }
+        sql.append("))");
+        List<StockSalesView> sales = dao.getNative(StockSalesView.class, sql.toString());
         for (var ss : sales) {
             for (var item : ss.getItems()) {
                 var view = this.findProduct(item.getStockProductId(), companyId);
@@ -602,14 +615,19 @@ public class DaoApi {
         return sales;
     }
 
-    public List<StockQuotationView> searchQuotation(String query, int companyId) {
-        String nameLike = "%" + query + "%";
-        int id = Helper.convertToInteger(query);
-        String sql = "select b from StockQuotationView b where b.companyId = :value0 and (" +
-                " b.id = :value1" +
-                " or b.customerId = :value1" +
-                " or lower(b.reference) like :value2)";
-        List<StockQuotationView> quotations = dao.getJPQLParams(StockQuotationView.class, sql, companyId, id, nameLike);
+    public List<StockQuotationView> searchQuotation(String query, int companyId, List<Integer> customerIds) {
+        String nameLike = "'%" + query.toLowerCase() + "%'";
+        int quotationId = Helper.convertToInteger(query);
+        StringBuilder sql = new StringBuilder("select * from prd_stk_quotation_order where company_id = " + companyId +
+                " and (" +
+                " id = "+ quotationId +
+                " or lower(reference) like " + nameLike +
+                " or customer_id in (0");
+        for(int customerId : customerIds) {
+            sql.append(",").append(customerId);
+        }
+        sql.append("))");
+        List<StockQuotationView> quotations = dao.getNative(StockQuotationView.class, sql.toString());
         for (var ss : quotations) {
             for (var item : ss.getItems()) {
                 var view = this.findProduct(item.getStockProductId(), companyId);
@@ -1202,6 +1220,12 @@ public class DaoApi {
     public <T> Response getSecuredRequest(String link, String header) {
         Invocation.Builder b = ClientBuilder.newClient().target(link).request();
         return b.header(HttpHeaders.AUTHORIZATION, header).get();
+    }
+
+    public <T> Response postSecuredRequest(String link, T t, String authHeader) {
+        Invocation.Builder b = ClientBuilder.newClient().target(link).request();
+        b.header(HttpHeaders.AUTHORIZATION, authHeader);
+        return b.post(Entity.entity(t, "application/json"));
     }
 
 }

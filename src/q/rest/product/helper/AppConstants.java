@@ -63,6 +63,9 @@ public class AppConstants {
 
 
     //CUSTOMER SERVICE
+    public static String SEARCH_CUSTOMER_IDS = CUSTOMER_SERVICE + "search-customer-ids";
+    public static String SEARCH_SUPPLIER_IDS = CUSTOMER_SERVICE + "search-supplier-ids";
+
     public static String getCustomers(String ids){
         return CUSTOMER_SERVICE + "customers/" + ids;
     }

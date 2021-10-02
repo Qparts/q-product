@@ -390,7 +390,9 @@ public class StockProductV2 {
     public Response searchSales(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
         logger.info("search sales");
         String query = map.get("query");
-        List<StockSalesView> sales = daoApi.searchSales(query, Helper.getCompanyFromJWT(header));
+        int companyId = Helper.getCompanyFromJWT(header);
+        List<Integer> customerIds = getCustomerIdsFromQuery(map, header);
+        List<StockSalesView> sales = daoApi.searchSales(query, companyId, customerIds);
         Attacher.attachCustomer(sales, header);
         logger.info("search sales done");
         return Response.status(200).entity(sales).build();
@@ -401,9 +403,11 @@ public class StockProductV2 {
     @POST
     @Path("search-purchase")
     public Response searchPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
-        String query = map.get("query");
         logger.info("search puchase");
-        List<StockPurchaseView> purchases = daoApi.searchPurchase(query, Helper.getCompanyFromJWT(header));
+        String query = map.get("query");
+        int companyId = Helper.getCompanyFromJWT(header);
+        List<Integer> supplierIds = getSupplierIdsFromQuery(map, header);
+        List<StockPurchaseView> purchases = daoApi.searchPurchase(query, companyId, supplierIds);
         Attacher.attachSupplier(purchases, header);
         logger.info("search purchase done");
         return Response.status(200).entity(purchases).build();
@@ -413,9 +417,11 @@ public class StockProductV2 {
     @POST
     @Path("search-quotation")
     public Response searchQuotation(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, Map<String, String> map) {
-        String query = map.get("query");
         logger.info("search quotation");
-        List<StockQuotationView> quotations = daoApi.searchQuotation(query, Helper.getCompanyFromJWT(header));
+        String query = map.get("query");
+        int companyId = Helper.getCompanyFromJWT(header);
+        List<Integer> customerIds = getCustomerIdsFromQuery(map, header);
+        List<StockQuotationView> quotations = daoApi.searchQuotation(query, companyId, customerIds);
         Attacher.attachCustomerQ(quotations, header);
         logger.info("search quotation done");
         return Response.status(200).entity(quotations).build();
@@ -804,6 +810,24 @@ public class StockProductV2 {
     private boolean verifyQuantities(StockReturnSales salesReturn) {
         // TODO: 20/01/2021  We have to check if the return is valid, check against quantities in sales, and in other sales returns
         return true;
+    }
+
+    private List<Integer> getCustomerIdsFromQuery(Map<String,String> map, String header){
+        Response r = this.postSecuredRequest(AppConstants.SEARCH_CUSTOMER_IDS, map, header);
+        if(r.getStatus() == 200){
+            Map<String,Object> newMap = r.readEntity(Map.class);
+            return (ArrayList<Integer>) newMap.get("customerIds");
+        }
+        return new ArrayList<>();
+    }
+
+    private List<Integer> getSupplierIdsFromQuery(Map<String,String> map, String header){
+        Response r = this.postSecuredRequest(AppConstants.SEARCH_SUPPLIER_IDS, map, header);
+        if(r.getStatus() == 200){
+            Map<String,Object> newMap = r.readEntity(Map.class);
+            return (ArrayList<Integer>) newMap.get("supplierIds");
+        }
+        return new ArrayList<>();
     }
 
 
