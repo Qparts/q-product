@@ -1,11 +1,11 @@
 package q.rest.product.model.qvm.qvmstock.minimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Table(name="prd_company_special_offer_upload_request")
 @Entity
@@ -26,8 +26,22 @@ public class PbSpecialOffer {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="offer_end_date")
     private Date endDate;
+    @OrderBy(value = "tag")
+    @ElementCollection(targetClass=String.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "prd_special_offer_brand_tag", joinColumns = @JoinColumn(name = "offer"))
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private Set<String> tag = new HashSet<>();
+
     @Transient
     private List<PbCompanyProduct> products = new ArrayList<>();
+
+    public Set<String> getTag() {
+        return tag;
+    }
+
+    public void setTag(Set<String> tag) {
+        this.tag = tag;
+    }
 
     public int getId() {
         return id;
