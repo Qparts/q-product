@@ -48,7 +48,6 @@ public class ProductQvmApiV3 {
 
     private static final Logger logger = Logger.getLogger(ProductQvmApiV3.class);
 
-
     @UserJwt
     @GET
     @Path("last-pulls")
@@ -319,9 +318,13 @@ public class ProductQvmApiV3 {
             return Response.status(200).entity(new HashMap<>()).build();
         }
         var size = daoApi.searchCompanyProductSize(searchObject);
+        //
         var companyProducts = daoApi.searchCompanyProducts(searchObject);
+        //
         async.saveSearch2(header, searchObject, size > 0);
+        //
         async.addToSearchListOld(header, companyProducts);
+
         Map<String,Object> map = new HashMap<>();
         map.put("products", companyProducts);
         map.put("count", size);

@@ -8,7 +8,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5b265574-e760-436c-97c7-54a062f3d26a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/product/model/qvm/qvmstock/minimal/PbSpecialOffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/model/qvm/qvmstock/minimal/PbSpecialOffer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/ProductQvmApiV3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/product/operation/StockProductV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/product/operation/StockProductV2.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -444,7 +445,11 @@
       <workItem from="1632903446434" duration="4137000" />
       <workItem from="1632989869886" duration="8774000" />
       <workItem from="1633209802381" duration="3591000" />
-      <workItem from="1633245943385" duration="986000" />
+      <workItem from="1633245943385" duration="1218000" />
+      <workItem from="1633290767770" duration="222000" />
+      <workItem from="1633370718138" duration="449000" />
+      <workItem from="1633470064515" duration="650000" />
+      <workItem from="1633607162985" duration="102000" />
     </task>
     <servers />
   </component>

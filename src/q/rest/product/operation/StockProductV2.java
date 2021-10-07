@@ -237,7 +237,8 @@ public class StockProductV2 {
     @Path("purchase")
     public Response createPurchaseOrder(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, StockPurchase po) {
         po.setCompanyId(Helper.getCompanyFromJWT(header));
-        po.setCreated(new Date());
+        if(po.getCreated() == null)
+            po.setCreated(new Date());
         po.setPaymentMethod(po.getTransactionType() == 'C' ? po.getPaymentMethod() : null);
         logger.info("create purchase");
         int purchaseID = daoApi.createPurchase(po);
