@@ -532,9 +532,8 @@ public class StockProductV2 {
         map.put("daysSummary", summaries);
         map.put("topCustomers", topCustomers);
         map.put("topBrands", topBrands);
-        List<Map<String, Object>> dailySales = daoApi.getDailySales(companyId, fromLong, toLong);
         logger.info("get sales report from to");
-        return Response.status(200).entity(dailySales).build();
+        return Response.status(200).entity(map).build();
     }
 
 
