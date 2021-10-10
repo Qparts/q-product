@@ -519,8 +519,29 @@ public class StockProductV2 {
 
     @SubscriberJwt
     @GET
+    @Path("sales-report/from/{from}/to/{to}")
+    public Response getSalesReport(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong) {
+        logger.info("get sales report from to");
+        int companyId = Helper.getCompanyFromJWT(header);
+        Date from = new Date(fromLong);
+        Date to = new Date(toLong);
+        List<StockSalesSummary> summaries = daoApi.getDailySalesSummary(from, to, companyId);//ok
+        List<Map<String, Object>> topCustomers = daoApi.getTopCustomers(from, to, companyId, header);//ok
+        List<Map<String, Object>> topBrands = daoApi.getTopBrands(from, to, companyId, 'S');
+        Map<String, Object> map = new HashMap<>();
+        map.put("daysSummary", summaries);
+        map.put("topCustomers", topCustomers);
+        map.put("topBrands", topBrands);
+        List<Map<String, Object>> dailySales = daoApi.getDailySales(companyId, fromLong, toLong);
+        logger.info("get sales report from to");
+        return Response.status(200).entity(dailySales).build();
+    }
+
+
+    @SubscriberJwt
+    @GET
     @Path("sales-report/{year}/{month}")
-    public Response getDailySales2(@HeaderParam(HttpHeaders.AUTHORIZATION) String header,
+    public Response getSalesReport(@HeaderParam(HttpHeaders.AUTHORIZATION) String header,
                                    @PathParam(value = "year") int year,
                                    @PathParam(value = "month") int month) {
         logger.info("get sales report by year and month");
@@ -584,11 +605,31 @@ public class StockProductV2 {
     @SubscriberJwt
     @GET
     @Path("purchase-report/{year}/{month}")
-    public Response getDailyPurchase(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month) {
+    public Response getPurchaseReport(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "year") int year, @PathParam(value = "month") int month) {
         logger.info("get purchase report by year and month");
         Date from = Helper.getFromDate(month, year);
         Date to = Helper.getToDate(month, year);//month = 1 - 12
         int companyId = Helper.getCompanyFromJWT(header);
+        List<StockPurchaseSummary> summaries = daoApi.getDailyPurchaseSummary(from, to, companyId);
+        List<Map<String, Object>> topSuppliers = daoApi.getTopSuppliers(from, to, companyId, header);
+        List<Map<String, Object>> topBrands = daoApi.getTopBrands(from, to, companyId, 'P');
+        Map<String, Object> map = new HashMap<>();
+        map.put("daysSummary", summaries);
+        map.put("topSuppliers", topSuppliers);
+        map.put("topBrands", topBrands);
+        logger.info("get purchase report by year and date");
+        return Response.status(200).entity(map).build();
+    }
+
+
+    @SubscriberJwt
+    @GET
+    @Path("purchase-report/from/{from}/to/{to}")
+    public Response getPurchaseReportFromTo(@HeaderParam(HttpHeaders.AUTHORIZATION) String header, @PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong) {
+        logger.info("get sales report from to");
+        int companyId = Helper.getCompanyFromJWT(header);
+        Date from = new Date(fromLong);
+        Date to = new Date(toLong);
         List<StockPurchaseSummary> summaries = daoApi.getDailyPurchaseSummary(from, to, companyId);
         List<Map<String, Object>> topSuppliers = daoApi.getTopSuppliers(from, to, companyId, header);
         List<Map<String, Object>> topBrands = daoApi.getTopBrands(from, to, companyId, 'P');
