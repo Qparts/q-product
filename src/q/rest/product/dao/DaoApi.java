@@ -134,8 +134,11 @@ public class DaoApi {
     private List<StockProductView> searchProductCombined(String query, int companyId){
         if(query.trim().length() == 0)
             return new ArrayList<>();
-        String nameLike = "'" + query.trim().toLowerCase() + "%'";
-        String numberLike = "'" + Helper.undecorate(query) + "%'";
+
+        String undecorated = Helper.undecorate(query);
+        String nameLike = "'%" + query.trim().toLowerCase() + "%'";
+        String numberLike = undecorated.length() > 0 ? "'%" + undecorated + "%'" : nameLike;
+
         String sql = "select * from (" +
                 " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
                 " from prd_view_stock_product" +
