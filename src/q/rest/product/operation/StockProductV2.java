@@ -396,6 +396,7 @@ public class StockProductV2 {
         List<StockSalesView> sales = daoApi.searchSales(query, companyId, customerIds);
         Attacher.attachCustomer(sales, header);
         logger.info("search sales done");
+        sales.forEach(s-> System.out.println(s.getId()));
         return Response.status(200).entity(sales).build();
     }
 
