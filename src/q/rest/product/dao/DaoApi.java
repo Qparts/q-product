@@ -125,6 +125,7 @@ public class DaoApi {
 
     public Set<StockProductView> searchProduct(String query, int companyId) {
         List<StockProductView> views = searchProductCombined(query, companyId);
+        views.forEach(v-> System.out.println(v.getProductId()));
 //        List<StockProductView> byNumber = searchProductByNumber(query, companyId);
   //      List<StockProductView> byName = searchProductByName(query, companyId);
         return new HashSet<>(views);
@@ -154,13 +155,6 @@ public class DaoApi {
                 " order by quantity desc";
         System.out.println(sql);
 
-//        String sql = "select * from (" +
-//                " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
-//                " from prd_view_stock_product" +
-//                " where company_id in (0,"+ companyId +")) z where n < 2 " +
-//                "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
-//                " and (z.product_number like "+ numberLike +
-//                " or lower(z.name) like "+ nameLike +" or lower(z.name_ar) like "+ nameLike + ")";
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
         attachLiveStock(views, companyId);
         attachShelves(views, companyId);
