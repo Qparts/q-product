@@ -608,6 +608,7 @@ public class DaoApi {
             sql.append(",").append(customerId);
         }
         sql.append(")) order by created desc");
+        System.out.println(sql);
         List<StockSalesView> sales = dao.getNative(StockSalesView.class, sql.toString());
         for (var ss : sales) {
             for (var item : ss.getItems()) {
