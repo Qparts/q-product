@@ -39,7 +39,6 @@ public class StockProductV2 {
         String query = (String) map.get("query");
         logger.info("search-product");
         Set<StockProductView> products = daoApi.searchProduct(query, Helper.getCompanyFromJWT(header));
-        products.forEach(v-> System.out.println(v.getProductId()));
         logger.info("search-product:done");
         return Response.status(200).entity(products).build();
     }

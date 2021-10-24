@@ -149,8 +149,6 @@ public class DaoApi {
                 "  select product_id, sum(quantity) as quantity from prd_stk_live_stock where company_id = "+companyId+" group by product_id" +
                 " ) ls on vp.product_id = ls.product_id" +
                 " order by quantity desc";
-        System.out.println(sql);
-
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
         attachLiveStock(views, companyId);
         attachShelves(views, companyId);
