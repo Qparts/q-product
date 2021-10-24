@@ -139,13 +139,27 @@ public class DaoApi {
         String nameLike = "'%" + query.trim().toLowerCase() + "%'";
         String numberLike = undecorated.length() > 0 ? "'%" + undecorated + "%'" : nameLike;
 
-        String sql = "select * from (" +
-                " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
-                " from prd_view_stock_product" +
-                " where company_id in (0,"+ companyId +")) z where n < 2 " +
-                "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
+
+        String sql = "select vp.*, coalesce(quantity, 0) as quantity from (" +
+                " select * from (" +
+                "  select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
+                "  from prd_view_stock_product" +
+                "  where company_id in (0,"+ companyId +")) z where n < 2" +
+                "  and ((z.status = 'P' and z.created_by_company = "+ companyId +") or z.status = 'A')" +
                 " and (z.product_number like "+ numberLike +
-                " or lower(z.name) like "+ nameLike +" or lower(z.name_ar) like "+ nameLike + ")";
+                " or lower(z.name) like "+ nameLike +" or lower(z.name_ar) like "+ nameLike + ")) vp" +
+                " left join (" +
+                "  select product_id, sum(quantity) as quantity from prd_stk_live_stock where company_id = "+companyId+" group by product_id" +
+                " ) ls on vp.product_id = ls.product_id" +
+                "order by quantity desc";
+        
+//        String sql = "select * from (" +
+//                " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
+//                " from prd_view_stock_product" +
+//                " where company_id in (0,"+ companyId +")) z where n < 2 " +
+//                "and ((z.status = 'P' and z.created_by_company = " + companyId + ") or z.status = 'A')" +
+//                " and (z.product_number like "+ numberLike +
+//                " or lower(z.name) like "+ nameLike +" or lower(z.name_ar) like "+ nameLike + ")";
         List<StockProductView> views = dao.getNative(StockProductView.class, sql);
         attachLiveStock(views, companyId);
         attachShelves(views, companyId);
@@ -608,7 +622,6 @@ public class DaoApi {
             sql.append(",").append(customerId);
         }
         sql.append(")) order by created desc");
-        System.out.println(sql);
         List<StockSalesView> sales = dao.getNative(StockSalesView.class, sql.toString());
         for (var ss : sales) {
             for (var item : ss.getItems()) {
