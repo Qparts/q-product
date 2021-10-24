@@ -125,11 +125,7 @@ public class DaoApi {
 
     public Set<StockProductView> searchProduct(String query, int companyId) {
         List<StockProductView> views = searchProductCombined(query, companyId);
-        views.forEach(v-> System.out.println(v.getProductId()));
-//        List<StockProductView> byNumber = searchProductByNumber(query, companyId);
-  //      List<StockProductView> byName = searchProductByName(query, companyId);
         return new HashSet<>(views);
-//        return productsSet;
     }
 
     private List<StockProductView> searchProductCombined(String query, int companyId){
