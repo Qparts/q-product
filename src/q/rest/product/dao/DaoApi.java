@@ -125,7 +125,7 @@ public class DaoApi {
 
     public Set<StockProductView> searchProduct(String query, int companyId) {
         List<StockProductView> views = searchProductCombined(query, companyId);
-        return new HashSet<>(views);
+        return new LinkedHashSet<>(views);
     }
 
     private List<StockProductView> searchProductCombined(String query, int companyId){
