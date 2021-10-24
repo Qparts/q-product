@@ -151,8 +151,8 @@ public class DaoApi {
                 " left join (" +
                 "  select product_id, sum(quantity) as quantity from prd_stk_live_stock where company_id = "+companyId+" group by product_id" +
                 " ) ls on vp.product_id = ls.product_id" +
-                "order by quantity desc";
-        
+                " order by quantity desc";
+
 //        String sql = "select * from (" +
 //                " select *, row_number() over (PARTITION BY product_id order by company_id desc) as n" +
 //                " from prd_view_stock_product" +
