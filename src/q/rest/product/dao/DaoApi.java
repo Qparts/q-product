@@ -585,7 +585,7 @@ public class DaoApi {
         for(int customerId : supplierIds) {
             sql.append(",").append(customerId);
         }
-        sql.append("))");
+        sql.append(")) order by created");
         var purchases = dao.getNative(StockPurchaseView.class, sql.toString());
         for (var pur : purchases) {
             for (var item : pur.getItems()) {
@@ -607,7 +607,7 @@ public class DaoApi {
         for(int customerId : customerIds) {
             sql.append(",").append(customerId);
         }
-        sql.append("))");
+        sql.append(")) order by created");
         List<StockSalesView> sales = dao.getNative(StockSalesView.class, sql.toString());
         for (var ss : sales) {
             for (var item : ss.getItems()) {
@@ -629,7 +629,7 @@ public class DaoApi {
         for(int customerId : customerIds) {
             sql.append(",").append(customerId);
         }
-        sql.append("))");
+        sql.append(")) order by created");
         List<StockQuotationView> quotations = dao.getNative(StockQuotationView.class, sql.toString());
         for (var ss : quotations) {
             for (var item : ss.getItems()) {
