@@ -31,7 +31,6 @@ public class StockProductV2 {
 
     private static final Logger logger = Logger.getLogger(StockProductV2.class);
 
-
     @SubscriberJwt
     @POST
     @Path("search-product")
